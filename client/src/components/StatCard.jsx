@@ -57,3 +57,4 @@ const StatCard = ({ title, value, icon: Icon, color = 'indigo', subtitle, trend 
 };
 
 export default StatCard;
+

@@ -115,7 +115,7 @@ const seedDemoUsers = async () => {
         designation: 'Associate Professor',
         assignedCourses: [course1._id, course2._id]
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     await StudentProfile.findOneAndUpdate(
@@ -130,7 +130,7 @@ const seedDemoUsers = async () => {
         attendancePercentage: 91.5,
         enrolledCourses: [course1._id, course2._id]
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     // 6. Upsert Notices
@@ -181,3 +181,4 @@ if (require.main === module) {
 }
 
 module.exports = seedDemoUsers;
+

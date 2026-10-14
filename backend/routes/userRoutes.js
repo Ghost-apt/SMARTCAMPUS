@@ -12,3 +12,4 @@ router.patch('/me', authenticate, userController.updateCurrentUserProfile);
 router.get('/', authenticate, authorize('admin'), userController.getAllUsers);
 
 module.exports = router;
+

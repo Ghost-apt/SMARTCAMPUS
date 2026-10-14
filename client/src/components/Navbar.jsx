@@ -97,3 +97,4 @@ const Navbar = ({ onToggleSidebar }) => {
 };
 
 export default Navbar;
+

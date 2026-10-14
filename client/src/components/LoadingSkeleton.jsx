@@ -21,3 +21,4 @@ const LoadingSkeleton = ({ count = 3, type = 'card' }) => {
 };
 
 export default LoadingSkeleton;
+

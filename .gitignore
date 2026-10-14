@@ -5,6 +5,8 @@ node_modules/
 
 # Environment variables
 .env
+.env*
+*.env*
 .env.local
 .env.development.local
 .env.test.local
@@ -49,3 +51,4 @@ Desktop.ini
 # Test artifacts
 coverage/
 .nyc_output/
+

@@ -118,7 +118,7 @@ router.post('/attendance/mark', authenticate, authorize('faculty', 'admin'), asy
             markedBy: req.user.id,
             remarks: item.remarks || ''
           },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         )
       )
     );
@@ -233,3 +233,4 @@ router.post('/ai/chat', async (req, res, next) => {
 });
 
 module.exports = router;
+

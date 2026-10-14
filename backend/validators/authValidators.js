@@ -74,3 +74,4 @@ module.exports = {
   validateLogin,
   validateEmail
 };
+

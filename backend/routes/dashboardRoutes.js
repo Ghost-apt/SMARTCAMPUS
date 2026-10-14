@@ -14,3 +14,4 @@ router.get('/faculty', authenticate, authorize('faculty', 'admin'), dashboardCon
 router.get('/admin', authenticate, authorize('admin'), dashboardController.getAdminDashboard);
 
 module.exports = router;
+

@@ -247,3 +247,4 @@ npm test
 - [ ] **Student At-Risk Predictor**: Machine learning model analyzing attendance drops and assignment marks.
 - [ ] **Automated Timetable Optimizer**: Constraint-satisfaction algorithm for classroom allocations.
 - [ ] **Voice-Enabled Student Helpdesk**: Whisper STT & TTS integration.
+
