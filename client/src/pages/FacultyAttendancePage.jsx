@@ -279,3 +279,4 @@ const FacultyAttendancePage = () => {
 };
 
 export default FacultyAttendancePage;
+

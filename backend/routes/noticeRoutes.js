@@ -9,3 +9,4 @@ router.post('/', authenticate, authorize('faculty', 'admin'), noticeController.c
 router.delete('/:id', authenticate, authorize('faculty', 'admin'), noticeController.deleteNotice);
 
 module.exports = router;
+

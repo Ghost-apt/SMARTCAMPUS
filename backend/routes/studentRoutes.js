@@ -14,3 +14,4 @@ router.patch('/:id', authenticate, authorize('admin', 'faculty'), studentControl
 router.delete('/:id', authenticate, authorize('admin'), studentController.deleteStudent);
 
 module.exports = router;
+

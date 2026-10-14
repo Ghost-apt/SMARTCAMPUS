@@ -131,3 +131,4 @@ const StudentTimetablePage = () => {
 };
 
 export default StudentTimetablePage;
+

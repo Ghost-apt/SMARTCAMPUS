@@ -9,3 +9,4 @@ router.post('/', authenticate, authorize('admin', 'faculty'), timetableControlle
 router.delete('/:id', authenticate, authorize('admin'), timetableController.deleteTimetableEntry);
 
 module.exports = router;
+

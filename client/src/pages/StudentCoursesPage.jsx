@@ -177,3 +177,4 @@ const StudentCoursesPage = () => {
 };
 
 export default StudentCoursesPage;
+

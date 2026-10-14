@@ -9,3 +9,4 @@ router.post('/', authenticate, authorize('faculty', 'admin'), resourceController
 router.delete('/:id', authenticate, authorize('faculty', 'admin'), resourceController.deleteResource);
 
 module.exports = router;
+

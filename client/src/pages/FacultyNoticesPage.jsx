@@ -229,3 +229,4 @@ const FacultyNoticesPage = () => {
 };
 
 export default FacultyNoticesPage;
+

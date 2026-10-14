@@ -232,3 +232,4 @@ const AdminDepartmentsPage = () => {
 };
 
 export default AdminDepartmentsPage;
+

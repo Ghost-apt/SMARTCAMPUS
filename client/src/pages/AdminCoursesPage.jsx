@@ -439,3 +439,4 @@ const AdminCoursesPage = () => {
 };
 
 export default AdminCoursesPage;
+

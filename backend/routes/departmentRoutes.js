@@ -10,3 +10,4 @@ router.patch('/:id', authenticate, authorize('admin'), departmentController.upda
 router.delete('/:id', authenticate, authorize('admin'), departmentController.deleteDepartment);
 
 module.exports = router;
+

@@ -95,3 +95,4 @@ const FacultyClassesPage = () => {
 };
 
 export default FacultyClassesPage;
+

@@ -152,3 +152,4 @@ const StudentFeesPage = () => {
 };
 
 export default StudentFeesPage;
+

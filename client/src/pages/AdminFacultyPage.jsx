@@ -319,3 +319,4 @@ const AdminFacultyPage = () => {
 };
 
 export default AdminFacultyPage;
+

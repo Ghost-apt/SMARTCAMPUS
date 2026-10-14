@@ -10,3 +10,4 @@ router.post('/:id/submit', authenticate, authorize('student'), assignmentControl
 router.patch('/:id/grade', authenticate, authorize('faculty', 'admin'), assignmentController.gradeSubmission);
 
 module.exports = router;
+

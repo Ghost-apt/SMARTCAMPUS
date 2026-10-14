@@ -253,3 +253,4 @@ const FacultyPerformancePage = () => {
 };
 
 export default FacultyPerformancePage;
+

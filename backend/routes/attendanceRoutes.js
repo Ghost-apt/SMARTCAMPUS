@@ -12,3 +12,4 @@ router.post('/mark', authenticate, authorize('faculty', 'admin'), attendanceCont
 router.get('/report', authenticate, authorize('faculty', 'admin'), attendanceController.getAttendanceReport);
 
 module.exports = router;
+

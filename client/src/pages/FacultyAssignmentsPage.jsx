@@ -467,3 +467,4 @@ const FacultyAssignmentsPage = () => {
 };
 
 export default FacultyAssignmentsPage;
+

@@ -10,3 +10,4 @@ router.post('/', authenticate, authorize('admin'), feeController.createFeeRecord
 router.patch('/:id/pay', authenticate, authorize('admin'), feeController.recordPayment);
 
 module.exports = router;
+

@@ -11,3 +11,4 @@ router.get('/results/my', authenticate, examController.getMyResults);
 router.post('/results', authenticate, authorize('faculty', 'admin'), examController.enterResult);
 
 module.exports = router;
+

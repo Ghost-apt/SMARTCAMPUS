@@ -16,3 +16,4 @@ router.post('/subjects', authenticate, authorize('admin', 'faculty'), courseCont
 router.patch('/subjects/:id', authenticate, authorize('admin', 'faculty'), courseController.updateSubject);
 
 module.exports = router;
+
