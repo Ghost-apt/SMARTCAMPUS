@@ -9,6 +9,17 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 // Route imports
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const facultyRoutes = require('./routes/facultyRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
+const courseRoutes = require('./routes/courseRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const timetableRoutes = require('./routes/timetableRoutes');
+const assignmentRoutes = require('./routes/assignmentRoutes');
+const examRoutes = require('./routes/examRoutes');
+const feeRoutes = require('./routes/feeRoutes');
+const noticeRoutes = require('./routes/noticeRoutes');
+const resourceRoutes = require('./routes/resourceRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const academicRoutes = require('./routes/academicRoutes');
 const seedDemoUsers = require('./scripts/seedDemoUsers');
@@ -115,6 +126,17 @@ app.post('/api/seed', async (req, res, next) => {
 // ==========================================
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/faculty', facultyRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api', courseRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/timetable', timetableRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api', examRoutes);
+app.use('/api/fees', feeRoutes);
+app.use('/api/notices', noticeRoutes);
+app.use('/api/resources', resourceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', academicRoutes);
 

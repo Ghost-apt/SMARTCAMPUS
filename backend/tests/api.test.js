@@ -307,4 +307,354 @@ describe('SmartCampus AI — Backend API Verification Suite', () => {
     assert.strictEqual(res.statusCode, 401);
     assert.strictEqual(res.body.success, false);
   });
+
+  // ============================================================
+  // PHASE 2 CORE CAMPUS MANAGEMENT TESTS
+  // ============================================================
+
+  let createdSubjectId = '';
+  let createdFacultyId = '';
+  let createdStudentId = '';
+
+  // ------------------------------------------------------------
+  // 16. DEPARTMENT, COURSE & SUBJECT CRUD TEST
+  // ------------------------------------------------------------
+  test('16. Admin can create departments, courses, and subjects', async () => {
+    // 1. Department
+    const deptRes = await request(app)
+      .post('/api/departments')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        departmentCode: 'CA',
+        departmentName: 'Department of Computer Applications',
+        headOfDepartment: 'Dr. Sharma'
+      });
+    assert.strictEqual(deptRes.statusCode, 201);
+    assert.strictEqual(deptRes.body.success, true);
+
+    // 2. Course
+    const courseRes = await request(app)
+      .post('/api/courses')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        courseCode: 'BCA',
+        courseName: 'Bachelor of Computer Applications',
+        totalSemesters: 6,
+        department: 'CA'
+      });
+    assert.strictEqual(courseRes.statusCode, 201);
+    assert.strictEqual(courseRes.body.success, true);
+
+    // 3. Subject
+    const subRes = await request(app)
+      .post('/api/subjects')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        subjectCode: 'BCA-501',
+        subjectName: 'Artificial Intelligence & Machine Learning',
+        credits: 4,
+        type: 'Theory',
+        semester: 5
+      });
+    assert.strictEqual(subRes.statusCode, 201);
+    assert.strictEqual(subRes.body.success, true);
+    createdSubjectId = subRes.body.subject._id;
+  });
+
+  // ------------------------------------------------------------
+  // 17. STUDENT & FACULTY MANAGEMENT TEST
+  // ------------------------------------------------------------
+  test('17. Admin can register student and faculty profiles', async () => {
+    // 1. Register student via admin endpoint
+    const studRes = await request(app)
+      .post('/api/students')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Pooja Sharma',
+        email: 'pooja.student@smartcampus.edu',
+        password: 'Password123!',
+        rollNumber: 'BCA-2023-088',
+        courseCode: 'BCA',
+        semester: 5
+      });
+    assert.strictEqual(studRes.statusCode, 201);
+    assert.strictEqual(studRes.body.success, true);
+    createdStudentId = studRes.body.student._id;
+
+    // 2. Register faculty via admin endpoint
+    const facRes = await request(app)
+      .post('/api/faculty')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Dr. Vikram Malhotra',
+        email: 'vikram.faculty@smartcampus.edu',
+        password: 'Password123!',
+        employeeId: 'FAC-BCA-012',
+        designation: 'Professor'
+      });
+    assert.strictEqual(facRes.statusCode, 201);
+    assert.strictEqual(facRes.body.success, true);
+    createdFacultyId = facRes.body.faculty._id;
+  });
+
+  // ------------------------------------------------------------
+  // 18. TIMETABLE 3-WAY CONFLICT DETECTION TEST
+  // ------------------------------------------------------------
+  test('18. Timetable scheduler must prevent Room, Faculty, and Class conflicts with HTTP 409', async () => {
+    // 1. Initial slot (successful)
+    const slot1 = await request(app)
+      .post('/api/timetable')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        courseCode: 'BCA',
+        semester: 5,
+        section: 'A',
+        subjectId: createdSubjectId,
+        facultyId: createdFacultyId,
+        room: 'Lab 301',
+        day: 'Monday',
+        startTime: '09:00',
+        endTime: '10:30'
+      });
+    assert.strictEqual(slot1.statusCode, 201);
+    assert.strictEqual(slot1.body.success, true);
+
+    // 2. Room conflict attempt (overlapping in Room 301 on Monday)
+    const roomConflict = await request(app)
+      .post('/api/timetable')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        courseCode: 'MCA',
+        semester: 1,
+        section: 'A',
+        room: 'Lab 301',
+        day: 'Monday',
+        startTime: '09:30',
+        endTime: '11:00'
+      });
+    assert.strictEqual(roomConflict.statusCode, 409);
+    assert.match(roomConflict.body.message, /Room 'Lab 301' is already booked/i);
+
+    // 3. Faculty schedule conflict attempt (same faculty overlapping)
+    const facultyConflict = await request(app)
+      .post('/api/timetable')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        courseCode: 'MCA',
+        semester: 1,
+        section: 'B',
+        facultyId: createdFacultyId,
+        room: 'Hall C',
+        day: 'Monday',
+        startTime: '09:30',
+        endTime: '11:00'
+      });
+    assert.strictEqual(facultyConflict.statusCode, 409);
+    assert.match(facultyConflict.body.message, /Assigned faculty is already scheduled/i);
+
+    // 4. Class schedule conflict attempt (same class/section overlapping)
+    const classConflict = await request(app)
+      .post('/api/timetable')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        courseCode: 'BCA',
+        semester: 5,
+        section: 'A',
+        room: 'Room 102',
+        day: 'Monday',
+        startTime: '10:00',
+        endTime: '11:30'
+      });
+    assert.strictEqual(classConflict.statusCode, 409);
+    assert.match(classConflict.body.message, /already has a scheduled lecture/i);
+  });
+
+  // ------------------------------------------------------------
+  // 19. ATTENDANCE MARKING & AGGREGATE RECALCULATION TEST
+  // ------------------------------------------------------------
+  test('19. Faculty marks attendance and student profile recalculates attendance compliance', async () => {
+    const markRes = await request(app)
+      .post('/api/attendance/mark')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        subjectId: createdSubjectId,
+        courseCode: 'BCA',
+        semester: 5,
+        date: new Date().toISOString(),
+        attendanceList: [
+          { studentId: createdStudentId, status: 'Present', remarks: 'Good punctuality' }
+        ]
+      });
+    assert.strictEqual(markRes.statusCode, 200);
+    assert.strictEqual(markRes.body.success, true);
+    assert.strictEqual(markRes.body.count, 1);
+
+    // Check attendance report
+    const reportRes = await request(app)
+      .get(`/api/attendance/student?studentId=${createdStudentId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    assert.strictEqual(reportRes.statusCode, 200);
+    assert.strictEqual(reportRes.body.overallPercentage, 100);
+    assert.strictEqual(reportRes.body.isEligible, true);
+  });
+
+  // ------------------------------------------------------------
+  // 20. ASSIGNMENT CREATION, SUBMISSION & GRADING TEST
+  // ------------------------------------------------------------
+  let createdAssignmentId = '';
+  test('20. Complete Assignment lifecycle: Faculty creates, Student submits, Faculty grades', async () => {
+    // 1. Faculty creates assignment
+    const assRes = await request(app)
+      .post('/api/assignments')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        title: 'Deep Learning PyTorch Implementations',
+        description: 'Implement a CNN for image classification.',
+        subjectId: createdSubjectId,
+        courseCode: 'BCA',
+        semester: 5,
+        dueDate: new Date(Date.now() + 86400000).toISOString(),
+        totalMarks: 50
+      });
+    assert.strictEqual(assRes.statusCode, 201);
+    createdAssignmentId = assRes.body.assignment._id;
+
+    // 2. Student submits assignment
+    const subRes = await request(app)
+      .post(`/api/assignments/${createdAssignmentId}/submit`)
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({
+        content: 'Completed PyTorch CNN model with 94.2% test accuracy.',
+        fileUrl: 'https://github.com/student/pytorch-cnn'
+      });
+    assert.strictEqual(subRes.statusCode, 200);
+    assert.strictEqual(subRes.body.success, true);
+
+    // 3. Faculty grades submission
+    const { User } = require('../models/CampusModels');
+    const studentUser = await User.findOne({ email: 'amit.student@smartcampus.edu' });
+    const gradeRes = await request(app)
+      .patch(`/api/assignments/${createdAssignmentId}/grade`)
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        studentId: studentUser._id.toString(),
+        marksObtained: 46,
+        feedback: 'Excellent hyperparameter tuning and model evaluation.'
+      });
+    assert.strictEqual(gradeRes.statusCode, 200);
+    assert.strictEqual(gradeRes.body.submission.marksObtained, 46);
+    assert.strictEqual(gradeRes.body.submission.status, 'Graded');
+  });
+
+  // ------------------------------------------------------------
+  // 21. EXAMINATION & RESULT GRADING TEST
+  // ------------------------------------------------------------
+  test('21. Examination mark entry computes correct letter grade and GPA', async () => {
+    const { User } = require('../models/CampusModels');
+    const studentUser = await User.findOne({ email: 'amit.student@smartcampus.edu' });
+
+    // Enter 92/100 -> Expect Grade 'A+'
+    const resultRes = await request(app)
+      .post('/api/results')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        examName: 'Mid-Semester Examinations 2026',
+        studentId: studentUser._id.toString(),
+        subjectId: createdSubjectId,
+        subjectCode: 'BCA-501',
+        subjectName: 'Artificial Intelligence & ML',
+        marksObtained: 92,
+        maxMarks: 100,
+        remarks: 'Outstanding performance in theory and coding.'
+      });
+    assert.strictEqual(resultRes.statusCode, 201);
+    assert.strictEqual(resultRes.body.result.grade, 'A+');
+    assert.strictEqual(resultRes.body.result.status, 'Pass');
+
+    // Verify student results retrieval
+    const myResults = await request(app)
+      .get('/api/results/my')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(myResults.statusCode, 200);
+    assert.strictEqual(myResults.body.results.length >= 1, true);
+    assert.strictEqual(myResults.body.aggregatePercentage, 92);
+  });
+
+  // ------------------------------------------------------------
+  // 22. FEE INVOICING & PAYMENT RECALCULATION TEST
+  // ------------------------------------------------------------
+  test('22. Fee pre-save hook dynamically balances receivables and updates payment status', async () => {
+    const { User } = require('../models/CampusModels');
+    const studentUser = await User.findOne({ email: 'amit.student@smartcampus.edu' });
+
+    // 1. Admin creates invoice of ₹60,000 with ₹0 paid
+    const feeRes = await request(app)
+      .post('/api/fees')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        studentId: studentUser._id.toString(),
+        feeType: 'Tuition Fee',
+        semester: 5,
+        totalAmount: 60000,
+        paidAmount: 0,
+        dueDate: new Date(Date.now() + 864000000).toISOString()
+      });
+    assert.strictEqual(feeRes.statusCode, 201);
+    assert.strictEqual(feeRes.body.fee.balanceAmount, 60000);
+    assert.strictEqual(feeRes.body.fee.status, 'Pending');
+    const feeId = feeRes.body.fee._id;
+
+    // 2. Partial Payment of ₹25,000
+    const pay1 = await request(app)
+      .patch(`/api/fees/${feeId}/pay`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        paymentAmount: 25000,
+        receiptNumber: 'REC-TEST-001'
+      });
+    assert.strictEqual(pay1.statusCode, 200);
+    assert.strictEqual(pay1.body.fee.paidAmount, 25000);
+    assert.strictEqual(pay1.body.fee.balanceAmount, 35000);
+    assert.strictEqual(pay1.body.fee.status, 'Partial');
+
+    // 3. Final Payment of ₹35,000 to clear invoice
+    const pay2 = await request(app)
+      .patch(`/api/fees/${feeId}/pay`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        paymentAmount: 35000,
+        receiptNumber: 'REC-TEST-002'
+      });
+    assert.strictEqual(pay2.statusCode, 200);
+    assert.strictEqual(pay2.body.fee.paidAmount, 60000);
+    assert.strictEqual(pay2.body.fee.balanceAmount, 0);
+    assert.strictEqual(pay2.body.fee.status, 'Paid');
+  });
+
+  // ------------------------------------------------------------
+  // 23. CAMPUS NOTICES BROADCAST TEST
+  // ------------------------------------------------------------
+  test('23. Official campus notice publishing and retrieval across roles', async () => {
+    const postRes = await request(app)
+      .post('/api/notices')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        title: 'BCA Final-Year Major Project Viva Schedule',
+        content: 'All BCA final-year scholars must submit project dossiers and attend defense.',
+        targetAudience: 'all',
+        priority: 'Urgent',
+        department: 'Computer Applications'
+      });
+    assert.strictEqual(postRes.statusCode, 201);
+    assert.strictEqual(postRes.body.notice.priority, 'Urgent');
+
+    // Student views notices
+    const getRes = await request(app)
+      .get('/api/notices')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(getRes.statusCode, 200);
+    assert.strictEqual(getRes.body.success, true);
+    assert.ok(getRes.body.notices.some((n) => n.title.includes('Viva Schedule')));
+  });
 });
+

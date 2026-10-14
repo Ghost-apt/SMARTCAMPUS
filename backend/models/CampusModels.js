@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
     department: {
       type: String,
       trim: true,
-      default: 'General'
+      default: 'Computer Applications'
     },
     avatar: {
       type: String,
@@ -89,7 +89,153 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 // ==========================================
-// 2. STUDENT PROFILE SCHEMA & MODEL
+// 2. DEPARTMENT SCHEMA & MODEL
+// ==========================================
+const departmentSchema = new mongoose.Schema(
+  {
+    deptCode: {
+      type: String,
+      required: [true, 'Department code is required (e.g. CA, CSE)'],
+      unique: true,
+      trim: true,
+      uppercase: true
+    },
+    deptName: {
+      type: String,
+      required: [true, 'Department name is required'],
+      trim: true
+    },
+    description: {
+      type: String,
+      default: ''
+    },
+    headOfDepartment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    contactEmail: {
+      type: String,
+      default: ''
+    },
+    buildingLocation: {
+      type: String,
+      default: 'Academic Block A'
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// ==========================================
+// 3. COURSE / PROGRAM SCHEMA & MODEL
+// ==========================================
+const courseSchema = new mongoose.Schema(
+  {
+    courseCode: {
+      type: String,
+      required: [true, 'Course code is required (e.g. BCA, MCA)'],
+      unique: true,
+      uppercase: true,
+      trim: true
+    },
+    courseName: {
+      type: String,
+      required: [true, 'Course name is required'],
+      trim: true
+    },
+    department: {
+      type: String,
+      required: true,
+      default: 'Computer Applications'
+    },
+    durationYears: {
+      type: Number,
+      default: 3
+    },
+    totalSemesters: {
+      type: Number,
+      default: 6
+    },
+    credits: {
+      type: Number,
+      default: 120
+    },
+    description: {
+      type: String,
+      default: ''
+    },
+    faculty: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// ==========================================
+// 4. SUBJECT SCHEMA & MODEL
+// ==========================================
+const subjectSchema = new mongoose.Schema(
+  {
+    subjectCode: {
+      type: String,
+      required: [true, 'Subject code is required (e.g. BCA-501)'],
+      unique: true,
+      uppercase: true,
+      trim: true
+    },
+    subjectName: {
+      type: String,
+      required: [true, 'Subject name is required'],
+      trim: true
+    },
+    courseCode: {
+      type: String,
+      required: true,
+      default: 'BCA'
+    },
+    department: {
+      type: String,
+      required: true,
+      default: 'Computer Applications'
+    },
+    semester: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 8,
+      default: 1
+    },
+    credits: {
+      type: Number,
+      default: 4,
+      min: 1,
+      max: 6
+    },
+    type: {
+      type: String,
+      enum: ['Theory', 'Practical', 'Elective'],
+      default: 'Theory'
+    },
+    faculty: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    description: {
+      type: String,
+      default: ''
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// ==========================================
+// 5. STUDENT PROFILE SCHEMA & MODEL
 // ==========================================
 const studentProfileSchema = new mongoose.Schema(
   {
@@ -110,6 +256,10 @@ const studentProfileSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Department is required (e.g. BCA, CSE, IT)'],
       trim: true,
+      default: 'Computer Applications'
+    },
+    course: {
+      type: String,
       default: 'BCA'
     },
     semester: {
@@ -128,6 +278,12 @@ const studentProfileSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
+      }
+    ],
+    enrolledSubjects: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
       }
     ],
     cgpa: {
@@ -149,7 +305,7 @@ const studentProfileSchema = new mongoose.Schema(
 );
 
 // ==========================================
-// 3. FACULTY PROFILE SCHEMA & MODEL
+// 6. FACULTY PROFILE SCHEMA & MODEL
 // ==========================================
 const facultyProfileSchema = new mongoose.Schema(
   {
@@ -183,6 +339,12 @@ const facultyProfileSchema = new mongoose.Schema(
         ref: 'Course'
       }
     ],
+    assignedSubjects: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
+      }
+    ],
     officeRoom: {
       type: String,
       default: 'Faculty Block A - Room 204'
@@ -194,72 +356,17 @@ const facultyProfileSchema = new mongoose.Schema(
 );
 
 // ==========================================
-// 4. COURSE SCHEMA & MODEL
-// ==========================================
-const courseSchema = new mongoose.Schema(
-  {
-    courseCode: {
-      type: String,
-      required: [true, 'Course code is required (e.g. BCA-501)'],
-      unique: true,
-      uppercase: true,
-      trim: true
-    },
-    courseName: {
-      type: String,
-      required: [true, 'Course name is required'],
-      trim: true
-    },
-    department: {
-      type: String,
-      required: true,
-      default: 'BCA'
-    },
-    semester: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 8
-    },
-    credits: {
-      type: Number,
-      default: 4,
-      min: 1,
-      max: 6
-    },
-    faculty: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    description: {
-      type: String,
-      default: ''
-    },
-    schedule: [
-      {
-        day: {
-          type: String,
-          enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-        },
-        time: String,
-        room: String
-      }
-    ]
-  },
-  {
-    timestamps: true
-  }
-);
-
-// ==========================================
-// 5. ATTENDANCE SCHEMA & MODEL
+// 7. ATTENDANCE SCHEMA & MODEL
 // ==========================================
 const attendanceSchema = new mongoose.Schema(
   {
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject'
+    },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true
+      ref: 'Course'
     },
     student: {
       type: mongoose.Schema.Types.ObjectId,
@@ -276,6 +383,10 @@ const attendanceSchema = new mongoose.Schema(
       enum: ['Present', 'Absent', 'Late', 'Excused'],
       default: 'Present'
     },
+    semester: {
+      type: Number,
+      default: 5
+    },
     markedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
@@ -290,18 +401,98 @@ const attendanceSchema = new mongoose.Schema(
   }
 );
 
-// Compound index to accelerate attendance queries and prevent duplicate entries per day
+// Unique compound index on subject, student, date to avoid duplicate entries
+attendanceSchema.index({ subject: 1, student: 1, date: 1 });
 attendanceSchema.index({ course: 1, student: 1, date: 1 });
 
 // ==========================================
-// 6. ASSIGNMENT SCHEMA & MODEL
+// 8. TIMETABLE SCHEMA & MODEL
+// ==========================================
+const timetableSchema = new mongoose.Schema(
+  {
+    courseCode: {
+      type: String,
+      required: true,
+      default: 'BCA'
+    },
+    semester: {
+      type: Number,
+      required: true,
+      default: 5
+    },
+    section: {
+      type: String,
+      default: 'A'
+    },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject'
+    },
+    subjectCode: {
+      type: String,
+      default: ''
+    },
+    subjectName: {
+      type: String,
+      default: ''
+    },
+    faculty: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    facultyName: {
+      type: String,
+      default: ''
+    },
+    room: {
+      type: String,
+      required: true,
+      default: 'Lab 304'
+    },
+    day: {
+      type: String,
+      enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      required: true
+    },
+    startTime: {
+      type: String,
+      required: true // e.g. "09:30"
+    },
+    endTime: {
+      type: String,
+      required: true // e.g. "11:00"
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// Indexes to speed up conflict checking
+timetableSchema.index({ faculty: 1, day: 1, startTime: 1 });
+timetableSchema.index({ room: 1, day: 1, startTime: 1 });
+timetableSchema.index({ courseCode: 1, semester: 1, section: 1, day: 1, startTime: 1 });
+
+// ==========================================
+// 9. ASSIGNMENT SCHEMA & MODEL
 // ==========================================
 const assignmentSchema = new mongoose.Schema(
   {
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject'
+    },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true
+      ref: 'Course'
+    },
+    courseCode: {
+      type: String,
+      default: 'BCA'
+    },
+    semester: {
+      type: Number,
+      default: 5
     },
     title: {
       type: String,
@@ -325,6 +516,11 @@ const assignmentSchema = new mongoose.Schema(
       ref: 'User',
       required: true
     },
+    status: {
+      type: String,
+      enum: ['Active', 'Closed'],
+      default: 'Active'
+    },
     submissions: [
       {
         student: {
@@ -332,12 +528,14 @@ const assignmentSchema = new mongoose.Schema(
           ref: 'User',
           required: true
         },
+        studentName: String,
+        studentRollNumber: String,
         submittedAt: {
           type: Date,
           default: Date.now
         },
-        fileUrl: String,
         content: String,
+        fileUrl: String,
         marksObtained: {
           type: Number,
           default: null
@@ -357,7 +555,182 @@ const assignmentSchema = new mongoose.Schema(
 );
 
 // ==========================================
-// 7. NOTICE / ANNOUNCEMENT SCHEMA & MODEL
+// 10. EXAMINATION & RESULTS SCHEMAS & MODELS
+// ==========================================
+const examinationSchema = new mongoose.Schema(
+  {
+    examName: {
+      type: String,
+      required: [true, 'Examination name is required'],
+      trim: true
+    },
+    courseCode: {
+      type: String,
+      default: 'BCA'
+    },
+    semester: {
+      type: Number,
+      required: true,
+      default: 5
+    },
+    academicYear: {
+      type: String,
+      default: '2026-2027'
+    },
+    startDate: {
+      type: Date,
+      default: Date.now
+    },
+    endDate: {
+      type: Date
+    },
+    status: {
+      type: String,
+      enum: ['Scheduled', 'Ongoing', 'Completed'],
+      default: 'Scheduled'
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+const resultSchema = new mongoose.Schema(
+  {
+    examination: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Examination',
+      required: true
+    },
+    examName: {
+      type: String,
+      default: 'Semester Examination'
+    },
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject'
+    },
+    subjectCode: {
+      type: String,
+      required: true
+    },
+    subjectName: {
+      type: String,
+      required: true
+    },
+    marksObtained: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    maxMarks: {
+      type: Number,
+      required: true,
+      default: 100
+    },
+    grade: {
+      type: String,
+      default: 'A'
+    },
+    status: {
+      type: String,
+      enum: ['Pass', 'Fail'],
+      default: 'Pass'
+    },
+    evaluatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    remarks: {
+      type: String,
+      default: ''
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+resultSchema.index({ examination: 1, student: 1, subjectCode: 1 }, { unique: true });
+
+// ==========================================
+// 11. FEE RECORD SCHEMA & MODEL
+// ==========================================
+const feeRecordSchema = new mongoose.Schema(
+  {
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    feeType: {
+      type: String,
+      required: true,
+      enum: ['Tuition Fee', 'Examination Fee', 'Lab Fee', 'Library Fee', 'Hostel Fee', 'Other'],
+      default: 'Tuition Fee'
+    },
+    semester: {
+      type: Number,
+      default: 5
+    },
+    totalAmount: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    paidAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    balanceAmount: {
+      type: Number,
+      default: 0
+    },
+    dueDate: {
+      type: Date,
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['Paid', 'Partial', 'Pending', 'Overdue'],
+      default: 'Pending'
+    },
+    receiptNumber: {
+      type: String,
+      default: ''
+    },
+    remarks: {
+      type: String,
+      default: ''
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// Pre-save hook: compute balanceAmount & update status accordingly
+feeRecordSchema.pre('save', async function () {
+  this.balanceAmount = Math.max(0, this.totalAmount - (this.paidAmount || 0));
+  if (this.balanceAmount === 0) {
+    this.status = 'Paid';
+  } else if (this.paidAmount > 0) {
+    this.status = 'Partial';
+  } else if (this.dueDate && new Date() > this.dueDate) {
+    this.status = 'Overdue';
+  } else {
+    this.status = 'Pending';
+  }
+});
+
+// ==========================================
+// 12. NOTICE / ANNOUNCEMENT SCHEMA & MODEL
 // ==========================================
 const noticeSchema = new mongoose.Schema(
   {
@@ -383,10 +756,18 @@ const noticeSchema = new mongoose.Schema(
       type: String,
       default: 'All'
     },
+    category: {
+      type: String,
+      enum: ['Academic', 'Examination', 'Holiday', 'Event', 'General'],
+      default: 'Academic'
+    },
     priority: {
       type: String,
       enum: ['Low', 'Medium', 'High', 'Urgent'],
       default: 'Medium'
+    },
+    expiresAt: {
+      type: Date
     }
   },
   {
@@ -395,7 +776,52 @@ const noticeSchema = new mongoose.Schema(
 );
 
 // ==========================================
-// 8. AI QUERY LOG SCHEMA & MODEL
+// 13. STUDY RESOURCES SCHEMA & MODEL
+// ==========================================
+const resourceSchema = new mongoose.Schema(
+  {
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject'
+    },
+    subjectCode: {
+      type: String,
+      default: 'BCA-501'
+    },
+    title: {
+      type: String,
+      required: [true, 'Resource title is required'],
+      trim: true
+    },
+    description: {
+      type: String,
+      default: ''
+    },
+    category: {
+      type: String,
+      enum: ['Lecture Notes', 'Syllabus', 'Lab Manual', 'Question Bank', 'Reference Book'],
+      default: 'Lecture Notes'
+    },
+    fileUrl: {
+      type: String,
+      default: 'https://smartcampus.edu/resources/sample-handout.pdf'
+    },
+    fileSize: {
+      type: String,
+      default: '2.4 MB'
+    },
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+// ==========================================
+// 14. AI QUERY LOG SCHEMA & MODEL (Phase 3 Foundation)
 // ==========================================
 const aiQueryLogSchema = new mongoose.Schema(
   {
@@ -428,24 +854,38 @@ const aiQueryLogSchema = new mongoose.Schema(
 );
 
 // ==========================================
-// EXPORT MODELS
+// EXPORT ALL MODELS
 // ==========================================
 const User = mongoose.model('User', userSchema);
+const Department = mongoose.model('Department', departmentSchema);
+const Course = mongoose.model('Course', courseSchema);
+const Subject = mongoose.model('Subject', subjectSchema);
 const StudentProfile = mongoose.model('StudentProfile', studentProfileSchema);
 const FacultyProfile = mongoose.model('FacultyProfile', facultyProfileSchema);
-const Course = mongoose.model('Course', courseSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
+const TimetableEntry = mongoose.model('TimetableEntry', timetableSchema);
 const Assignment = mongoose.model('Assignment', assignmentSchema);
+const Examination = mongoose.model('Examination', examinationSchema);
+const Result = mongoose.model('Result', resultSchema);
+const FeeRecord = mongoose.model('FeeRecord', feeRecordSchema);
 const Notice = mongoose.model('Notice', noticeSchema);
+const Resource = mongoose.model('Resource', resourceSchema);
 const AIQueryLog = mongoose.model('AIQueryLog', aiQueryLogSchema);
 
 module.exports = {
   User,
+  Department,
+  Course,
+  Subject,
   StudentProfile,
   FacultyProfile,
-  Course,
   Attendance,
+  TimetableEntry,
   Assignment,
+  Examination,
+  Result,
+  FeeRecord,
   Notice,
+  Resource,
   AIQueryLog
 };
