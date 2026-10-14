@@ -22,6 +22,9 @@ const noticeRoutes = require('./routes/noticeRoutes');
 const resourceRoutes = require('./routes/resourceRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const academicRoutes = require('./routes/academicRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const { initScheduler } = require('./services/schedulerService');
 const seedDemoUsers = require('./scripts/seedDemoUsers');
 
 const app = express();
@@ -138,6 +141,8 @@ app.use('/api/fees', feeRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api', academicRoutes);
 
 // ==========================================
@@ -152,6 +157,7 @@ app.use(errorHandler);
 let server = null;
 
 if (process.env.NODE_ENV !== 'test') {
+  initScheduler();
   server = app.listen(PORT, () => {
     console.log(`
 ==================================================

@@ -854,6 +854,170 @@ const aiQueryLogSchema = new mongoose.Schema(
 );
 
 // ==========================================
+// 16. ATTENDANCE SESSION (QR & CODE) SCHEMA & MODEL
+// ==========================================
+const attendanceSessionSchema = new mongoose.Schema(
+  {
+    sessionCode: {
+      type: String,
+      required: true,
+      uppercase: true,
+      trim: true,
+      index: true
+    },
+    qrToken: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true
+    },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subject',
+      required: true
+    },
+    faculty: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    courseCode: {
+      type: String,
+      default: 'BCA'
+    },
+    semester: {
+      type: Number,
+      default: 5
+    },
+    section: {
+      type: String,
+      default: 'A'
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: true
+    },
+    status: {
+      type: String,
+      enum: ['Active', 'Closed', 'Expired'],
+      default: 'Active'
+    },
+    attendees: [
+      {
+        student: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        },
+        studentName: String,
+        rollNumber: String,
+        scannedAt: {
+          type: Date,
+          default: Date.now
+        },
+        method: {
+          type: String,
+          enum: ['QR', 'Code'],
+          default: 'QR'
+        }
+      }
+    ]
+  },
+  {
+    timestamps: true
+  }
+);
+
+// ==========================================
+// 17. NOTIFICATION SCHEMA & MODEL
+// ==========================================
+const notificationSchema = new mongoose.Schema(
+  {
+    recipient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true
+    },
+    type: {
+      type: String,
+      enum: [
+        'ASSIGNMENT_DEADLINE',
+        'NEW_ASSIGNMENT',
+        'ATTENDANCE_WARNING',
+        'NOTICE',
+        'RESULT_PUBLISHED',
+        'FEE_DUE',
+        'SYSTEM'
+      ],
+      default: 'SYSTEM'
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    message: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    link: {
+      type: String,
+      default: ''
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    readAt: {
+      type: Date,
+      default: null
+    },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {}
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+notificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });
+
+// ==========================================
+// 18. AUDIT LOG SCHEMA & MODEL
+// ==========================================
+const auditLogSchema = new mongoose.Schema(
+  {
+    actor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    actorName: String,
+    actorRole: String,
+    action: {
+      type: String,
+      required: true
+    },
+    resourceType: String,
+    resourceId: String,
+    details: mongoose.Schema.Types.Mixed,
+    ipAddress: String
+  },
+  {
+    timestamps: true
+  }
+);
+auditLogSchema.index({ createdAt: -1 });
+
+// ==========================================
 // EXPORT ALL MODELS
 // ==========================================
 const User = mongoose.model('User', userSchema);
@@ -871,6 +1035,9 @@ const FeeRecord = mongoose.model('FeeRecord', feeRecordSchema);
 const Notice = mongoose.model('Notice', noticeSchema);
 const Resource = mongoose.model('Resource', resourceSchema);
 const AIQueryLog = mongoose.model('AIQueryLog', aiQueryLogSchema);
+const AttendanceSession = mongoose.model('AttendanceSession', attendanceSessionSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
+const AuditLog = mongoose.model('AuditLog', auditLogSchema);
 
 module.exports = {
   User,
@@ -887,5 +1054,9 @@ module.exports = {
   FeeRecord,
   Notice,
   Resource,
-  AIQueryLog
+  AIQueryLog,
+  AttendanceSession,
+  Notification,
+  AuditLog
 };
+

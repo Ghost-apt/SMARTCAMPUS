@@ -656,5 +656,221 @@ describe('SmartCampus AI — Backend API Verification Suite', () => {
     assert.strictEqual(getRes.body.success, true);
     assert.ok(getRes.body.notices.some((n) => n.title.includes('Viva Schedule')));
   });
+
+  // ============================================================
+  // PHASE 3 ANALYTICS & AUTOMATION TESTS
+  // ============================================================
+
+  // ------------------------------------------------------------
+  // 24. INSTITUTIONAL & ROLE-BASED ANALYTICS OVERVIEW TEST
+  // ------------------------------------------------------------
+  test('24. Role-based analytics endpoints return aggregated metrics and enforce access control', async () => {
+    // 1. Admin analytics overview
+    const adminRes = await request(app)
+      .get('/api/analytics/admin/overview')
+      .set('Authorization', `Bearer ${adminToken}`);
+    assert.strictEqual(adminRes.statusCode, 200);
+    assert.strictEqual(adminRes.body.success, true);
+    assert.ok(adminRes.body.data.summary);
+    assert.ok(adminRes.body.data.financials);
+    assert.ok(Array.isArray(adminRes.body.data.weeklyAttendanceTrend));
+    assert.ok(Array.isArray(adminRes.body.data.departmentDistribution));
+    assert.ok(Array.isArray(adminRes.body.data.gradeDistribution));
+
+    // 2. Student forbidden from admin analytics
+    const forbiddenRes = await request(app)
+      .get('/api/analytics/admin/overview')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(forbiddenRes.statusCode, 403);
+
+    // 3. Faculty analytics overview
+    const facultyRes = await request(app)
+      .get('/api/analytics/faculty/overview')
+      .set('Authorization', `Bearer ${facultyToken}`);
+    assert.strictEqual(facultyRes.statusCode, 200);
+    assert.strictEqual(facultyRes.body.success, true);
+    assert.ok(Array.isArray(facultyRes.body.data.subjectAttendance));
+    assert.ok(Array.isArray(facultyRes.body.data.assignmentStats));
+    assert.ok(Array.isArray(facultyRes.body.data.supportRequiredList));
+
+    // 4. Student analytics overview
+    const studentRes = await request(app)
+      .get('/api/analytics/student/overview')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(studentRes.statusCode, 200);
+    assert.strictEqual(studentRes.body.success, true);
+    assert.ok(studentRes.body.data.attendance);
+    assert.ok(studentRes.body.data.assignments);
+    assert.ok(studentRes.body.data.academicPerformance);
+  });
+
+  // ------------------------------------------------------------
+  // 25. DYNAMIC QR ATTENDANCE SESSION LIFECYCLE TEST
+  // ------------------------------------------------------------
+  let activeSessionId = '';
+  let activeSessionCode = '';
+  let activeQrToken = '';
+
+  test('25. Dynamic QR Attendance session creation, status polling, and early termination', async () => {
+    // 1. Faculty creates a 10-minute QR attendance session
+    const createRes = await request(app)
+      .post('/api/attendance/session/create')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        subjectId: createdSubjectId,
+        courseCode: 'BCA',
+        semester: 5,
+        durationMinutes: 10
+      });
+    assert.strictEqual(createRes.statusCode, 201);
+    assert.strictEqual(createRes.body.success, true);
+    assert.ok(createRes.body.sessionId);
+    assert.ok(createRes.body.sessionCode);
+    assert.strictEqual(createRes.body.sessionCode.length, 6);
+    assert.ok(createRes.body.qrCodeDataUrl.startsWith('data:image/png;base64,'));
+    assert.ok(createRes.body.qrToken);
+
+    activeSessionId = createRes.body.sessionId;
+    activeSessionCode = createRes.body.sessionCode;
+    activeQrToken = createRes.body.qrToken;
+
+    // 2. Poll session status
+    const statusRes = await request(app)
+      .get(`/api/attendance/session/${activeSessionId}/status`)
+      .set('Authorization', `Bearer ${facultyToken}`);
+    assert.strictEqual(statusRes.statusCode, 200);
+    assert.strictEqual(statusRes.body.session.isActive, true);
+    assert.strictEqual(statusRes.body.isExpired, false);
+    assert.strictEqual(statusRes.body.attendeeCount, 0);
+
+    // 3. Faculty closes session
+    const closeRes = await request(app)
+      .patch(`/api/attendance/session/${activeSessionId}/close`)
+      .set('Authorization', `Bearer ${facultyToken}`);
+    assert.strictEqual(closeRes.statusCode, 200);
+    assert.strictEqual(closeRes.body.session.isActive, false);
+
+    // 4. Verify status after closure
+    const closedStatusRes = await request(app)
+      .get(`/api/attendance/session/${activeSessionId}/status`)
+      .set('Authorization', `Bearer ${facultyToken}`);
+    assert.strictEqual(closedStatusRes.body.session.isActive, false);
+  });
+
+  // ------------------------------------------------------------
+  // 26. QR / CODE CHECK-IN & FRAUD / DUPLICATE SCAN PREVENTION TEST
+  // ------------------------------------------------------------
+  test('26. Student check-in via QR / code prevents duplicates and rejects closed sessions', async () => {
+    // 1. Faculty creates fresh active session
+    const createRes = await request(app)
+      .post('/api/attendance/session/create')
+      .set('Authorization', `Bearer ${facultyToken}`)
+      .send({
+        subjectId: createdSubjectId,
+        courseCode: 'BCA',
+        semester: 5,
+        durationMinutes: 15
+      });
+    assert.strictEqual(createRes.statusCode, 201);
+    const validSessionCode = createRes.body.sessionCode;
+    const validSessionId = createRes.body.sessionId;
+
+    // 2. Student successfully checks in with sessionCode
+    const scanRes = await request(app)
+      .post('/api/attendance/session/scan')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ sessionCode: validSessionCode });
+    assert.strictEqual(scanRes.statusCode, 200);
+    assert.strictEqual(scanRes.body.success, true);
+    assert.ok(scanRes.body.overallPercentage !== undefined);
+
+    // 3. Student attempts duplicate scan in same session -> Must return HTTP 400
+    const dupRes = await request(app)
+      .post('/api/attendance/session/scan')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ sessionCode: validSessionCode });
+    assert.strictEqual(dupRes.statusCode, 400);
+    assert.strictEqual(dupRes.body.success, false);
+    assert.match(dupRes.body.message, /already/i);
+
+    // 4. Close session and verify subsequent check-in rejection
+    await request(app)
+      .patch(`/api/attendance/session/${validSessionId}/close`)
+      .set('Authorization', `Bearer ${facultyToken}`);
+
+    const closedRes = await request(app)
+      .post('/api/attendance/session/scan')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ sessionCode: validSessionCode });
+    assert.strictEqual(closedRes.statusCode, 400);
+    assert.match(closedRes.body.message, /expired or been closed/i);
+  });
+
+  // ------------------------------------------------------------
+  // 27. NOTIFICATION HUB & UNREAD TELEMETRY TEST
+  // ------------------------------------------------------------
+  test('27. Notification hub retrieves alerts, exposes unread count, and updates read state', async () => {
+    const { Notification, User } = require('../models/CampusModels');
+    const studentUser = await User.findOne({ email: 'amit.student@smartcampus.edu' });
+
+    // 1. Seed a test notification for the student
+    const testNotif = await Notification.create({
+      recipient: studentUser._id,
+      sender: studentUser._id,
+      title: 'Midterm Timetable Released',
+      message: 'The official schedule for BCA Semester 5 midterms is now active.',
+      type: 'RESULT_PUBLISHED',
+      link: '/student/results'
+    });
+
+    // 2. Check unread count
+    const countRes = await request(app)
+      .get('/api/notifications/unread-count')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(countRes.statusCode, 200);
+    assert.ok(countRes.body.unreadCount >= 1);
+
+    // 3. Get notification list
+    const listRes = await request(app)
+      .get('/api/notifications')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(listRes.statusCode, 200);
+    assert.ok(listRes.body.notifications.length >= 1);
+
+    // 4. Mark single notification as read
+    const readRes = await request(app)
+      .patch(`/api/notifications/${testNotif._id}/read`)
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(readRes.statusCode, 200);
+    assert.strictEqual(readRes.body.notification.isRead, true);
+
+    // 5. Mark all as read
+    const readAllRes = await request(app)
+      .patch('/api/notifications/read-all')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(readAllRes.statusCode, 200);
+
+    // 6. Verify zero unread notifications remaining
+    const finalCountRes = await request(app)
+      .get('/api/notifications/unread-count')
+      .set('Authorization', `Bearer ${studentToken}`);
+    assert.strictEqual(finalCountRes.statusCode, 200);
+    assert.strictEqual(finalCountRes.body.unreadCount, 0);
+  });
+
+  // ------------------------------------------------------------
+  // 28. SCHEDULER SERVICE & IDEMPOTENT DEADLINE REMINDERS TEST
+  // ------------------------------------------------------------
+  test('28. Scheduler service triggers deadline reminders without duplicating notifications', async () => {
+    const { triggerDeadlineReminders } = require('../services/schedulerService');
+
+    // Execute scheduler runner directly
+    const createdResult = await triggerDeadlineReminders();
+    assert.strictEqual(typeof createdResult.remindersSent, 'number');
+
+    // Executing a second time immediately must be idempotent (0 new duplicate notifications)
+    const secondPassResult = await triggerDeadlineReminders();
+    assert.strictEqual(secondPassResult.remindersSent, 0);
+  });
 });
 

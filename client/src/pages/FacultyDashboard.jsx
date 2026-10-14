@@ -29,12 +29,21 @@ const FacultyDashboard = () => {
   const [postingNotice, setPostingNotice] = useState(false);
   const [noticeSuccess, setNoticeSuccess] = useState('');
 
+  const [analyticsData, setAnalyticsData] = useState(null);
+
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await api.get('/dashboard/faculty');
-        if (res.data.success) {
-          setData(res.data.data);
+        const [dashRes, analyticsRes] = await Promise.allSettled([
+          api.get('/dashboard/faculty'),
+          api.get('/analytics/faculty/overview')
+        ]);
+
+        if (dashRes.status === 'fulfilled' && dashRes.value.data.success) {
+          setData(dashRes.value.data.data);
+        }
+        if (analyticsRes.status === 'fulfilled' && analyticsRes.value.data.success) {
+          setAnalyticsData(analyticsRes.value.data.data);
         }
       } catch (err) {
         setError(err.userMessage || 'Failed to load faculty dashboard.');
@@ -86,6 +95,8 @@ const FacultyDashboard = () => {
 
   const assignedCourses = data?.assignedCourses || [];
   const notices = data?.recentNotices || [];
+  const atRiskStudents = analyticsData?.studentsNeedingSupport || [];
+  const turnoutRate = analyticsData?.attendanceCompliance?.averageTurnoutRate ?? 88;
 
   return (
     <DashboardLayout
@@ -112,23 +123,24 @@ const FacultyDashboard = () => {
           title="Students Enrolled"
           value={data?.totalEnrolledStudents ?? 42}
           subtitle="Across all sections"
-          trend="+4 new this semester"
+          trend={`${turnoutRate}% avg turnout`}
           icon={Users}
           color="teal"
         />
         <StatCard
           title="Pending Submissions"
-          value={data?.pendingReviewsCount ?? 0}
+          value={data?.pendingReviewsCount ?? analyticsData?.assignments?.pendingGrading ?? 0}
           subtitle="Requires grading"
           icon={ClipboardCheck}
           color="amber"
         />
         <StatCard
-          title="Today's Lectures"
-          value="2"
-          subtitle="Scheduled"
-          icon={Clock}
-          color="blue"
+          title="Attendance Risk"
+          value={atRiskStudents.length}
+          subtitle="Students < 75% compliance"
+          trend={atRiskStudents.length > 0 ? 'Requires attention' : 'All compliant'}
+          icon={CalendarCheck}
+          color={atRiskStudents.length > 0 ? 'rose' : 'emerald'}
         />
       </div>
 
@@ -136,9 +148,16 @@ const FacultyDashboard = () => {
       <div className="mb-8 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h4 className="text-sm font-bold text-slate-900">Faculty Fast Actions</h4>
-          <p className="text-xs text-slate-500">Record attendance, publish announcements, or manage course syllabi.</p>
+          <p className="text-xs text-slate-500">Record attendance via QR code, publish announcements, or manage course grading.</p>
         </div>
         <div className="flex items-center gap-3">
+          <a
+            href="/faculty/attendance"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-sm transition-colors"
+          >
+            <CalendarCheck className="w-4 h-4" />
+            <span>Launch QR Attendance</span>
+          </a>
           <button
             onClick={() => setShowNoticeModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors"

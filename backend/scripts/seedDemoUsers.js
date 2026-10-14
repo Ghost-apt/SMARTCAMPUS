@@ -14,7 +14,9 @@ const {
   Result,
   FeeRecord,
   Notice,
-  Resource
+  Resource,
+  AttendanceSession,
+  Notification
 } = require('../models/CampusModels');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/smartcampus';
@@ -542,9 +544,77 @@ const seedDemoUsers = async () => {
       console.log('📢 Seeded initial campus notices.');
     }
 
+    // 13. Active QR Attendance Session (Phase 3)
+    const sessionCount = await AttendanceSession.countDocuments();
+    if (sessionCount === 0) {
+      const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // Active for 2 hours
+      await AttendanceSession.create({
+        sessionCode: 'BCA501',
+        qrToken: 'token-demo-session-bca-501-active',
+        subject: subjects[0]._id,
+        faculty: faculty._id,
+        courseCode: 'BCA',
+        semester: 5,
+        section: 'A',
+        date: new Date(),
+        expiresAt,
+        status: 'Active',
+        attendees: []
+      });
+      console.log('📱 Seeded active QR attendance session (Code: BCA501).');
+    }
+
+    // 14. Notifications (Phase 3)
+    const notifCount = await Notification.countDocuments();
+    if (notifCount === 0) {
+      await Notification.create([
+        {
+          recipient: student._id,
+          type: 'ASSIGNMENT_DEADLINE',
+          title: 'Assignment Deadline Approaching',
+          message: 'Your assignment "AI Neural Network Architectures" is due in 5 days. Submit your solution before the portal closes.',
+          link: '/student/assignments',
+          isRead: false
+        },
+        {
+          recipient: student._id,
+          type: 'NOTICE',
+          title: 'New Campus Circular Published',
+          message: 'BCA Final-Year Capstone Project Review-1 has been scheduled. Check requirements.',
+          link: '/student/notices',
+          isRead: false
+        },
+        {
+          recipient: student._id,
+          type: 'FEE_DUE',
+          title: 'Semester Fee Installment Reminder',
+          message: 'Examination Fee installment of ₹1,000 is due within 14 days.',
+          link: '/student/fees',
+          isRead: false
+        },
+        {
+          recipient: faculty._id,
+          type: 'NEW_ASSIGNMENT',
+          title: 'Pending Submissions for Review',
+          message: 'Students have submitted deliverables for "Full-Stack JWT Authentication Project".',
+          link: '/faculty/assignments',
+          isRead: false
+        },
+        {
+          recipient: admin._id,
+          type: 'SYSTEM',
+          title: 'System Health Check Passed',
+          message: 'All backend microservices, MongoDB collections, and scheduler tasks are online.',
+          link: '/admin/analytics',
+          isRead: false
+        }
+      ]);
+      console.log('🔔 Seeded role-based notifications.');
+    }
+
     console.log(`
 ==================================================
-✅ Phase 2 Comprehensive Seeding Complete!
+✅ SmartCampus AI Phase 1, 2, and 3 Seeding Complete!
 ==================================================
 Verified Demo Accounts:
 1. Student: student@smartcampus.edu / ${studentPassword}

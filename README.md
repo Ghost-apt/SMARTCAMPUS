@@ -2,9 +2,9 @@
 
 > **BCA Final-Year Major Project**  
 > **Workspace**: `C:\VS CODE\SMARTCAMPUS`  
-> **Version**: 2.0.0 (Phase 1 & Phase 2 Complete: Core Campus Management)
+> **Version**: 3.0.0 (Phase 1 + Phase 2 + Phase 3 Master Implementation Complete)
 
-SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and prepared for Python FastAPI RAG-based AI services in Phase 3. It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking, coursework submission and grading, examination results, fee ledger calculations, and campus announcements.
+SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and prepared for Python FastAPI RAG-based AI services in subsequent phases. It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking with dynamic QR check-in, coursework submission and grading, examination results with UGC 10-point GPA calculation, fee ledger management, campus announcements, interactive notifications, and background automation daemons.
 
 ---
 
@@ -15,30 +15,34 @@ SMARTCAMPUS/
 ├── .gitignore
 ├── README.md
 │
-├── ai-service/                              # Python AI Microservice (Phase 3 Foundation)
+├── ai-service/                              # Python AI Microservice (Phase 4 Foundation)
 │   ├── main.py                              # FastAPI service & RAG endpoint skeleton
 │   ├── requirements.txt                     # FastAPI & Uvicorn dependencies
-│   └── README.md                            # Phase 3 AI Roadmap & local setup guide
+│   └── README.md                            # Phase 4 AI Roadmap & local setup guide
 │
 ├── backend/                                 # Node.js & Express REST API Server
 │   ├── .env.example                         # Environment configuration template
 │   ├── .env                                 # Local development environment settings
 │   ├── package.json                         # Dependencies & scripts
 │   ├── package-lock.json
-│   ├── server.js                            # Express app entry point & route mounting
+│   ├── server.js                            # Express app entry point, route mounting & scheduler init
 │   │
 │   ├── config/
 │   │   └── database.js                      # Resilient Mongoose connection manager
 │   │
 │   ├── models/
-│   │   └── CampusModels.js                  # 13 Mongoose models: User, Department, Course,
+│   │   └── CampusModels.js                  # 16 Mongoose models: User, Department, Course,
 │   │                                        # Subject, StudentProfile, FacultyProfile, Attendance,
 │   │                                        # TimetableEntry, Assignment, Examination, Result,
-│   │                                        # FeeRecord, Notice, Resource, AIQueryLog
+│   │                                        # FeeRecord, Notice, Resource, AIQueryLog,
+│   │                                        # AttendanceSession, Notification, AuditLog
 │   ├── middleware/
 │   │   ├── authenticate.js                  # JWT & HttpOnly cookie verification
 │   │   ├── authorize.js                     # Role-Based Access Control (RBAC) guard
 │   │   └── errorHandler.js                  # Centralized 404 & Mongoose error handling
+│   │
+│   ├── services/
+│   │   └── schedulerService.js              # Idempotent deadline reminders & background cron
 │   │
 │   ├── validators/
 │   │   └── authValidators.js                # Input validation & security guards
@@ -52,6 +56,9 @@ SMARTCAMPUS/
 │   │   ├── departmentController.js          # Academic divisions & HOD governance
 │   │   ├── courseController.js              # Program degrees & syllabus subjects
 │   │   ├── attendanceController.js          # Turnout logs, mark attendance, compliance %
+│   │   ├── qrAttendanceController.js        # Dynamic QR token generation & check-in verification
+│   │   ├── analyticsController.js           # Institutional, Faculty, and Student analytics
+│   │   ├── notificationController.js        # Notification hub, unread counts, mark-read
 │   │   ├── timetableController.js           # 3-way conflict checking (Room, Faculty, Class)
 │   │   ├── assignmentController.js          # Assignment lifecycle, student submission, grading
 │   │   ├── examController.js                # Exam schedules, result entry, UGC 10-point GPA
@@ -67,7 +74,9 @@ SMARTCAMPUS/
 │   │   ├── facultyRoutes.js                 # /api/faculty/*
 │   │   ├── departmentRoutes.js              # /api/departments/*
 │   │   ├── courseRoutes.js                  # /api/courses/* & /api/subjects/*
-│   │   ├── attendanceRoutes.js              # /api/attendance/*
+│   │   ├── attendanceRoutes.js              # /api/attendance/* & /api/attendance/session/*
+│   │   ├── analyticsRoutes.js               # /api/analytics/*
+│   │   ├── notificationRoutes.js            # /api/notifications/*
 │   │   ├── timetableRoutes.js               # /api/timetable/*
 │   │   ├── assignmentRoutes.js              # /api/assignments/*
 │   │   ├── examRoutes.js                    # /api/examinations/* & /api/results/*
@@ -76,10 +85,10 @@ SMARTCAMPUS/
 │   │   └── resourceRoutes.js                # /api/resources/*
 │   │
 │   ├── scripts/
-│   │   └── seedDemoUsers.js                 # Phase 2 comprehensive database seeder
+│   │   └── seedDemoUsers.js                 # Phase 1, 2, and 3 comprehensive database seeder
 │   │
 │   └── tests/
-│       └── api.test.js                      # 23-point automated verification suite
+│       └── api.test.js                      # 28-point automated verification suite (Phases 1-3)
 │
 └── client/                                  # React + Vite Frontend Application
     ├── .env.example                         # Client environment template
@@ -90,7 +99,7 @@ SMARTCAMPUS/
     ├── tailwind.config.js
     ├── vite.config.js
     └── src/
-        ├── App.jsx                          # Comprehensive Phase 2 routes & role guards
+        ├── App.jsx                          # Comprehensive routes & role guards
         ├── main.jsx                         # React root mount
         ├── index.css                        # Tailwind directives & theme
         │
@@ -102,7 +111,7 @@ SMARTCAMPUS/
         │
         ├── components/
         │   ├── DashboardLayout.jsx          # Master layout (Sidebar + Navbar)
-        │   ├── Navbar.jsx                   # Top navigation with alerts & profile menu
+        │   ├── Navbar.jsx                   # Interactive Notification Bell dropdown & user menu
         │   ├── Sidebar.jsx                  # Collapsible, role-aware navigation
         │   ├── ProtectedRoute.jsx           # Role security route guard
         │   ├── StatCard.jsx                 # Analytical metric card
@@ -116,9 +125,9 @@ SMARTCAMPUS/
             ├── NotFoundPage.jsx             # 404 Not Found handler
             │
             ├── # Student Portal Pages
-            │   ├── StudentDashboard.jsx     # Overview & AI consultation widget
+            │   ├── StudentDashboard.jsx     # Overview, analytics summary & QR check-in shortcut
             │   ├── StudentCoursesPage.jsx   # Enrolled courses, credits, faculty
-            │   ├── StudentAttendancePage.jsx# Compliance gauge, subject breakdown, history
+            │   ├── StudentAttendancePage.jsx# Compliance gauge, subject breakdown & QR/code check-in modal
             │   ├── StudentTimetablePage.jsx # Weekly schedule grid with day selector
             │   ├── StudentAssignmentsPage.jsx# Coursework submission & grade review
             │   ├── StudentResultsPage.jsx   # Semester grade sheet & GPA transcript
@@ -128,9 +137,9 @@ SMARTCAMPUS/
             │   └── StudentAIPage.jsx        # Dedicated AI Academic Advisor chat
             │
             ├── # Faculty Portal Pages
-            │   ├── FacultyDashboard.jsx     # Faculty overview & quick actions
+            │   ├── FacultyDashboard.jsx     # Overview, at-risk student telemetry, QR shortcut
             │   ├── FacultyClassesPage.jsx   # Assigned teaching modules & enrolled cohorts
-            │   ├── FacultyAttendancePage.jsx# Interactive roll call & bulk status marking
+            │   ├── FacultyAttendancePage.jsx# Interactive roll call & Launch QR session modal
             │   ├── FacultyAssignmentsPage.jsx# Coursework creator & submission evaluator
             │   ├── FacultyPerformancePage.jsx# Exam marks entry & UGC grade rubric
             │   ├── FacultyMaterialsPage.jsx # Study materials & notes repository publisher
@@ -146,7 +155,7 @@ SMARTCAMPUS/
                 ├── AdminAttendancePage.jsx  # Campus-wide attendance audit & reports
                 ├── AdminFeesPage.jsx        # Student bursar ledger & payment recorder
                 ├── AdminNoticesPage.jsx     # Official campus circulars broadcast
-                └── AdminAnalyticsPage.jsx   # Infrastructure telemetry & system status
+                └── AdminAnalyticsPage.jsx   # Recharts charts: Weekly turnout, Dept stats, Grade distribution
 ```
 
 ---
@@ -157,19 +166,22 @@ SMARTCAMPUS/
 - **React 18** + **Vite 5** (Fast HMR & Optimized production build)
 - **Tailwind CSS 3** (Custom University SaaS theme: Deep Navy `#0f172a`, Indigo `#4f46e5`, Teal `#0d9488`)
 - **React Router DOM 6** (Client-side routing with nested role guards)
+- **Recharts 2.15** (Responsive AreaCharts, BarCharts, and PieCharts)
 - **Axios** (Configured with request/response interceptors and cookie support)
-- **Lucide React** (Modern, clean icon set)
+- **Lucide React** (Modern, accessible iconography)
 
 ### Backend (`backend/`)
 - **Node.js 24** & **Express 5**
 - **Mongoose 9** with **MongoDB**
+- **qrcode** (Dynamic Base64 Data URL generation for mobile/projector scanning)
+- **node-cron** (Background task scheduling for deadline reminders)
 - **bcryptjs** (Salted password hashing, 10 rounds)
 - **jsonwebtoken** (Signed Bearer tokens & HttpOnly cookie support)
 - **cookie-parser** (Session cookie extraction)
-- **supertest** & **mongodb-memory-server** (In-memory testing)
+- **supertest** (Integration test runner)
 
 ### AI Service (`ai-service/`)
-- **Python 3.11** + **FastAPI** & **Uvicorn** (Foundation for Phase 3 RAG)
+- **Python 3.11** + **FastAPI** & **Uvicorn** (Foundation for Phase 4 RAG)
 
 ---
 
@@ -185,7 +197,7 @@ SMARTCAMPUS/
 ```powershell
 cd "C:\VS CODE\SMARTCAMPUS\backend"
 
-# Run Phase 2 Comprehensive Seeding:
+# Run Comprehensive Database Seeder:
 node scripts/seedDemoUsers.js
 # Or:
 npm run seed
@@ -225,17 +237,17 @@ Visit in your browser: `http://localhost:5173`
 
 The Login page features **One-Click Demo Account Buttons** that instantly pre-fill verified credentials:
 
-| Role | Email | Password | Access Path | Key Phase 2 Features |
+| Role | Email | Password | Access Path | Key Features |
 | :--- | :--- | :--- | :--- | :--- |
-| **Student** | `student@smartcampus.edu` | `Student@123` | `/student/dashboard` | Attendance metrics (88.5%), registered courses, weekly timetable grid, assignment submitter, exam grade sheet, fee balance tracker, study resources, and AI academic advisor |
-| **Faculty** | `faculty@smartcampus.edu` | `Faculty@123` | `/faculty/dashboard` | Assigned classes, interactive attendance roll call with bulk save, coursework creator & grader, exam marks evaluation, study materials publisher, notice broadcaster |
-| **Admin** | `admin@smartcampus.edu` | `Admin@123` | `/admin/dashboard` | Complete student admissions, faculty appointments, departments, course catalog, 3-way collision-free timetable scheduler, fee collection ledger, campus circulars |
+| **Student** | `student@smartcampus.edu` | `Student@123` | `/student/dashboard` | Attendance compliance (88.5%), QR code / session code check-in, notification bell dropdown, registered courses, weekly timetable grid, assignment submitter, exam grade sheet, fee balance tracker, study resources, and AI academic advisor |
+| **Faculty** | `faculty@smartcampus.edu` | `Faculty@123` | `/faculty/dashboard` | Assigned classes, launch QR attendance session with countdown & live attendee roster, coursework creator & evaluator, exam marks evaluation, study materials publisher, notice broadcaster, at-risk student monitoring |
+| **Admin** | `admin@smartcampus.edu` | `Admin@123` | `/admin/dashboard` | Student admissions, faculty appointments, departments, course catalog, 3-way collision-free timetable scheduler, fee collection ledger, campus circulars, interactive Recharts telemetry |
 
 ---
 
-## 6. Automated Testing (23/23 Passing)
+## 6. Automated Testing (28/28 Passing)
 
-The backend includes a comprehensive 23-point automated verification suite powered by Node.js native test runner and `supertest`:
+The backend includes a comprehensive 28-point automated verification suite powered by Node.js native test runner and `supertest`:
 
 ```powershell
 cd "C:\VS CODE\SMARTCAMPUS\backend"
@@ -266,6 +278,11 @@ npm test
 21. **Examination & Result Grading** (Computes UGC 10-point scale grade & GPA)
 22. **Fee Invoicing & Payment Recalculation** (Pre-save hook dynamically balances ledger)
 23. **Campus Notices Broadcast** (Publishes and broadcasts circulars across roles)
+24. **Role-Based Analytics Overview** (Admin, Faculty, and Student aggregated telemetry & access guards)
+25. **Dynamic QR Attendance Session Lifecycle** (Creation, live polling, and early termination)
+26. **QR / Code Check-in Verification & Fraud Prevention** (Valid check-in, duplicate scan rejection, closed session rejection)
+27. **Notification Hub & Unread Telemetry** (Alerts list, unread count polling, mark single as read, mark all read)
+28. **Scheduler Service & Idempotent Reminders** (Idempotent 48h assignment deadline reminder daemon)
 
 ---
 
@@ -276,6 +293,23 @@ npm test
 - `POST /api/auth/login`: Authenticate and receive JWT token & HttpOnly cookie.
 - `POST /api/auth/logout`: Invalidate session and clear auth cookie.
 - `GET /api/auth/me`: Retrieve current user profile and role details.
+
+### Analytics & System Telemetry (`/api/analytics`)
+- `GET /api/analytics/admin/overview`: Institutional headcounts, turnout trends, department distributions, fee ledger totals.
+- `GET /api/analytics/faculty/overview`: Subject turnout rates, assignment completion, at-risk students list (<75% attendance).
+- `GET /api/analytics/student/overview`: Personal attendance compliance, assignment progress, exam GPA trends.
+
+### Dynamic QR Attendance (`/api/attendance`)
+- `POST /api/attendance/session/create`: Generate short-lived QR token and 6-char fallback session code.
+- `POST /api/attendance/session/scan`: Student check-in via QR token or session code with duplicate guard.
+- `GET /api/attendance/session/:id/status`: Live attendee counter and time remaining.
+- `PATCH /api/attendance/session/:id/close`: Faculty early session termination.
+
+### Notifications Hub (`/api/notifications`)
+- `GET /api/notifications`: Retrieve paginated user notifications.
+- `GET /api/notifications/unread-count`: Lightweight unread counter for navbar bell badge.
+- `PATCH /api/notifications/:id/read`: Mark individual alert as read.
+- `PATCH /api/notifications/read-all`: Mark all notifications as read.
 
 ### Core Campus Management (`/api`)
 - `GET, POST /api/departments`: Department management & HOD appointments.
@@ -295,7 +329,7 @@ npm test
 
 ---
 
-## 8. Phase 3 AI/ML Roadmap
+## 8. Phase 4 AI/ML Roadmap
 
 - [ ] **RAG Campus Knowledge Engine**: Ingest university syllabus PDFs, examination guidelines, and fee circulars into ChromaDB / pgvector.
 - [ ] **Student At-Risk Predictor**: Machine learning model analyzing attendance drops and assignment marks for early intervention.

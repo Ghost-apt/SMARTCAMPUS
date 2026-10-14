@@ -29,12 +29,21 @@ const StudentDashboard = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
 
+  const [analyticsData, setAnalyticsData] = useState(null);
+
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await api.get('/dashboard/student');
-        if (res.data.success) {
-          setDashboardData(res.data.data);
+        const [dashRes, analyticsRes] = await Promise.allSettled([
+          api.get('/dashboard/student'),
+          api.get('/analytics/student/overview')
+        ]);
+
+        if (dashRes.status === 'fulfilled' && dashRes.value.data.success) {
+          setDashboardData(dashRes.value.data.data);
+        }
+        if (analyticsRes.status === 'fulfilled' && analyticsRes.value.data.success) {
+          setAnalyticsData(analyticsRes.value.data.data);
         }
       } catch (err) {
         setError(err.userMessage || 'Failed to load student dashboard.');
@@ -75,10 +84,12 @@ const StudentDashboard = () => {
     );
   }
 
-  const attendanceRate = dashboardData?.attendanceRate ?? 88.5;
+  const attendanceRate = analyticsData?.attendance?.overallPercentage ?? dashboardData?.attendanceRate ?? 88.5;
   const enrolledCoursesCount = dashboardData?.enrolledCoursesCount ?? 2;
   const courses = dashboardData?.courses || [];
   const notices = dashboardData?.recentNotices || [];
+  const pendingAssignments = analyticsData?.assignments?.pending ?? 2;
+  const cgpaValue = analyticsData?.academics?.currentCgpa ?? dashboardData?.profile?.cgpa ?? '8.75';
 
   return (
     <DashboardLayout
@@ -98,7 +109,7 @@ const StudentDashboard = () => {
           title="Attendance Rate"
           value={`${attendanceRate}%`}
           subtitle={attendanceRate >= 75 ? 'Eligibility Criteria Met' : 'Action Required (<75%)'}
-          trend={attendanceRate >= 75 ? '+2.1% this week' : '-3.5%'}
+          trend={attendanceRate >= 75 ? 'Exam Eligible' : 'Debarred Risk'}
           icon={CalendarCheck}
           color={attendanceRate >= 75 ? 'teal' : 'rose'}
         />
@@ -111,19 +122,34 @@ const StudentDashboard = () => {
         />
         <StatCard
           title="Current CGPA"
-          value={dashboardData?.profile?.cgpa || '8.75'}
+          value={cgpaValue}
           subtitle="Scale of 10.0"
-          trend="Top 10% in batch"
+          trend="Good Standing"
           icon={Clock}
           color="amber"
         />
         <StatCard
           title="Assignments Due"
-          value="2"
-          subtitle="Within 5 days"
+          value={pendingAssignments}
+          subtitle="Requires submission"
           icon={FileText}
           color="blue"
         />
+      </div>
+
+      {/* Classroom Quick Action Strip */}
+      <div className="mb-8 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h4 className="text-sm font-bold text-slate-900">Lecture Session Check-In</h4>
+          <p className="text-xs text-slate-500">In class right now? Record your attendance with the session code or QR code.</p>
+        </div>
+        <a
+          href="/student/attendance"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-sm transition-colors"
+        >
+          <CalendarCheck className="w-4 h-4" />
+          <span>Check In via Code / QR</span>
+        </a>
       </div>
 
       {/* AI Assistant Quick Consultation Widget */}
