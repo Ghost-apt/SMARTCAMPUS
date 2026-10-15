@@ -303,6 +303,7 @@ const studentProfileSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+studentProfileSchema.index({ department: 1, semester: 1 });
 
 // ==========================================
 // 6. FACULTY PROFILE SCHEMA & MODEL
@@ -354,6 +355,7 @@ const facultyProfileSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+facultyProfileSchema.index({ department: 1 });
 
 // ==========================================
 // 7. ATTENDANCE SCHEMA & MODEL
@@ -553,6 +555,8 @@ const assignmentSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+assignmentSchema.index({ subject: 1, dueDate: 1 });
+assignmentSchema.index({ courseCode: 1, semester: 1 });
 
 // ==========================================
 // 10. EXAMINATION & RESULTS SCHEMAS & MODELS
@@ -714,6 +718,8 @@ const feeRecordSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+feeRecordSchema.index({ student: 1, academicYear: 1, semester: 1 });
+feeRecordSchema.index({ status: 1 });
 
 // Pre-save hook: compute balanceAmount & update status accordingly
 feeRecordSchema.pre('save', async function () {
@@ -774,6 +780,7 @@ const noticeSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+noticeSchema.index({ isPublished: 1, targetAudience: 1, createdAt: -1 });
 
 // ==========================================
 // 13. STUDY RESOURCES SCHEMA & MODEL
@@ -856,6 +863,8 @@ const resourceSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+resourceSchema.index({ subject: 1, ragStatus: 1 });
+resourceSchema.index({ courseCode: 1, semester: 1, isPublished: 1 });
 
 // ==========================================
 // 14. AI QUERY LOG SCHEMA & MODEL (Phase 3 Foundation)
@@ -968,6 +977,7 @@ const attendanceSessionSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+attendanceSessionSchema.index({ faculty: 1, status: 1 });
 
 // ==========================================
 // 17. NOTIFICATION SCHEMA & MODEL

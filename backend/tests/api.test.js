@@ -1108,5 +1108,90 @@ describe('SmartCampus AI — Backend API Verification Suite', () => {
       .set('Authorization', `Bearer ${facultyToken}`);
     assert.strictEqual(checkRes.statusCode, 404);
   });
+
+  // ------------------------------------------------------------
+  // 39. DEEP HEALTH CHECK & SUBSYSTEM OBSERVABILITY TEST
+  // ------------------------------------------------------------
+  test('39. Deep health check returns subsystem telemetry and system metrics', async () => {
+    const res = await request(app).get('/api/health');
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(res.body.status, 'healthy');
+    assert.strictEqual(res.body.service, 'SmartCampus AI API');
+    assert.strictEqual(res.body.version, '6.0.0');
+    assert.ok(res.body.database);
+    assert.strictEqual(res.body.database.connected, true);
+    assert.ok(res.body.system);
+    assert.ok(res.body.system.nodeVersion);
+    assert.ok(res.body.system.memoryUsageMB);
+    assert.ok(typeof res.body.system.memoryUsageMB.rss === 'number');
+    assert.ok(typeof res.body.uptimeSeconds === 'number');
+  });
+
+  // ------------------------------------------------------------
+  // 40. KUBERNETES READINESS & LIVENESS PROBES TEST
+  // ------------------------------------------------------------
+  test('40. Health readiness and liveness probes return operational readiness', async () => {
+    // 1. Readiness Probe
+    const readyRes = await request(app).get('/api/health/ready');
+    assert.strictEqual(readyRes.statusCode, 200);
+    assert.strictEqual(readyRes.body.status, 'ready');
+    assert.strictEqual(readyRes.body.database, 'connected');
+
+    // 2. Liveness Probe
+    const liveRes = await request(app).get('/api/health/live');
+    assert.strictEqual(liveRes.statusCode, 200);
+    assert.strictEqual(liveRes.body.status, 'alive');
+    assert.ok(typeof liveRes.body.uptimeSeconds === 'number');
+  });
+
+  // ------------------------------------------------------------
+  // 41. SECURITY HARDENING: HELMET HEADERS TEST
+  // ------------------------------------------------------------
+  test('41. Security hardening: Helmet HTTP headers are applied on responses', async () => {
+    const res = await request(app).get('/api/health');
+    assert.strictEqual(res.statusCode, 200);
+
+    // Verify critical HTTP security headers
+    assert.strictEqual(res.headers['x-content-type-options'], 'nosniff');
+    assert.strictEqual(res.headers['x-frame-options'], 'SAMEORIGIN');
+    assert.strictEqual(res.headers['origin-agent-cluster'], '?1');
+  });
+
+  // ------------------------------------------------------------
+  // 42. CORS CONFIGURATION AND SAFE METHOD VERIFICATION
+  // ------------------------------------------------------------
+  test('42. CORS handles trusted origin verification and preflight requests', async () => {
+    const res = await request(app)
+      .options('/api/health')
+      .set('Origin', 'http://localhost:5173')
+      .set('Access-Control-Request-Method', 'GET');
+
+    assert.strictEqual(res.headers['access-control-allow-origin'], 'http://localhost:5173');
+    assert.ok(res.headers['access-control-allow-credentials']);
+  });
+
+  // ------------------------------------------------------------
+  // 43. PRODUCTION ERROR HANDLER RESILIENCE TEST
+  // ------------------------------------------------------------
+  test('43. Error handler returns structured JSON and rejects malformed routes', async () => {
+    const res = await request(app).get('/api/non-existent-endpoint-test-404');
+    assert.strictEqual(res.statusCode, 404);
+    assert.strictEqual(res.body.success, false);
+    assert.match(res.body.message, /Resource '.*' was not found/);
+  });
+
+  // ------------------------------------------------------------
+  // 44. DATABASE BACKUP UTILITY VERIFICATION TEST
+  // ------------------------------------------------------------
+  test('44. Database backup utility creates valid JSON archive with metadata', async () => {
+    const { runBackup } = require('../scripts/backupDatabase');
+    const result = await runBackup();
+
+    assert.ok(result.backupDir);
+    assert.ok(result.metadata);
+    assert.ok(result.metadata.collections.User);
+    assert.ok(typeof result.metadata.totalRecords === 'number');
+    assert.ok(result.metadata.totalRecords > 0);
+  });
 });
 

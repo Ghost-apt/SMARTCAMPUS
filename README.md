@@ -2,9 +2,9 @@
 
 > **BCA Final-Year Major Project**  
 > **Workspace**: `C:\VS CODE\SMARTCAMPUS`  
-> **Version**: 5.0.0 (Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 5 Complete)
+> **Version**: 6.0.0 (Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 5 + Phase 6 Complete)
 
-SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and an integrated Python FastAPI machine learning & RAG microservice (`scikit-learn`, `RandomForestClassifier`, `TF-IDF + Cosine Vector Space`, `pypdf`). It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking with dynamic QR check-in, coursework submission and grading, examination results with UGC 10-point GPA calculation, fee ledger management, campus announcements, interactive notifications, background automation daemons, intelligent academic support (ML early-support classification, explainable risk factors, personalized curriculum recommendations, role-aware AI campus assistant), and a **genuine RAG-powered Academic Document Assistant** with verified citations and fail-closed RBAC document security.
+SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and an integrated Python FastAPI machine learning & RAG microservice (`scikit-learn`, `RandomForestClassifier`, `TF-IDF + Cosine Vector Space`, `pypdf`). It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking with dynamic QR check-in, coursework submission and grading, examination results with UGC 10-point GPA calculation, fee ledger management, campus announcements, interactive notifications, background automation daemons, intelligent academic support (ML early-support classification, explainable risk factors, personalized curriculum recommendations, role-aware AI campus assistant), a **genuine RAG-powered Academic Document Assistant** with verified citations and fail-closed RBAC document security, and **complete production readiness** (security headers, API rate limiting, environment validation, Docker multi-stage containers, Docker Compose with persistent storage volumes, automated database backup/restore, deep observability probes, and GitHub Actions CI/CD).
 
 ---
 
@@ -14,8 +14,15 @@ SmartCampus AI is an enterprise-grade university management system built with th
 SMARTCAMPUS/
 ├── .gitignore
 ├── README.md
+├── docker-compose.yml                       # Production multi-container orchestrator
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                           # GitHub Actions CI workflow (Backend, AI, Frontend)
 │
 ├── ai-service/                              # Python AI, ML & RAG Microservice
+│   ├── Dockerfile                           # Production containerfile (python:3.11-slim)
+│   ├── .dockerignore
 │   ├── main.py                              # FastAPI entrypoint (Port 8000)
 │   ├── requirements.txt                     # FastAPI, scikit-learn, pypdf, pandas, numpy, pytest
 │   ├── pytest.ini                           # Pytest configuration
@@ -54,94 +61,64 @@ SMARTCAMPUS/
 │       └── test_recommendations.py
 │
 ├── backend/                                 # Node.js & Express REST API Server (Port 5000)
+│   ├── Dockerfile                           # Production containerfile (node:20-alpine)
+│   ├── .dockerignore
 │   ├── .env.example                         # Environment configuration template
 │   ├── .env                                 # Local development environment settings
-│   ├── package.json                         # Dependencies & scripts
+│   ├── package.json                         # Dependencies & scripts (backup, restore, test)
 │   ├── package-lock.json
-│   ├── server.js                            # Express app entry point, route mounting & scheduler init
+│   ├── server.js                            # Express app entry point, security headers & rate limits
 │   │
 │   ├── config/
-│   │   └── database.js                      # Resilient Mongoose connection manager
+│   │   ├── database.js                      # Resilient Mongoose connection manager
+│   │   └── envValidator.js                  # Fail-fast environment variable validator
 │   │
 │   ├── models/
-│   │   └── CampusModels.js                  # 16 Mongoose models
+│   │   └── CampusModels.js                  # 16 Mongoose models with optimized compound indexes
 │   │
 │   ├── services/
 │   │   ├── aiService.js                     # MongoDB metrics aggregator, AI client & rule fallback
+│   │   ├── ragService.js                    # Document RBAC resolver & RAG ingestion/query client
 │   │   └── schedulerService.js              # Idempotent deadline reminders & background cron
 │   │
+│   ├── middleware/
+│   │   ├── authenticate.js                  # JWT & HttpOnly cookie verification
+│   │   ├── authorize.js                     # Role-Based Access Control (RBAC) guard
+│   │   └── errorHandler.js                  # Production-hardened 404 & error handler (no stack leaks)
+│   │
 │   ├── controllers/
-│   │   ├── aiController.js                  # Academic insights, recommendations, early support, chat
+│   │   ├── aiController.js                  # Academic insights, recommendations, early support, chat, RAG
+│   │   ├── resourceController.js            # Study materials, RAG vector indexing, reindex, status, purge
 │   │   └── ... (11 other controllers)
 │   │
 │   ├── routes/
 │   │   ├── aiRoutes.js                      # /api/ai endpoints
-│   │   └── ... (17 other route files)
-│   │
-│   └── tests/
-│       └── api.test.js                      # Automated verification suite (33/33 tests passing)
-│   │
-│   ├── models/
-│   │   └── CampusModels.js                  # 16 Mongoose models: User, Department, Course,
-│   │                                        # Subject, StudentProfile, FacultyProfile, Attendance,
-│   │                                        # TimetableEntry, Assignment, Examination, Result,
-│   │                                        # FeeRecord, Notice, Resource, AIQueryLog,
-│   │                                        # AttendanceSession, Notification, AuditLog
-│   ├── middleware/
-│   │   ├── authenticate.js                  # JWT & HttpOnly cookie verification
-│   │   ├── authorize.js                     # Role-Based Access Control (RBAC) guard
-│   │   └── errorHandler.js                  # Centralized 404 & Mongoose error handling
-│   │
-│   ├── services/
-│   │   └── schedulerService.js              # Idempotent deadline reminders & background cron
-│   │
-│   ├── validators/
-│   │   └── authValidators.js                # Input validation & security guards
-│   │
-│   ├── controllers/
-│   │   ├── authController.js                # Auth, registration, login, logout, session check
-│   │   ├── userController.js                # User profile management
-│   │   ├── dashboardController.js           # Student, Faculty, & Admin data aggregators
-│   │   ├── studentController.js             # Student CRUD, profile & cohort directory
-│   │   ├── facultyController.js             # Faculty staff CRUD, workload allocations
-│   │   ├── departmentController.js          # Academic divisions & HOD governance
-│   │   ├── courseController.js              # Program degrees & syllabus subjects
-│   │   ├── attendanceController.js          # Turnout logs, mark attendance, compliance %
-│   │   ├── qrAttendanceController.js        # Dynamic QR token generation & check-in verification
-│   │   ├── analyticsController.js           # Institutional, Faculty, and Student analytics
-│   │   ├── notificationController.js        # Notification hub, unread counts, mark-read
-│   │   ├── timetableController.js           # 3-way conflict checking (Room, Faculty, Class)
-│   │   ├── assignmentController.js          # Assignment lifecycle, student submission, grading
-│   │   ├── examController.js                # Exam schedules, result entry, UGC 10-point GPA
-│   │   ├── feeController.js                 # Fee invoices, payments, auto-balance calculation
-│   │   ├── noticeController.js              # Campus circulars & priority broadcasts
-│   │   └── resourceController.js            # Study materials, syllabus notes, repository
-│   │
-│   ├── routes/
-│   │   ├── authRoutes.js                    # /api/auth/*
-│   │   ├── userRoutes.js                    # /api/users/*
-│   │   ├── dashboardRoutes.js               # /api/dashboard/*
-│   │   ├── studentRoutes.js                 # /api/students/*
-│   │   ├── facultyRoutes.js                 # /api/faculty/*
-│   │   ├── departmentRoutes.js              # /api/departments/*
-│   │   ├── courseRoutes.js                  # /api/courses/* & /api/subjects/*
-│   │   ├── attendanceRoutes.js              # /api/attendance/* & /api/attendance/session/*
-│   │   ├── analyticsRoutes.js               # /api/analytics/*
-│   │   ├── notificationRoutes.js            # /api/notifications/*
-│   │   ├── timetableRoutes.js               # /api/timetable/*
-│   │   ├── assignmentRoutes.js              # /api/assignments/*
-│   │   ├── examRoutes.js                    # /api/examinations/* & /api/results/*
-│   │   ├── feeRoutes.js                     # /api/fees/*
-│   │   ├── noticeRoutes.js                  # /api/notices/*
-│   │   └── resourceRoutes.js                # /api/resources/*
+│   │   ├── resourceRoutes.js                # /api/resources endpoints
+│   │   └── ... (16 other route files)
 │   │
 │   ├── scripts/
-│   │   └── seedDemoUsers.js                 # Phase 1, 2, and 3 comprehensive database seeder
+│   │   ├── seedDemoUsers.js                 # Database seeder (all roles & sample records)
+│   │   ├── backupDatabase.js                # Automated JSON database backup utility
+│   │   └── restoreDatabase.js               # Safe upsert database restoration utility
 │   │
 │   └── tests/
-│       └── api.test.js                      # 28-point automated verification suite (Phases 1-3)
+│       └── api.test.js                      # 44-point automated verification suite (Phases 1-6)
 │
 └── client/                                  # React + Vite Frontend Application
+    ├── Dockerfile                           # Multi-stage production containerfile (node + nginx)
+    ├── .dockerignore
+    ├── nginx.conf                           # Production Nginx reverse proxy & SPA configuration
+    ├── .env.example                         # Client environment template
+    ├── .env                                 # VITE_API_BASE_URL=http://localhost:5000/api
+    ├── index.html
+    ├── package.json
+    ├── postcss.config.js
+    ├── tailwind.config.js
+    ├── vite.config.js
+    ├── src/                                 # Complete React application
+    └── tests/
+        └── frontend.test.js                 # 6-point frontend integrity & contract test suite
+```
     ├── .env.example                         # Client environment template
     ├── .env                                 # VITE_API_BASE_URL=http://localhost:5000/api
     ├── index.html
@@ -344,10 +321,29 @@ npm test
 36. **Document-Level RBAC Security** (Student queries outside enrolled department/subjects receive 0 citations)
 37. **Prompt Injection Defense** (Malicious prompt injection attempts in query or text fail to leak credentials)
 38. **Resource Deletion Vector Purge** (Resource deletion purges document and chunks from RAG vector store)
+39. **Deep Health Check & Subsystem Observability** (Reports database status, heap/RSS memory, uptime, node version)
+40. **Readiness & Liveness Probes** (Dedicated Kubernetes/Docker probes: `/api/health/ready` & `/api/health/live`)
+41. **Security Hardening Headers** (Helmet headers verified: `nosniff`, `SAMEORIGIN`, `Origin-Agent-Cluster`)
+42. **CORS & Preflight Verification** (Trusted origin validation with credential support)
+43. **Production Error Handling** (Suppresses stack traces on internal errors and formats safe JSON)
+44. **Database Backup Utility** (JSON archive generation with integrity metadata verification)
+
+### Frontend Integrity & Architecture Tests (`client/tests/frontend.test.js`):
+1. **Production Build Assets** (`dist/index.html`, module script loader, CSS/JS bundles)
+2. **Route Definitions & RBAC** (Verifies 25+ role-specific routes and `ProtectedRoute` wrappers)
+3. **Sidebar Role Navigation** (Contract tests for student, faculty, and admin navigation items)
+4. **RAG Document Assistant UI** (Contract tests for Document Q&A tab, citations, and subject filter)
+5. **Faculty Study Materials & RAG** (Contract tests for RAG indexing badges, re-indexing, full text input)
+6. **API Client & Auth Interceptors** (Contract tests for Bearer token and credentials handling)
 
 ---
 
 ## 7. API Endpoints Reference
+
+### System & Health Observability (`/api/health`)
+- `GET /api/health`: Deep health telemetry (uptime, database status, memory RSS/heap, Node.js version, environment).
+- `GET /api/health/ready`: Kubernetes/Docker readiness probe (returns 200 if MongoDB is connected, 503 if not).
+- `GET /api/health/live`: Kubernetes/Docker liveness probe (returns 200 if process is responsive).
 
 ### Authentication (`/api/auth`)
 - `POST /api/auth/register`: Register new student or faculty account.
@@ -403,7 +399,7 @@ npm test
 
 ---
 
-## 8. Phases 1–5 Implementation Status
+## 8. Phases 1–6 Implementation Status
 
 - [x] **Phase 1: Architecture, Authentication & Responsive Shells**: JWT, RBAC guards, Tailwind dashboards, Mongo connection manager.
 - [x] **Phase 2: Core Campus Operations**: Timetable 3-way conflict detection, Attendance compliance, Assignments lifecycle, Results GPA, Fee ledger.
@@ -418,4 +414,45 @@ npm test
   - Prompt-injection defense shields and honest insufficiency policy.
   - Zero-citation fabrication guarantee.
   - Extractive deterministic fallback when Python microservice or LLM is offline.
+- [x] **Phase 6: Production Readiness, Security, Testing & Deployment**:
+  - [x] Production security hardening: `helmet`, `express-rate-limit`, environment variable validator (`envValidator.js`), CORS policy.
+  - [x] Production error handling: Stack trace suppression and sanitized user messages in production mode.
+  - [x] Optimized MongoDB compound indexes across high-frequency schemas (`StudentProfile`, `FacultyProfile`, `Assignment`, `Notice`, `Resource`, `FeeRecord`, `AttendanceSession`).
+  - [x] Automated database backup and restore utilities (`npm run backup`, `npm run restore`).
+  - [x] Deep observability probes: `/api/health`, `/api/health/ready`, `/api/health/live`.
+  - [x] Containerization: Production multi-stage Dockerfiles (`client/Dockerfile`, `backend/Dockerfile`, `ai-service/Dockerfile`) and `docker-compose.yml` with persistent named volumes (`smartcampus_mongo_data`, `smartcampus_rag_vector_store`).
+  - [x] CI/CD Automation: GitHub Actions workflow (`.github/workflows/ci.yml`) validating backend, AI service, and frontend builds across Node.js 20/22 and Python 3.11.
+  - [x] Comprehensive automated test coverage: **44/44 backend tests**, **12/12 python tests**, and **6/6 frontend tests** passing.
+
+---
+
+## 9. Containerization & Docker Runbook
+
+```powershell
+# 1. Build and start all 4 services in detached mode
+docker compose up --build -d
+
+# 2. View running containers and health status
+docker compose ps
+
+# 3. Stream logs across services
+docker compose logs -f
+
+# 4. Stop and remove containers while preserving persistent volumes
+docker compose down
+```
+
+---
+
+## 10. Database Backup & Recovery Guide
+
+```powershell
+# Run manual JSON database backup
+cd "C:\VS CODE\SMARTCAMPUS\backend"
+npm run backup
+
+# Run database restoration from latest backup archive
+cd "C:\VS CODE\SMARTCAMPUS\backend"
+npm run restore
+```
 

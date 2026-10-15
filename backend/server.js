@@ -1,10 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+const { validateEnv } = require('./config/envValidator');
 const { connectDB, getDbStatus } = require('./config/database');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
+
+// Validate environment configuration
+validateEnv();
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
@@ -33,23 +39,68 @@ const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 // ==========================================
-// 1. CORE MIDDLEWARES
+// 1. CORE SECURITY & PARSING MIDDLEWARES
 // ==========================================
+// Helmet HTTP security headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false
+  })
+);
+
+// Rate limiters (bypassed in test environment)
+const isTestEnv = process.env.NODE_ENV === 'test';
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 600,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => isTestEnv,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP. Please try again after 15 minutes.'
+  }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 40,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => isTestEnv,
+  message: {
+    success: false,
+    message: 'Too many authentication attempts. Please try again after 15 minutes.'
+  }
+});
+
+const aiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 80,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => isTestEnv,
+  message: {
+    success: false,
+    message: 'AI query rate limit exceeded. Please wait a moment before sending another query.'
+  }
+});
+
 // CORS Configuration supporting development and production frontend origins
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or Postman)
       if (!origin) return callback(null, true);
-      // Allow localhost on any port (for Vite dynamic ports) or configured CLIENT_ORIGIN
       if (/^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) || origin === CLIENT_ORIGIN) {
         return callback(null, true);
       }
-      return callback(null, true); // Dev-permissive fallback
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Key']
   })
 );
 
@@ -91,15 +142,50 @@ app.get('/', (req, res) => {
 
 app.get('/api/health', (req, res) => {
   const db = getDbStatus();
-  const statusCode = db.connected ? 200 : 200; // Report 200 with honest status payload
+  const memory = process.memoryUsage();
 
-  res.status(statusCode).json({
+  res.status(200).json({
     status: db.connected ? 'healthy' : 'degraded',
     service: 'SmartCampus AI API',
+    version: '6.0.0',
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
     database: db,
+    system: {
+      nodeVersion: process.version,
+      platform: process.platform,
+      memoryUsageMB: {
+        rss: Math.round(memory.rss / (1024 * 1024)),
+        heapTotal: Math.round(memory.heapTotal / (1024 * 1024)),
+        heapUsed: Math.round(memory.heapUsed / (1024 * 1024))
+      }
+    },
     environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Kubernetes / Docker Readiness Probe
+app.get('/api/health/ready', (req, res) => {
+  const db = getDbStatus();
+  if (!db.connected) {
+    return res.status(503).json({
+      status: 'not_ready',
+      message: 'MongoDB connection is offline or reconnecting.'
+    });
+  }
+  res.status(200).json({
+    status: 'ready',
+    database: 'connected',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Kubernetes / Docker Liveness Probe
+app.get('/api/health/live', (req, res) => {
+  res.status(200).json({
+    status: 'alive',
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -126,9 +212,10 @@ app.post('/api/seed', async (req, res, next) => {
 });
 
 // ==========================================
-// 4. API ROUTE MOUNTING
+// 4. API ROUTE MOUNTING WITH RATE LIMITING
 // ==========================================
-app.use('/api/auth', authRoutes);
+app.use('/api', apiLimiter);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
@@ -144,7 +231,7 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api', academicRoutes);
 
 // ==========================================
@@ -152,6 +239,15 @@ app.use('/api', academicRoutes);
 // ==========================================
 app.use(notFound);
 app.use(errorHandler);
+
+// Global unhandled error guards
+process.on('uncaughtException', (err) => {
+  console.error('💥 [Server Uncaught Exception]:', err.message, err.stack);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 [Server Unhandled Rejection]:', promise, 'reason:', reason);
+});
 
 // ==========================================
 // 6. SERVER LIFECYCLE & GRACEFUL SHUTDOWN

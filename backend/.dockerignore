@@ -1,0 +1,10 @@
+node_modules
+backups
+tests
+.git
+.github
+.env
+.env.test
+*.log
+npm-debug.log*
+.DS_Store

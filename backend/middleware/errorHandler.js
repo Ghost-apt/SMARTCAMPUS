@@ -43,9 +43,15 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Generic internal server error
-  res.status(err.status || 500).json({
+  const isProduction = process.env.NODE_ENV === 'production';
+  const statusCode = err.status || 500;
+  
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal Server Error'
+    message: isProduction && statusCode >= 500
+      ? 'An unexpected server error occurred. Please contact the administrator if this persists.'
+      : (err.message || 'Internal Server Error'),
+    ...(isProduction ? {} : { stack: err.stack })
   });
 };
 
