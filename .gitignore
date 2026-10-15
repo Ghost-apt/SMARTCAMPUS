@@ -57,3 +57,6 @@ Desktop.ini
 coverage/
 .nyc_output/
 
+# Docker desktop artifacts
+welcome-to-docker/
+
