@@ -17,8 +17,10 @@ const FacultyMaterialsPage = () => {
   const [resourceType, setResourceType] = useState('PDF');
   const [fileUrl, setFileUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [fullText, setFullText] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState('');
+  const [reindexingId, setReindexingId] = useState(null);
 
   const fetchResourcesAndSubjects = async () => {
     try {
@@ -45,6 +47,18 @@ const FacultyMaterialsPage = () => {
     fetchResourcesAndSubjects();
   }, []);
 
+  const handleReindex = async (resourceId) => {
+    setReindexingId(resourceId);
+    try {
+      await api.post(`/resources/${resourceId}/reindex`);
+      await fetchResourcesAndSubjects();
+    } catch (err) {
+      setError(err.userMessage || 'Re-indexing failed');
+    } finally {
+      setReindexingId(null);
+    }
+  };
+
   const handleUploadResource = async (e) => {
     e.preventDefault();
     if (!title.trim() || !fileUrl.trim()) return;
@@ -61,14 +75,16 @@ const FacultyMaterialsPage = () => {
         semester: 5,
         resourceType,
         fileUrl,
-        description
+        description,
+        extractedText: fullText || description
       });
 
       if (res.data.success) {
-        setUploadSuccess('Study resource published successfully!');
+        setUploadSuccess('Study resource published & indexed for RAG!');
         setTitle('');
         setFileUrl('');
         setDescription('');
+        setFullText('');
         await fetchResourcesAndSubjects();
         setTimeout(() => {
           setShowModal(false);
@@ -126,12 +142,29 @@ const FacultyMaterialsPage = () => {
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="px-2.5 py-0.5 rounded text-[11px] font-black bg-teal-50 text-teal-800 border border-teal-100">
-                    {item.subject?.subjectCode || 'BCA'}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 uppercase">
-                    {item.resourceType || 'PDF'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded text-[11px] font-black bg-teal-50 text-teal-800 border border-teal-100">
+                      {item.subject?.subjectCode || 'BCA'}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 uppercase">
+                      {item.resourceType || 'PDF'}
+                    </span>
+                  </div>
+                  {item.ragStatus === 'indexed' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      ⚡ RAG Indexed ({item.chunkCount || 0} chunks)
+                    </span>
+                  )}
+                  {item.ragStatus === 'processing' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
+                      Indexing...
+                    </span>
+                  )}
+                  {item.ragStatus === 'failed' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200" title={item.ragError}>
+                      RAG Offline
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">
@@ -142,19 +175,30 @@ const FacultyMaterialsPage = () => {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                 <span className="text-[11px] text-slate-400">
                   Published: {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active'}
                 </span>
-                <a
-                  href={item.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white flex items-center gap-1.5 transition-colors"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Open Link</span>
-                </a>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleReindex(item._id)}
+                    disabled={reindexingId === item._id}
+                    className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors disabled:opacity-50"
+                    title="Re-run RAG chunking and vector embeddings"
+                  >
+                    {reindexingId === item._id ? 'Indexing...' : 'Re-index RAG'}
+                  </button>
+                  <a
+                    href={item.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open</span>
+                  </a>
+                </div>
               </div>
             </div>
           ))}
@@ -238,11 +282,29 @@ const FacultyMaterialsPage = () => {
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Description / Syllabus Topics</label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Summary of chapters and reading topics covered..."
                   className="w-full border border-slate-300 rounded-xl p-3 text-xs focus:outline-none focus:border-teal-500"
+                ></textarea>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700">
+                    Full Text Notes / Excerpt for AI Assistant (RAG)
+                  </label>
+                  <span className="text-[10px] text-teal-600 font-semibold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                    Auto-Indexed
+                  </span>
+                </div>
+                <textarea
+                  rows="4"
+                  value={fullText}
+                  onChange={(e) => setFullText(e.target.value)}
+                  placeholder="Paste lecture text, key definitions, or formulas here for instant semantic retrieval by students..."
+                  className="w-full border border-slate-300 rounded-xl p-3 text-xs font-mono focus:outline-none focus:border-teal-500 bg-slate-50/50"
                 ></textarea>
               </div>
 

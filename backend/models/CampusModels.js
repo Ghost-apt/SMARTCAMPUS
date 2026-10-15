@@ -813,6 +813,43 @@ const resourceSchema = new mongoose.Schema(
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
+    },
+    department: {
+      type: String,
+      default: 'BCA'
+    },
+    courseCode: {
+      type: String,
+      default: 'BCA'
+    },
+    semester: {
+      type: Number,
+      default: 5
+    },
+    ragStatus: {
+      type: String,
+      enum: ['Uploaded', 'Processing', 'Indexed', 'Failed'],
+      default: 'Indexed'
+    },
+    chunkCount: {
+      type: Number,
+      default: 0
+    },
+    ragError: {
+      type: String,
+      default: ''
+    },
+    indexedAt: {
+      type: Date,
+      default: Date.now
+    },
+    extractedText: {
+      type: String,
+      default: ''
+    },
+    isPublished: {
+      type: Boolean,
+      default: true
     }
   },
   {

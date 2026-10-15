@@ -24,6 +24,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const academicRoutes = require('./routes/academicRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const { initScheduler } = require('./services/schedulerService');
 const seedDemoUsers = require('./scripts/seedDemoUsers');
 
@@ -143,6 +144,7 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/ai', aiRoutes);
 app.use('/api', academicRoutes);
 
 // ==========================================

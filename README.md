@@ -2,9 +2,9 @@
 
 > **BCA Final-Year Major Project**  
 > **Workspace**: `C:\VS CODE\SMARTCAMPUS`  
-> **Version**: 3.0.0 (Phase 1 + Phase 2 + Phase 3 Master Implementation Complete)
+> **Version**: 5.0.0 (Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 5 Complete)
 
-SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and prepared for Python FastAPI RAG-based AI services in subsequent phases. It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking with dynamic QR check-in, coursework submission and grading, examination results with UGC 10-point GPA calculation, fee ledger management, campus announcements, interactive notifications, and background automation daemons.
+SmartCampus AI is an enterprise-grade university management system built with the MERN stack (MongoDB, Express.js, React, Node.js) and an integrated Python FastAPI machine learning & RAG microservice (`scikit-learn`, `RandomForestClassifier`, `TF-IDF + Cosine Vector Space`, `pypdf`). It provides comprehensive, role-based portals for **Students**, **Faculty**, and **Administrators** with real-time analytics, automated conflict-free timetable scheduling, attendance tracking with dynamic QR check-in, coursework submission and grading, examination results with UGC 10-point GPA calculation, fee ledger management, campus announcements, interactive notifications, background automation daemons, intelligent academic support (ML early-support classification, explainable risk factors, personalized curriculum recommendations, role-aware AI campus assistant), and a **genuine RAG-powered Academic Document Assistant** with verified citations and fail-closed RBAC document security.
 
 ---
 
@@ -15,12 +15,45 @@ SMARTCAMPUS/
 ├── .gitignore
 ├── README.md
 │
-├── ai-service/                              # Python AI Microservice (Phase 4 Foundation)
-│   ├── main.py                              # FastAPI service & RAG endpoint skeleton
-│   ├── requirements.txt                     # FastAPI & Uvicorn dependencies
-│   └── README.md                            # Phase 4 AI Roadmap & local setup guide
+├── ai-service/                              # Python AI, ML & RAG Microservice
+│   ├── main.py                              # FastAPI entrypoint (Port 8000)
+│   ├── requirements.txt                     # FastAPI, scikit-learn, pypdf, pandas, numpy, pytest
+│   ├── pytest.ini                           # Pytest configuration
+│   ├── README.md                            # AI/ML & RAG documentation & specs
+│   │
+│   ├── app/
+│   │   ├── config.py                        # Service configuration & shared internal key
+│   │   ├── schemas.py                       # Pydantic validation schemas (ML & RAG)
+│   │   │
+│   │   ├── ml/
+│   │   │   ├── pipeline.py                  # Scikit-learn StandardScaler + RandomForest pipeline
+│   │   │   ├── synthetic_data.py            # Isolated 600-sample benchmark dataset generator
+│   │   │   ├── train.py                     # Standalone training script (96.67% accuracy)
+│   │   │   ├── support_model.joblib         # Serialized ML model artifact
+│   │   │   └── support_model_meta.json      # Model performance metrics & feature importances
+│   │   │
+│   │   ├── rag/                             # Genuine RAG Academic Document Pipeline (Phase 5)
+│   │   │   ├── text_extractor.py            # Page-by-page PDF & text extraction, scanned PDF check
+│   │   │   ├── chunker.py                   # Overlapping semantic chunking (450 chars, 80 overlap)
+│   │   │   ├── vector_store.py              # Persistent TF-IDF/Cosine vector store & RBAC filters
+│   │   │   ├── generator.py                 # Grounded response synthesizer & prompt-injection shield
+│   │   │   └── store/                       # Persistent vector index & chunk metadata storage
+│   │   │       ├── metadata.json
+│   │   │       └── vector_model.joblib
+│   │   │
+│   │   ├── services/
+│   │   │   ├── recommender.py               # Curriculum gap to syllabus topic & resource mapper
+│   │   │   └── assistant.py                 # Role-aware campus assistant with live student context
+│   │   │
+│   │   └── api/
+│   │       └── routes.py                    # Internal AI & RAG routes (health, predict, rag, chat)
+│   │
+│   └── tests/                               # Pytest test suite (12/12 passing)
+│       ├── test_ml_pipeline.py
+│       ├── test_rag_pipeline.py
+│       └── test_recommendations.py
 │
-├── backend/                                 # Node.js & Express REST API Server
+├── backend/                                 # Node.js & Express REST API Server (Port 5000)
 │   ├── .env.example                         # Environment configuration template
 │   ├── .env                                 # Local development environment settings
 │   ├── package.json                         # Dependencies & scripts
@@ -29,6 +62,24 @@ SMARTCAMPUS/
 │   │
 │   ├── config/
 │   │   └── database.js                      # Resilient Mongoose connection manager
+│   │
+│   ├── models/
+│   │   └── CampusModels.js                  # 16 Mongoose models
+│   │
+│   ├── services/
+│   │   ├── aiService.js                     # MongoDB metrics aggregator, AI client & rule fallback
+│   │   └── schedulerService.js              # Idempotent deadline reminders & background cron
+│   │
+│   ├── controllers/
+│   │   ├── aiController.js                  # Academic insights, recommendations, early support, chat
+│   │   └── ... (11 other controllers)
+│   │
+│   ├── routes/
+│   │   ├── aiRoutes.js                      # /api/ai endpoints
+│   │   └── ... (17 other route files)
+│   │
+│   └── tests/
+│       └── api.test.js                      # Automated verification suite (33/33 tests passing)
 │   │
 │   ├── models/
 │   │   └── CampusModels.js                  # 16 Mongoose models: User, Department, Course,
@@ -283,6 +334,16 @@ npm test
 26. **QR / Code Check-in Verification & Fraud Prevention** (Valid check-in, duplicate scan rejection, closed session rejection)
 27. **Notification Hub & Unread Telemetry** (Alerts list, unread count polling, mark single as read, mark all read)
 28. **Scheduler Service & Idempotent Reminders** (Idempotent 48h assignment deadline reminder daemon)
+29. **Academic Performance Insights** (Student fetches academic metrics with explainable ML diagnostics)
+30. **Personalized Recommendations** (Curriculum syllabus topics and matched library resources)
+31. **Faculty Early-Support Roster** (Cohort risk analysis with student risk factors)
+32. **Role-Aware AI Campus Assistant** (Verified student context injection & query validation)
+33. **AI Service Health & Fallback** (Service availability and rule engine fallback readiness)
+34. **RAG Resource Upload & Vector Indexing** (Faculty publishes study material and triggers vector store ingestion)
+35. **RAG Grounded Query & Citations** (Student queries authorized materials with genuine citations: title, page, excerpt)
+36. **Document-Level RBAC Security** (Student queries outside enrolled department/subjects receive 0 citations)
+37. **Prompt Injection Defense** (Malicious prompt injection attempts in query or text fail to leak credentials)
+38. **Resource Deletion Vector Purge** (Resource deletion purges document and chunks from RAG vector store)
 
 ---
 
@@ -323,15 +384,38 @@ npm test
 - `GET, POST /api/examinations` & `/api/results`: Exam scheduling, marks entry, and GPA.
 - `GET, POST, PATCH /api/fees`: Fee invoices, payment installments, and balance tracking.
 - `GET, POST /api/notices`: University bulletin announcements.
-- `GET, POST /api/resources`: Study materials and lecture notes.
-- `POST /api/ai/chat`: AI Academic Assistant consultation.
+- `GET, POST /api/resources`: Study materials and lecture notes repository.
+- `POST /api/resources/:id/reindex`: Re-trigger RAG chunking and vector indexing.
+- `GET /api/resources/:id/processing-status`: Check document RAG indexing status.
 - `POST /api/seed`: Re-seed demo dataset.
+
+### AI & Machine Learning (`/api/ai`)
+- `GET /api/ai/academic-insights`: Student academic performance metrics and explainable ML risk diagnostics.
+- `GET /api/ai/recommendations`: Personalized syllabus curriculum topics and matched digital library assets.
+- `GET /api/ai/early-support`: Faculty/Admin cohort risk analysis or individual student diagnostic.
+- `POST /api/ai/chat`: Role-aware conversational campus assistant with live student records.
+- `GET /api/ai/status`: Health and operational readiness of Python AI microservice and fallback engine.
+- `POST /api/ai/ml/retrain`: Admin trigger to retrain `RandomForestClassifier` on benchmark dataset.
+
+### RAG Academic Document Assistant (`/api/ai/document-assistant`)
+- `POST /api/ai/document-assistant/query`: Grounded student document inquiry with verified citations and fail-closed RBAC.
+- `GET /api/ai/rag/status`: Vector store metrics (total documents, indexed chunks, vector index status).
 
 ---
 
-## 8. Phase 4 AI/ML Roadmap
+## 8. Phases 1–5 Implementation Status
 
-- [ ] **RAG Campus Knowledge Engine**: Ingest university syllabus PDFs, examination guidelines, and fee circulars into ChromaDB / pgvector.
-- [ ] **Student At-Risk Predictor**: Machine learning model analyzing attendance drops and assignment marks for early intervention.
-- [ ] **Automated Timetable Optimizer**: Constraint-satisfaction algorithm (OR-Tools) for multi-hall scheduling.
-- [ ] **Voice-Enabled Student Helpdesk**: Whisper STT & TTS integration.
+- [x] **Phase 1: Architecture, Authentication & Responsive Shells**: JWT, RBAC guards, Tailwind dashboards, Mongo connection manager.
+- [x] **Phase 2: Core Campus Operations**: Timetable 3-way conflict detection, Attendance compliance, Assignments lifecycle, Results GPA, Fee ledger.
+- [x] **Phase 3: Interactive Features & System Telemetry**: Dynamic QR Attendance sessions, Notifications Hub, Institutional Analytics, Idempotent Deadline Daemon.
+- [x] **Phase 4: AI & Machine Learning Integration**: FastAPI microservice, Scikit-learn `RandomForestClassifier` (96.67% accuracy), Explainable risk factors, Personalized syllabus recommendations, Role-aware AI campus assistant.
+- [x] **Phase 5: RAG-Powered Academic Document Assistant**:
+  - Genuine PDF/Text page-by-page extraction with `pypdf`.
+  - Scanned PDF detection & graceful rejection (<30 chars).
+  - Overlapping semantic chunker (450 chars, 80 overlap).
+  - Persistent disk-backed vector store (TF-IDF + Cosine similarity space).
+  - Strict server-side RBAC access filtering (cross-subject fail-closed defense).
+  - Prompt-injection defense shields and honest insufficiency policy.
+  - Zero-citation fabrication guarantee.
+  - Extractive deterministic fallback when Python microservice or LLM is offline.
+

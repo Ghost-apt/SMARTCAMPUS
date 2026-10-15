@@ -1,0 +1,41 @@
+{
+  "model_name": "SmartCampus Student Support Classifier",
+  "version": "1.0.0",
+  "algorithm": "RandomForestClassifier(n_estimators=50, max_depth=5)",
+  "features": [
+    "attendance_percentage",
+    "assignment_completion_rate",
+    "average_exam_marks",
+    "failed_assignments_count",
+    "attendance_trend"
+  ],
+  "is_trained": true,
+  "training_samples": 480,
+  "test_samples": 120,
+  "metrics": {
+    "accuracy": 0.9667,
+    "precision": 0.9032,
+    "recall": 0.9655,
+    "f1_score": 0.9333,
+    "roc_auc": 0.9629,
+    "confusion_matrix": [
+      [
+        88,
+        3
+      ],
+      [
+        1,
+        28
+      ]
+    ]
+  },
+  "feature_importances": {
+    "attendance_percentage": 0.2469,
+    "assignment_completion_rate": 0.4266,
+    "average_exam_marks": 0.1204,
+    "failed_assignments_count": 0.1764,
+    "attendance_trend": 0.0297
+  },
+  "trained_at": "2026-10-14T16:59:52.528407",
+  "disclaimer": "This model provides early academic-support indications for faculty review. It must not be used for automated grading, disciplinary sanctions, or high-stakes academic decisions."
+}

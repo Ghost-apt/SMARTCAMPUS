@@ -30,13 +30,15 @@ const StudentDashboard = () => {
   const [aiLoading, setAiLoading] = useState(false);
 
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [aiInsights, setAiInsights] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const [dashRes, analyticsRes] = await Promise.allSettled([
+        const [dashRes, analyticsRes, insightsRes] = await Promise.allSettled([
           api.get('/dashboard/student'),
-          api.get('/analytics/student/overview')
+          api.get('/analytics/student/overview'),
+          api.get('/ai/academic-insights')
         ]);
 
         if (dashRes.status === 'fulfilled' && dashRes.value.data.success) {
@@ -44,6 +46,9 @@ const StudentDashboard = () => {
         }
         if (analyticsRes.status === 'fulfilled' && analyticsRes.value.data.success) {
           setAnalyticsData(analyticsRes.value.data.data);
+        }
+        if (insightsRes.status === 'fulfilled' && insightsRes.value.data.success) {
+          setAiInsights(insightsRes.value.data);
         }
       } catch (err) {
         setError(err.userMessage || 'Failed to load student dashboard.');
@@ -154,14 +159,38 @@ const StudentDashboard = () => {
 
       {/* AI Assistant Quick Consultation Widget */}
       <div className="mb-8 bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl p-6 text-white shadow-xl border border-indigo-900/50">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30 flex items-center justify-center">
-            <Bot className="w-6 h-6" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30 flex items-center justify-center">
+              <Bot className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-lg text-white">SmartCampus AI Academic Assistant</h3>
+                {aiInsights?.analysis?.riskLevel && (
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      aiInsights.analysis.riskLevel === 'High'
+                        ? 'bg-rose-500/30 text-rose-300 border border-rose-500/50'
+                        : aiInsights.analysis.riskLevel === 'Medium'
+                        ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50'
+                        : 'bg-teal-500/30 text-teal-300 border border-teal-500/50'
+                    }`}
+                  >
+                    Standing: {aiInsights.analysis.riskLevel === 'Low' ? 'Optimal' : aiInsights.analysis.riskLevel + ' Support'}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-300">Ask any question regarding lecture notes, PDF study materials (RAG), attendance rules, or syllabus.</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-lg text-white">SmartCampus AI Academic Assistant</h3>
-            <p className="text-xs text-slate-300">Ask any question regarding university policies, attendance rules, examinations, or syllabus.</p>
-          </div>
+          <a
+            href="/student/ai"
+            className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-teal-300 flex items-center gap-1.5 transition-colors border border-white/10"
+          >
+            <span>AI Advisor & Document Q&A (RAG)</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </a>
         </div>
 
         <form onSubmit={handleAskAI} className="flex gap-2 mt-4">

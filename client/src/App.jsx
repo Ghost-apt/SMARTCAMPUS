@@ -144,6 +144,14 @@ function App() {
         }
       />
       <Route
+        path="/student/ai"
+        element={
+          <ProtectedRoute allowedRoles={['student', 'admin']}>
+            <StudentAIPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/student/*"
         element={
           <ProtectedRoute allowedRoles={['student', 'admin']}>
