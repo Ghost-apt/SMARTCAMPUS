@@ -1,0 +1,29 @@
+{
+  "name": "smartcampus-ai-root",
+  "version": "6.0.0",
+  "private": true,
+  "description": "SmartCampus AI — Intelligent University Management & Student Support System",
+  "scripts": {
+    "dev": "node scripts/start-all.js",
+    "start": "node scripts/start-all.js",
+    "stop": "node scripts/stop-all.js",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev:ai": "powershell -Command \"cd ai-service; .\\venv\\Scripts\\uvicorn app.main:app --port 8000 --reload\"",
+    "backup": "npm --prefix backend run backup",
+    "restore": "npm --prefix backend run restore",
+    "seed": "npm --prefix backend run seed",
+    "test": "npm --prefix backend test && npm --prefix client test && powershell -Command \"cd ai-service; .\\venv\\Scripts\\pytest -v\"",
+    "build": "npm --prefix client run build"
+  },
+  "keywords": [
+    "smartcampus",
+    "university-management",
+    "mern",
+    "rag",
+    "ai",
+    "machine-learning"
+  ],
+  "author": "SmartCampus AI Team",
+  "license": "ISC"
+}
