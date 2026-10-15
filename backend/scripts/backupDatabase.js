@@ -50,7 +50,11 @@ const runBackup = async () => {
 
   for (const { name, model } of collections) {
     try {
-      const records = await model.find({}).lean();
+      let query = model.find({});
+      if (name === 'User') {
+        query = query.select('+password');
+      }
+      const records = await query.lean();
       const filePath = path.join(backupDir, `${name}.json`);
       fs.writeFileSync(filePath, JSON.stringify(records, null, 2), 'utf8');
 

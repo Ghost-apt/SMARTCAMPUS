@@ -71,6 +71,9 @@ const runRestore = async (specifiedBackupDir = null) => {
         for (const item of records) {
           const id = item._id;
           delete item._id;
+          if (name === 'User' && !item.password) {
+            delete item.password;
+          }
           await model.findByIdAndUpdate(id, item, { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true });
         }
         restoredTotal += records.length;

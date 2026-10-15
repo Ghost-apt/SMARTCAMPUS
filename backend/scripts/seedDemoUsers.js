@@ -1,5 +1,6 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
+const { closeDB } = require('../config/database');
 const {
   User,
   StudentProfile,
@@ -35,8 +36,8 @@ const seedDemoUsers = async () => {
     const facultyPassword = process.env.DEMO_FACULTY_PASSWORD || 'Faculty@123';
     const studentPassword = process.env.DEMO_STUDENT_PASSWORD || 'Student@123';
 
-    // 1. Users
-    let admin = await User.findOne({ email: 'admin@smartcampus.edu' });
+    // 1. Users (Ensure demo accounts are present and passwords are encrypted and valid)
+    let admin = await User.findOne({ email: 'admin@smartcampus.edu' }).select('+password');
     if (!admin) {
       admin = await User.create({
         name: 'System Administrator',
@@ -48,9 +49,14 @@ const seedDemoUsers = async () => {
         accountStatus: 'active'
       });
       console.log('👤 Created Admin: admin@smartcampus.edu');
+    } else {
+      admin.password = adminPassword;
+      admin.accountStatus = 'active';
+      await admin.save();
+      console.log('👤 Verified Admin demo credentials: admin@smartcampus.edu');
     }
 
-    let faculty = await User.findOne({ email: 'faculty@smartcampus.edu' });
+    let faculty = await User.findOne({ email: 'faculty@smartcampus.edu' }).select('+password');
     if (!faculty) {
       faculty = await User.create({
         name: 'Dr. Sarah Sharma',
@@ -63,9 +69,14 @@ const seedDemoUsers = async () => {
         accountStatus: 'active'
       });
       console.log('👤 Created Faculty: faculty@smartcampus.edu');
+    } else {
+      faculty.password = facultyPassword;
+      faculty.accountStatus = 'active';
+      await faculty.save();
+      console.log('👤 Verified Faculty demo credentials: faculty@smartcampus.edu');
     }
 
-    let student = await User.findOne({ email: 'student@smartcampus.edu' });
+    let student = await User.findOne({ email: 'student@smartcampus.edu' }).select('+password');
     if (!student) {
       student = await User.create({
         name: 'Anurag Singh',
@@ -78,6 +89,24 @@ const seedDemoUsers = async () => {
         accountStatus: 'active'
       });
       console.log('👤 Created Student: student@smartcampus.edu');
+    } else {
+      student.password = studentPassword;
+      student.accountStatus = 'active';
+      await student.save();
+      console.log('👤 Verified Student demo credentials: student@smartcampus.edu');
+    }
+
+    // Fix any other existing users in the database missing passwords
+    const usersNeedingPassword = await User.find({
+      $or: [{ password: { $exists: false } }, { password: null }, { password: '' }]
+    }).select('+password');
+
+    for (const u of usersNeedingPassword) {
+      const pwd = u.role === 'admin' ? adminPassword : (u.role === 'faculty' ? facultyPassword : studentPassword);
+      u.password = pwd;
+      u.accountStatus = 'active';
+      await u.save();
+      console.log(`🔑 Restored password for user account: ${u.email}`);
     }
 
     // 2. Departments
@@ -624,7 +653,7 @@ Verified Demo Accounts:
     `);
 
     if (require.main === module) {
-      await mongoose.disconnect();
+      await closeDB();
       process.exit(0);
     }
   } catch (err) {
