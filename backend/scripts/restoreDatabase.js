@@ -8,7 +8,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { connectDB } = require('../config/database');
+const { connectDB, closeDB } = require('../config/database');
 const CampusModels = require('../models/CampusModels');
 
 const runRestore = async (specifiedBackupDir = null) => {
@@ -71,7 +71,7 @@ const runRestore = async (specifiedBackupDir = null) => {
         for (const item of records) {
           const id = item._id;
           delete item._id;
-          await model.findByIdAndUpdate(id, item, { upsert: true, new: true, setDefaultsOnInsert: true });
+          await model.findByIdAndUpdate(id, item, { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true });
         }
         restoredTotal += records.length;
         console.log(`   ✔ Restored ${name}: ${records.length} records`);
@@ -86,7 +86,7 @@ const runRestore = async (specifiedBackupDir = null) => {
   console.log(`\n✅ [Database Restore Complete]: ${restoredTotal} records restored.`);
 
   if (process.env.NODE_ENV !== 'test') {
-    await mongoose.connection.close();
+    await closeDB();
     process.exit(0);
   }
 

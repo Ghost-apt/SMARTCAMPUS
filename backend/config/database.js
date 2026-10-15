@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 
 let isConnected = false;
+let isGracefulShutdown = false;
 
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/smartcampus';
+  isGracefulShutdown = false;
 
   try {
     const conn = await mongoose.connect(uri, {
@@ -20,9 +22,19 @@ const connectDB = async () => {
   }
 };
 
+const closeDB = async () => {
+  isGracefulShutdown = true;
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close();
+  }
+  isConnected = false;
+};
+
 mongoose.connection.on('disconnected', () => {
   isConnected = false;
-  console.warn('⚠️ MongoDB connection lost. Attempting reconnection...');
+  if (!isGracefulShutdown) {
+    console.warn('⚠️ MongoDB connection lost. Attempting reconnection...');
+  }
 });
 
 mongoose.connection.on('reconnected', () => {
@@ -38,6 +50,7 @@ const getDbStatus = () => ({
 
 module.exports = {
   connectDB,
+  closeDB,
   getDbStatus
 };
 

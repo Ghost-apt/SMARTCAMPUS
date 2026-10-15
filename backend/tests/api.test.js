@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const { closeDB } = require('../config/database');
 
 // Set test environment
 process.env.NODE_ENV = 'test';
@@ -27,7 +28,7 @@ describe('SmartCampus AI — Backend API Verification Suite', () => {
   });
 
   after(async () => {
-    await mongoose.disconnect();
+    await closeDB();
     if (mongoServer) {
       await mongoServer.stop();
     }

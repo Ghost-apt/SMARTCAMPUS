@@ -8,7 +8,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { connectDB } = require('../config/database');
+const { connectDB, closeDB } = require('../config/database');
 const CampusModels = require('../models/CampusModels');
 
 const runBackup = async () => {
@@ -73,7 +73,7 @@ const runBackup = async () => {
   console.log(`   ${backupDir}`);
 
   if (process.env.NODE_ENV !== 'test') {
-    await mongoose.connection.close();
+    await closeDB();
     process.exit(0);
   }
 
