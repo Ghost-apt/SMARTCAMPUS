@@ -20,7 +20,8 @@ import {
   BarChart3,
   Settings,
   X,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -34,6 +35,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Timetable', path: '/student/timetable', icon: Calendar },
     { name: 'Assignments', path: '/student/assignments', icon: FileText },
     { name: 'Examinations & Results', path: '/student/results', icon: Award },
+    { name: 'Fees & Invoices', path: '/student/fees', icon: CreditCard },
     { name: 'Study Resources', path: '/student/resources', icon: Library },
     { name: 'AI Academic Assistant', path: '/student/ai-assistant', icon: Bot, badge: 'AI' },
     { name: 'Notices', path: '/student/notices', icon: Bell },
@@ -60,6 +62,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Courses', path: '/admin/courses', icon: BookOpen },
     { name: 'Timetable', path: '/admin/timetable', icon: Calendar },
     { name: 'Attendance Reports', path: '/admin/attendance', icon: CalendarCheck },
+    { name: 'Fee Management', path: '/admin/fees', icon: CreditCard },
     { name: 'Notices', path: '/admin/notices', icon: Bell },
     { name: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
     { name: 'Settings', path: '/admin/settings', icon: Settings },
