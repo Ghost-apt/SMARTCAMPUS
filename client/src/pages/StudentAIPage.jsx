@@ -21,7 +21,8 @@ import {
   FileText,
   BookmarkCheck,
   Search,
-  Filter
+  Filter,
+  CheckCheck
 } from 'lucide-react';
 
 const SUGGESTED_QUERIES = [
@@ -212,20 +213,20 @@ const StudentAIPage = () => {
   const riskBadge = (level) => {
     if (level === 'High') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-500/20 text-rose-800 dark:text-rose-400 border border-rose-300 dark:border-rose-500/30">
           <AlertTriangle className="w-3.5 h-3.5" /> High Support Priority
         </span>
       );
     }
     if (level === 'Medium') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-400 border border-amber-300 dark:border-amber-500/30">
           <AlertCircle className="w-3.5 h-3.5" /> Moderate Support
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
         <CheckCircle2 className="w-3.5 h-3.5" /> Optimal Standing
       </span>
     );
@@ -238,13 +239,13 @@ const StudentAIPage = () => {
     >
       {/* Top Navigation Tabs & Service Status */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-xl">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
           <button
             onClick={() => setActiveTab('chat')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'chat'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Bot className="w-4 h-4" />
@@ -252,10 +253,10 @@ const StudentAIPage = () => {
           </button>
           <button
             onClick={() => setActiveTab('rag')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'rag'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/25'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -263,10 +264,10 @@ const StudentAIPage = () => {
           </button>
           <button
             onClick={() => setActiveTab('recommendations')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'recommendations'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/25'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Lightbulb className="w-4 h-4" />
@@ -276,9 +277,9 @@ const StudentAIPage = () => {
 
         {/* Engine Status Badge */}
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-500 font-medium">Engine:</span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-teal-300 border border-slate-700 font-mono text-[11px]">
-            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+          <span className="text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Engine:</span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-cyan-400 border border-slate-700 font-mono text-[11px] shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
             {aiStatus?.service?.mlModelReady
               ? 'Python ML & RAG Engine (Active)'
               : 'Deterministic Rule Engine (Fallback Active)'}
@@ -286,7 +287,7 @@ const StudentAIPage = () => {
           <button
             onClick={() => { fetchAcademicData(); fetchCourseDocuments(); }}
             title="Refresh AI Data"
-            className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+            className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -296,9 +297,9 @@ const StudentAIPage = () => {
       {/* Tab 1: AI Campus Assistant */}
       {activeTab === 'chat' && (
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-500" />
               <span>Contextual Academic Inquiries</span>
             </p>
             <div className="flex flex-wrap gap-2">
@@ -306,7 +307,7 @@ const StudentAIPage = () => {
                 <button
                   key={idx}
                   onClick={() => handleSend(null, q)}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 border border-slate-200 transition-colors text-left"
+                  className="text-xs px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-indigo-50 dark:hover:bg-indigo-500/15 hover:text-indigo-600 dark:hover:text-indigo-300 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors text-left"
                 >
                   {q}
                 </button>
@@ -314,7 +315,7 @@ const StudentAIPage = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col h-[520px]">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex flex-col h-[520px] overflow-hidden">
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.map((m, idx) => (
                 <div
@@ -322,27 +323,27 @@ const StudentAIPage = () => {
                   className={`flex gap-3 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {m.sender === 'ai' && (
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-teal-400 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center text-white flex-shrink-0 shadow-md">
                       <Bot className="w-4 h-4" />
                     </div>
                   )}
 
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm ${
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed shadow-sm ${
                       m.sender === 'user'
-                        ? 'bg-indigo-600 text-white rounded-tr-none'
+                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-tr-none'
                         : m.error
-                        ? 'bg-rose-50 border border-rose-200 text-rose-800 rounded-tl-none'
-                        : 'bg-slate-50 border border-slate-200/70 text-slate-800 rounded-tl-none'
+                        ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300 rounded-tl-none'
+                        : 'bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 text-slate-800 dark:text-slate-200 rounded-tl-none'
                     }`}
                   >
                     <p className="whitespace-pre-line">{m.text}</p>
-                    <div className="flex items-center justify-between gap-3 mt-1.5">
+                    <div className="flex items-center justify-between gap-3 mt-2">
                       <span className={`text-[10px] ${m.sender === 'user' ? 'text-indigo-200' : 'text-slate-400'}`}>
                         {m.time}
                       </span>
                       {m.engine && (
-                        <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 bg-slate-200/50 dark:bg-slate-900/50 px-1.5 py-0.5 rounded">
                           {m.engine}
                         </span>
                       )}
@@ -350,7 +351,7 @@ const StudentAIPage = () => {
                   </div>
 
                   {m.sender === 'user' && (
-                    <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-white flex-shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-800 dark:bg-slate-700 flex items-center justify-center text-white flex-shrink-0">
                       <User className="w-4 h-4" />
                     </div>
                   )}
@@ -362,27 +363,27 @@ const StudentAIPage = () => {
                   <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white flex-shrink-0">
                     <Bot className="w-4 h-4" />
                   </div>
-                  <div className="bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-2xl text-xs text-slate-500 flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-teal-500 animate-spin" />
+                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-2xl text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-cyan-500 animate-spin" />
                     <span>Synthesizing academic advisor response...</span>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
               <form onSubmit={handleSend} className="flex gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about your upcoming assignments, attendance status, timetable, or syllabus..."
-                  className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
                 />
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Ask AI</span>
@@ -397,14 +398,14 @@ const StudentAIPage = () => {
       {activeTab === 'rag' && (
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Document Context Selector & Scope Strip */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+              <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-500/20">
                 <FileText className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900">Enrolled Course Document Corpus</h4>
-                <p className="text-xs text-slate-500">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Enrolled Course Document Corpus</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Select a subject scope or query all authorized course study materials.
                 </p>
               </div>
@@ -415,7 +416,7 @@ const StudentAIPage = () => {
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-indigo-500"
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-cyan-500"
               >
                 <option value="all">All Enrolled Subjects</option>
                 <option value="BCA-501">BCA-501 (AI & Machine Learning)</option>
@@ -426,9 +427,9 @@ const StudentAIPage = () => {
           </div>
 
           {/* Suggested Document Inquiries */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <BookmarkCheck className="w-3.5 h-3.5 text-teal-600" />
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 shadow-sm">
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <BookmarkCheck className="w-3.5 h-3.5 text-cyan-500" />
               <span>Grounded Curricular Questions</span>
             </p>
             <div className="flex flex-wrap gap-2">
@@ -436,7 +437,7 @@ const StudentAIPage = () => {
                 <button
                   key={idx}
                   onClick={() => handleRagSend(null, q)}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-teal-50/60 hover:bg-teal-100/80 text-teal-900 border border-teal-200 transition-colors text-left"
+                  className="text-xs px-3 py-1.5 rounded-xl bg-cyan-50/60 dark:bg-cyan-500/10 hover:bg-cyan-100 dark:hover:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border border-cyan-200/80 dark:border-cyan-500/30 transition-colors text-left"
                 >
                   {q}
                 </button>
@@ -445,7 +446,7 @@ const StudentAIPage = () => {
           </div>
 
           {/* RAG Chat Window */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col h-[560px]">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex flex-col h-[560px] overflow-hidden">
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {ragMessages.map((m, idx) => (
                 <div
@@ -453,45 +454,47 @@ const StudentAIPage = () => {
                   className={`flex gap-3 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {m.sender === 'ai' && (
-                    <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center text-white flex-shrink-0 shadow-md">
                       <FileText className="w-4 h-4" />
                     </div>
                   )}
 
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed shadow-sm ${
                       m.sender === 'user'
-                        ? 'bg-indigo-600 text-white rounded-tr-none'
+                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-tr-none'
                         : m.error
-                        ? 'bg-rose-50 border border-rose-200 text-rose-800 rounded-tl-none'
-                        : 'bg-slate-50 border border-slate-200/70 text-slate-800 rounded-tl-none'
+                        ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300 rounded-tl-none'
+                        : 'bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 text-slate-800 dark:text-slate-200 rounded-tl-none'
                     }`}
                   >
                     <p className="whitespace-pre-line">{m.text}</p>
 
                     {/* Verified Source Citations Box */}
                     {m.citations && m.citations.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-200/80 space-y-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1">
+                      <div className="mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-700 space-y-2.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
                           <BookmarkCheck className="w-3.5 h-3.5" />
                           <span>Grounded Document Citations ({m.citations.length})</span>
                         </span>
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           {m.citations.map((c, cIdx) => (
                             <div
                               key={cIdx}
-                              className="p-2.5 rounded-lg bg-white border border-teal-200/70 text-[11px] space-y-1"
+                              className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-cyan-200/70 dark:border-cyan-500/30 text-xs space-y-1 shadow-sm"
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                                  <FileText className="w-3 h-3 text-teal-600" />
+                                <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                  <FileText className="w-3.5 h-3.5 text-cyan-500" />
                                   <span>{c.document_title}</span>
                                 </span>
-                                <span className="px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 font-mono text-[10px] font-bold border border-teal-200">
+                                <span className="px-2 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 font-mono text-[10px] font-bold border border-cyan-200 dark:border-cyan-500/30">
                                   Page {c.page_number}
                                 </span>
                               </div>
-                              <p className="text-slate-600 italic line-clamp-2">"{c.excerpt}"</p>
+                              <p className="text-slate-600 dark:text-slate-400 italic line-clamp-2">
+                                "{c.excerpt}"
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -503,7 +506,7 @@ const StudentAIPage = () => {
                         {m.time}
                       </span>
                       {m.engine && (
-                        <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 bg-slate-200/50 dark:bg-slate-900/50 px-1.5 py-0.5 rounded">
                           {m.engine}
                         </span>
                       )}
@@ -511,7 +514,7 @@ const StudentAIPage = () => {
                   </div>
 
                   {m.sender === 'user' && (
-                    <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-white flex-shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-800 dark:bg-slate-700 flex items-center justify-center text-white flex-shrink-0">
                       <User className="w-4 h-4" />
                     </div>
                   )}
@@ -520,30 +523,30 @@ const StudentAIPage = () => {
 
               {ragLoading && (
                 <div className="flex gap-3 justify-start items-center">
-                  <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white flex-shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-cyan-600 flex items-center justify-center text-white flex-shrink-0">
                     <FileText className="w-4 h-4" />
                   </div>
-                  <div className="bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-2xl text-xs text-slate-500 flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-teal-500 animate-spin" />
+                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-2xl text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-cyan-500 animate-spin" />
                     <span>Retrieving authorized document chunks and synthesizing answer citations...</span>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
               <form onSubmit={handleRagSend} className="flex gap-2">
                 <input
                   type="text"
                   value={ragInput}
                   onChange={(e) => setRagInput(e.target.value)}
                   placeholder="Ask any question grounded in your course materials (e.g. What is normalization in DBMS Unit 1?)..."
-                  className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-teal-500"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
                 />
                 <button
                   type="submit"
                   disabled={ragLoading || !ragInput.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
                 >
                   <Search className="w-3.5 h-3.5" />
                   <span>Ask Notes</span>
@@ -558,33 +561,35 @@ const StudentAIPage = () => {
       {activeTab === 'recommendations' && (
         <div className="space-y-6">
           {insightsLoading ? (
-            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <Sparkles className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-3" />
-              <p className="text-sm font-semibold text-slate-700">Analyzing academic metrics & curriculum gaps...</p>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Analyzing academic metrics & curriculum gaps...
+              </p>
             </div>
           ) : (
             <>
               {insights?.analysis && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-7 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <GraduationCap className="w-5 h-5 text-indigo-600" />
-                        <h3 className="font-bold text-lg text-slate-900">
+                        <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                        <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                           Academic Standing & ML Support Diagnostics
                         </h3>
                       </div>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         Evaluated across attendance compliance, assignment submissions, and examination scores.
                       </p>
                     </div>
                     <div>{riskBadge(insights.analysis.riskLevel)}</div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                      <span className="text-[11px] text-slate-500 block">Attendance Rate</span>
-                      <span className="text-lg font-bold text-slate-900">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">Attendance Rate</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
                         {insights.metrics?.attendanceRate ?? 0}%
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-0.5">
@@ -592,9 +597,9 @@ const StudentAIPage = () => {
                       </span>
                     </div>
 
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                      <span className="text-[11px] text-slate-500 block">Assignment Completion</span>
-                      <span className="text-lg font-bold text-slate-900">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">Assignment Completion</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
                         {insights.metrics?.assignmentCompletionRate ?? 0}%
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-0.5">
@@ -602,17 +607,17 @@ const StudentAIPage = () => {
                       </span>
                     </div>
 
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                      <span className="text-[11px] text-slate-500 block">Current GPA</span>
-                      <span className="text-lg font-bold text-slate-900">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">Current GPA</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
                         {insights.metrics?.gpa ?? 'N/A'}
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-0.5">Scale of 10.0</span>
                     </div>
 
-                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                      <span className="text-[11px] text-slate-500 block">Risk Score / Confidence</span>
-                      <span className="text-lg font-bold text-slate-900">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">Risk Score / Confidence</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block">
                         {Math.round((insights.analysis.riskScore || 0) * 100)}%
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-0.5">
@@ -622,14 +627,14 @@ const StudentAIPage = () => {
                   </div>
 
                   {insights.analysis.contributingFactors?.length > 0 && (
-                    <div className="mt-4 p-4 rounded-xl bg-amber-50/70 border border-amber-200">
-                      <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wide flex items-center gap-1.5 mb-2">
-                        <AlertCircle className="w-3.5 h-3.5 text-amber-700" />
+                    <div className="mt-5 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                      <h4 className="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
                         <span>Identified Performance Influencers</span>
                       </h4>
                       <ul className="space-y-1">
                         {insights.analysis.contributingFactors.map((factor, i) => (
-                          <li key={i} className="text-xs text-amber-900 flex items-start gap-2">
+                          <li key={i} className="text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2">
                             <span className="text-amber-500 font-bold">•</span>
                             <span>{factor}</span>
                           </li>
@@ -641,14 +646,14 @@ const StudentAIPage = () => {
               )}
 
               {/* Personalized Recommended Topics */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-7 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
-                  <BookOpen className="w-5 h-5 text-indigo-600" />
+                  <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <div>
-                    <h3 className="font-bold text-lg text-slate-900">
+                    <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                       Curriculum Focus Recommendations
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Targeted syllabus modules based on performance gaps and upcoming course milestones.
                     </p>
                   </div>
@@ -658,28 +663,28 @@ const StudentAIPage = () => {
                   {recommendations?.recommendedTopics?.map((rec, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/20 transition-all flex flex-col justify-between"
+                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500/30 hover:bg-indigo-50/20 dark:hover:bg-indigo-500/10 transition-all flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
                             {rec.courseCode}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                               rec.priority === 'High'
-                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                : 'bg-slate-100 text-slate-700'
+                                ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             {rec.priority} Priority
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 mb-1">{rec.topic}</h4>
-                        <p className="text-xs text-slate-600 mb-3">{rec.reason}</p>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{rec.topic}</h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">{rec.reason}</p>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                         <span>Focus Area: {rec.action}</span>
                       </div>
                     </div>
@@ -689,36 +694,36 @@ const StudentAIPage = () => {
 
               {/* Curated Library & Academic Learning Resources */}
               {recommendations?.libraryResources?.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-7 shadow-sm">
                   <div className="flex items-center gap-2 mb-4">
-                    <Library className="w-5 h-5 text-teal-600" />
+                    <Library className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                     <div>
-                      <h3 className="font-bold text-lg text-slate-900">
+                      <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                         Curated Learning & Library Resources
                       </h3>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         Approved textbooks, practice guides, and reference material matched to your curriculum.
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     {recommendations.libraryResources.map((res, idx) => (
                       <div
                         key={idx}
-                        className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 flex items-start justify-between gap-3"
+                        className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-start justify-between gap-3"
                       >
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30">
                               {res.type}
                             </span>
-                            <span className="text-[10px] text-slate-500">{res.courseCode}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{res.courseCode}</span>
                           </div>
-                          <h5 className="text-xs font-bold text-slate-900">{res.title}</h5>
-                          <p className="text-[11px] text-slate-500 mt-0.5">Author/Source: {res.author}</p>
+                          <h5 className="text-xs font-bold text-slate-900 dark:text-white">{res.title}</h5>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Author/Source: {res.author}</p>
                         </div>
-                        <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-white border border-slate-200 text-indigo-600 flex-shrink-0 flex items-center gap-1">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 flex-shrink-0 flex items-center gap-1 shadow-sm">
                           <ExternalLink className="w-3 h-3" />
                           <span>Access</span>
                         </span>

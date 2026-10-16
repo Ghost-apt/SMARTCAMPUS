@@ -19,13 +19,14 @@ import {
   Building2,
   BarChart3,
   Settings,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, role, logout } = useAuth();
 
-  // Role-specific navigation links
+  // Role-specific navigation links (Test contracts require these exact variable names)
   const studentLinks = [
     { name: 'Overview', path: '/student/dashboard', icon: LayoutDashboard },
     { name: 'My Courses', path: '/student/courses', icon: BookOpen },
@@ -67,74 +68,93 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const links = role === 'admin' ? adminLinks : role === 'faculty' ? facultyLinks : studentLinks;
 
-  const getRoleBadgeColor = () => {
+  const getRoleBadge = () => {
     switch (role) {
       case 'admin':
-        return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+        return {
+          label: 'Admin',
+          badge: 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+        };
       case 'faculty':
-        return 'bg-teal-500/10 text-teal-400 border-teal-500/20';
+        return {
+          label: 'Faculty',
+          badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
+        };
       default:
-        return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+        return {
+          label: 'Student',
+          badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+        };
     }
   };
 
+  const roleMeta = getRoleBadge();
+
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Mobile Backdrop with Blur */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-slate-950/70 z-40 lg:hidden backdrop-blur-md transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 bottom-0 z-50 w-64 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800/80 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
               <Bot className="w-5 h-5" />
             </div>
             <div>
               <span className="font-extrabold text-white text-base tracking-tight">SmartCampus</span>
-              <span className="ml-1 text-xs font-bold text-teal-400 uppercase tracking-wider">AI</span>
+              <span className="ml-1 text-[11px] font-black text-cyan-400 uppercase tracking-widest px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
+                AI
+              </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+            aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Current User Card */}
-        <div className="px-4 py-3 mx-3 my-3 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center gap-3">
-          <img
-            src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'}
-            alt="User avatar"
-            className="w-10 h-10 rounded-full object-cover border border-slate-600"
-          />
+        <div className="p-3 mx-3 my-3 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-900/40 border border-slate-800/80 flex items-center gap-3 shadow-inner">
+          <div className="relative">
+            <img
+              src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'}
+              alt="User avatar"
+              className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500/30 shadow-sm"
+            />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-slate-950" />
+          </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">{user?.name || 'Campus Member'}</p>
+            <p className="text-xs font-bold text-white truncate">{user?.name || 'Campus Member'}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border ${getRoleBadgeColor()}`}>
-                {role || 'Student'}
+              <span className={`text-[10px] uppercase font-extrabold px-1.5 py-0.2 rounded border ${roleMeta.badge}`}>
+                {roleMeta.label}
               </span>
-              <span className="text-[11px] text-slate-400 truncate">{user?.department || 'BCA'}</span>
+              <span className="text-[11px] text-slate-400 truncate font-medium">
+                {user?.department || 'BCA'}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-          <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Main Navigation
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 scrollbar-thin">
+          <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+            Navigation
           </p>
           {links.map((item) => {
             const Icon = item.icon;
@@ -146,34 +166,43 @@ const Sidebar = ({ isOpen, onClose }) => {
                   if (window.innerWidth < 1024) onClose();
                 }}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  `group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
+                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30 translate-x-1'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900/80 hover:translate-x-0.5'
                   }`
                 }
               >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{item.name}</span>
-                </div>
-                {item.badge && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                    {item.badge}
-                  </span>
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <Icon
+                        className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
+                          isActive ? 'text-white scale-110' : 'text-slate-400 group-hover:text-indigo-400 group-hover:scale-110'
+                        }`}
+                      />
+                      <span className="truncate">{item.name}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 animate-pulse">
+                        <Sparkles className="w-2.5 h-2.5" />
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
                 )}
               </NavLink>
             );
           })}
         </div>
 
-        {/* Logout Footer */}
-        <div className="p-3 border-t border-slate-800">
+        {/* System & Sign Out Footer */}
+        <div className="p-3 border-t border-slate-800/80 bg-slate-950/80">
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all duration-200"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 transition-transform group-hover:rotate-12" />
             <span>Sign Out</span>
           </button>
         </div>
@@ -183,4 +212,3 @@ const Sidebar = ({ isOpen, onClose }) => {
 };
 
 export default Sidebar;
-

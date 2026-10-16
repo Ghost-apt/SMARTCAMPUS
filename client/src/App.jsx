@@ -41,6 +41,8 @@ import AdminFeesPage from './pages/AdminFeesPage';
 import AdminNoticesPage from './pages/AdminNoticesPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 
+import LandingPage from './pages/LandingPage';
+
 // Root redirector based on authenticated state
 const RootRedirect = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -57,7 +59,8 @@ function App() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<RootRedirect />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/portal" element={<RootRedirect />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
