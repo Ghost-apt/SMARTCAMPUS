@@ -1,4 +1,5 @@
 const aiService = require('../services/aiService');
+const ragService = require('../services/ragService');
 
 // @desc    Get student academic performance analysis and risk diagnostics
 // @route   GET /api/ai/academic-insights
@@ -110,8 +111,6 @@ const retrainModelController = async (req, res, next) => {
     next(err);
   }
 };
-
-const ragService = require('../services/ragService');
 
 // @desc    Query the RAG Academic Document Assistant
 // @route   POST /api/ai/document-assistant/query

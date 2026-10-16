@@ -41,14 +41,17 @@ const markAttendance = async (req, res, next) => {
       })
     );
 
-    // Update overall attendance percentage for affected students
-    for (const item of attendanceList) {
-      const records = await Attendance.find({ student: item.studentId });
-      const total = records.length;
-      const attended = records.filter((r) => r.status === 'Present').length;
-      const pct = total > 0 ? Number(((attended / total) * 100).toFixed(1)) : 100;
-      await StudentProfile.findOneAndUpdate({ user: item.studentId }, { attendancePercentage: pct });
-    }
+    // Update overall attendance percentage for affected students (deduplicated & concurrent)
+    const uniqueStudentIds = [...new Set(attendanceList.map((item) => item.studentId).filter(Boolean))];
+    await Promise.all(
+      uniqueStudentIds.map(async (studentId) => {
+        const records = await Attendance.find({ student: studentId });
+        const total = records.length;
+        const attended = records.filter((r) => r.status === 'Present').length;
+        const pct = total > 0 ? Number(((attended / total) * 100).toFixed(1)) : 100;
+        return StudentProfile.findOneAndUpdate({ user: studentId }, { attendancePercentage: pct });
+      })
+    );
 
     res.status(200).json({
       success: true,

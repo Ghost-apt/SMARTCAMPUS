@@ -67,7 +67,8 @@ const deleteNotice = async (req, res, next) => {
     if (!notice) return res.status(404).json({ success: false, message: 'Notice not found.' });
 
     // Authorization check: Admin or author
-    if (req.user.role !== 'admin' && notice.author.toString() !== req.user.id) {
+    const authorId = notice.author?._id ? notice.author._id.toString() : notice.author?.toString();
+    if (req.user.role !== 'admin' && authorId !== req.user.id.toString()) {
       return res.status(403).json({ success: false, message: 'Unauthorized to delete this notice.' });
     }
 

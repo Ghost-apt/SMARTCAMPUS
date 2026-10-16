@@ -26,7 +26,11 @@ const getAssignments = async (req, res, next) => {
     const sanitized = assignments.map((a) => {
       const aObj = a.toObject();
       if (req.user.role === 'student') {
-        aObj.mySubmission = aObj.submissions.find((s) => s.student.toString() === req.user.id) || null;
+        const userIdStr = req.user.id.toString();
+        aObj.mySubmission = (aObj.submissions || []).find((s) => {
+          const sId = s.student?._id ? s.student._id.toString() : s.student?.toString();
+          return sId === userIdStr;
+        }) || null;
         // Do not expose other students' submissions!
         delete aObj.submissions;
       }
@@ -97,7 +101,11 @@ const submitAssignment = async (req, res, next) => {
     const isLate = new Date() > new Date(assignment.dueDate);
 
     // Check if student already submitted
-    const existingIndex = assignment.submissions.findIndex((s) => s.student.toString() === req.user.id);
+    const userIdStr = req.user.id.toString();
+    const existingIndex = assignment.submissions.findIndex((s) => {
+      const sId = s.student?._id ? s.student._id.toString() : s.student?.toString();
+      return sId === userIdStr;
+    });
 
     const submissionData = {
       student: req.user.id,

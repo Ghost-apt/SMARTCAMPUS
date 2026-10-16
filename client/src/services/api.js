@@ -20,10 +20,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Uniform error message extraction
+// Response Interceptor: Uniform error message extraction & session cleanup
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // If token expired or rejected by server on an authenticated endpoint, purge stale local session
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
+      try {
+        localStorage.removeItem('smartcampus_token');
+      } catch {
+        // Safe fallback in restricted environments
+      }
+    }
+
     const customMessage = error.response?.data?.message || error.message || 'An unexpected network error occurred.';
     error.userMessage = customMessage;
     return Promise.reject(error);

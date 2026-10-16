@@ -1,4 +1,7 @@
-const { User, StudentProfile, FacultyProfile } = require('../models/CampusModels');
+const fs = require('fs');
+const path = require('path');
+const { User, StudentProfile, FacultyProfile, DEFAULT_AVATAR_URL } = require('../models/CampusModels');
+const { verifyImageSignature } = require('../middleware/uploadMiddleware');
 
 // @desc    Get current user profile
 // @route   GET /api/users/me
@@ -78,10 +81,6 @@ const getAllUsers = async (req, res, next) => {
 // @route   POST /api/users/me/profile-picture or PATCH /api/users/me/profile-picture
 // @access  Private
 const uploadProfilePicture = async (req, res, next) => {
-  const fs = require('fs');
-  const path = require('path');
-  const { verifyImageSignature } = require('../middleware/uploadMiddleware');
-
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -150,9 +149,6 @@ const uploadProfilePicture = async (req, res, next) => {
 // @route   DELETE /api/users/me/profile-picture
 // @access  Private
 const removeProfilePicture = async (req, res, next) => {
-  const fs = require('fs');
-  const path = require('path');
-
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -172,14 +168,13 @@ const removeProfilePicture = async (req, res, next) => {
       }
     }
 
-    const defaultAvatar = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
-    user.avatar = defaultAvatar;
+    user.avatar = DEFAULT_AVATAR_URL;
     await user.save();
 
     res.status(200).json({
       success: true,
       message: 'Profile picture removed successfully',
-      avatarUrl: defaultAvatar,
+      avatarUrl: DEFAULT_AVATAR_URL,
       user
     });
   } catch (err) {

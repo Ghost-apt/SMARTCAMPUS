@@ -11,8 +11,8 @@ const getMyFees = async (req, res, next) => {
 
     const fees = await FeeRecord.find({ student: studentId }).sort({ dueDate: 1 });
 
-    const totalBilled = fees.reduce((acc, f) => acc + f.totalAmount, 0);
-    const totalPaid = fees.reduce((acc, f) => acc + f.paidAmount, 0);
+    const totalBilled = fees.reduce((acc, f) => acc + (Number(f.totalAmount) || 0), 0);
+    const totalPaid = fees.reduce((acc, f) => acc + (Number(f.paidAmount) || 0), 0);
     const totalBalance = Math.max(0, totalBilled - totalPaid);
 
     res.status(200).json({
@@ -41,8 +41,8 @@ const getAllFees = async (req, res, next) => {
       .populate('student', 'name email studentId department')
       .sort({ dueDate: 1 });
 
-    const totalReceivable = fees.reduce((acc, f) => acc + f.totalAmount, 0);
-    const totalCollected = fees.reduce((acc, f) => acc + f.paidAmount, 0);
+    const totalReceivable = fees.reduce((acc, f) => acc + (Number(f.totalAmount) || 0), 0);
+    const totalCollected = fees.reduce((acc, f) => acc + (Number(f.paidAmount) || 0), 0);
     const totalOutstanding = Math.max(0, totalReceivable - totalCollected);
 
     res.status(200).json({

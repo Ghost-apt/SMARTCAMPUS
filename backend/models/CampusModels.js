@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+// Canonical default profile avatar across university roles
+const DEFAULT_AVATAR_URL = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+
 // ==========================================
 // 1. USER SCHEMA & MODEL
 // ==========================================
@@ -54,7 +57,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'
+      default: DEFAULT_AVATAR_URL
     },
     phone: {
       type: String,
@@ -1104,6 +1107,7 @@ module.exports = {
   AIQueryLog,
   AttendanceSession,
   Notification,
-  AuditLog
+  AuditLog,
+  DEFAULT_AVATAR_URL
 };
 

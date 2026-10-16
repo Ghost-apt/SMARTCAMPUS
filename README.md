@@ -383,6 +383,8 @@ npm test
 - `GET, POST /api/resources`: Study materials and lecture notes repository.
 - `POST /api/resources/:id/reindex`: Re-trigger RAG chunking and vector indexing.
 - `GET /api/resources/:id/processing-status`: Check document RAG indexing status.
+- `POST /api/users/me/profile-picture`: Secure multipart upload with MIME and magic-byte signature validation.
+- `DELETE /api/users/me/profile-picture`: Reset user profile picture to default avatar constant.
 - `POST /api/seed`: Re-seed demo dataset.
 
 ### AI & Machine Learning (`/api/ai`)
@@ -415,18 +417,42 @@ npm test
   - Zero-citation fabrication guarantee.
   - Extractive deterministic fallback when Python microservice or LLM is offline.
 - [x] **Phase 6: Production Readiness, Security, Testing & Deployment**:
-  - [x] Production security hardening: `helmet`, `express-rate-limit`, environment variable validator (`envValidator.js`), CORS policy.
+  - [x] Production security hardening: `helmet`, `express-rate-limit`, environment variable validator (`envValidator.js`), CORS policy, magic-byte image signature verification.
   - [x] Production error handling: Stack trace suppression and sanitized user messages in production mode.
   - [x] Optimized MongoDB compound indexes across high-frequency schemas (`StudentProfile`, `FacultyProfile`, `Assignment`, `Notice`, `Resource`, `FeeRecord`, `AttendanceSession`).
   - [x] Automated database backup and restore utilities (`npm run backup`, `npm run restore`).
   - [x] Deep observability probes: `/api/health`, `/api/health/ready`, `/api/health/live`.
   - [x] Containerization: Production multi-stage Dockerfiles (`client/Dockerfile`, `backend/Dockerfile`, `ai-service/Dockerfile`) and `docker-compose.yml` with persistent named volumes (`smartcampus_mongo_data`, `smartcampus_rag_vector_store`).
   - [x] CI/CD Automation: GitHub Actions workflow (`.github/workflows/ci.yml`) validating backend, AI service, and frontend builds across Node.js 20/22 and Python 3.11.
-  - [x] Comprehensive automated test coverage: **44/44 backend tests**, **12/12 python tests**, and **6/6 frontend tests** passing.
+  - [x] Comprehensive automated test coverage: **47/47 backend tests**, **12/12 python tests**, **10/10 profile picture tests**, **10/10 live E2E tests**, and **6/6 frontend contract tests** passing (100% green).
 
 ---
 
-## 9. Containerization & Docker Runbook
+## 9. Code Quality & Maintainability Architecture
+
+The repository enforces strict maintainability principles to ensure long-term stability and ease of refactoring:
+
+1. **Zero-Deletion & Preservation Principle**:
+   - Zero files or folders are deleted, renamed, or moved during refactoring.
+   - All module paths, API routes, and contracts remain preserved and backwards compatible.
+
+2. **Single Source of Truth (SSOT)**:
+   - Canonical Mongoose schemas and default asset constants (e.g., `DEFAULT_AVATAR_URL`) are exported directly from `backend/models/CampusModels.js`.
+   - Internal microservice authorization secrets (`INTERNAL_AI_KEY`) are harmonized across backend `envValidator.js`, `aiService.js`, `ragService.js`, and Python `app/config.py`.
+
+3. **Defensive Coding & Null Safety**:
+   - Controller endpoints safely handle populated vs unpopulated Mongoose `ObjectId` references (`item.author?._id ? item.author._id.toString() : item.author?.toString()`).
+   - Financial aggregators and fee reducers use `(Number(val) || 0)` defensive guards to eliminate `NaN` propagation.
+   - Batch operations deduplicate IDs with `Set` and execute updates concurrently via `Promise.all`.
+
+4. **Layered Security & Input Validation**:
+   - File uploads inspect MIME types and binary magic bytes (JPEG `FF D8 FF`, PNG `89 50 4E 47`, WebP `52 49 46 46...57 45 42 50`).
+   - Prompt injection defense filters and sanitizes inputs before vector search or LLM generation.
+   - Fail-closed RBAC access filtering prevents cross-department or cross-course data leakage.
+
+---
+
+## 10. Containerization & Docker Runbook
 
 ```powershell
 # 1. Build and start all 4 services in detached mode
@@ -444,7 +470,7 @@ docker compose down
 
 ---
 
-## 10. Database Backup & Recovery Guide
+## 11. Database Backup & Recovery Guide
 
 ```powershell
 # Run manual JSON database backup

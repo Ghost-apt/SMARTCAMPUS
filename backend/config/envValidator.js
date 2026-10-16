@@ -56,7 +56,7 @@ const validateEnv = () => {
 
   // 4. Internal AI Secret Key check
   if (!process.env.INTERNAL_AI_KEY) {
-    process.env.INTERNAL_AI_KEY = 'smartcampus_internal_ai_secret_key_2026';
+    process.env.INTERNAL_AI_KEY = 'smartcampus-internal-ai-secret-key-2026';
     warnings.push('INTERNAL_AI_KEY is not set; defaulting to standard internal key.');
   }
 

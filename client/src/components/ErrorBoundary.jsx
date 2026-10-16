@@ -23,19 +23,23 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
-          <div className="max-w-md w-full bg-slate-800/90 border border-slate-700/80 rounded-3xl p-8 shadow-2xl text-center space-y-6 backdrop-blur-md">
+        <div className="min-h-screen bg-[#080B16] text-[#F3F6FF] flex items-center justify-center p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
+          <div className="absolute -top-24 left-1/4 w-96 h-96 bg-[#43D9FF]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-[#6C8CFF]/15 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="max-w-md w-full bg-[#121A2E]/90 border border-[#232D48] rounded-3xl p-8 shadow-2xl text-center space-y-6 backdrop-blur-xl relative z-10">
             <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto shadow-inner">
               <AlertTriangle className="w-8 h-8" />
             </div>
 
             <div>
-              <h2 className="text-xl font-black text-white tracking-tight">Something Went Wrong</h2>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+              <h2 className="text-xl font-black text-[#F3F6FF] tracking-tight">Something Went Wrong</h2>
+              <p className="text-xs text-[#9BA8C7] mt-2 leading-relaxed">
                 The application encountered an unexpected display error on this page.
               </p>
               {this.state.error?.message && (
-                <div className="mt-3 p-3 bg-slate-950/60 rounded-xl text-rose-300 font-mono text-[11px] text-left overflow-x-auto border border-rose-900/30">
+                <div className="mt-3 p-3 bg-[#0D1224] rounded-xl text-rose-300 font-mono text-[11px] text-left overflow-x-auto border border-rose-900/30">
                   {this.state.error.message}
                 </div>
               )}
@@ -44,14 +48,14 @@ class ErrorBoundary extends React.Component {
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <button
                 onClick={() => window.location.reload()}
-                className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-[#18233B] hover:bg-[#232D48] text-white text-xs font-bold flex items-center justify-center gap-2 border border-[#232D48] transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Reload Page</span>
               </button>
               <button
                 onClick={this.handleReset}
-                className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] hover:from-[#5575F5] hover:to-[#6CE1FF] text-slate-950 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all transform hover:scale-[1.02]"
               >
                 <Home className="w-4 h-4" />
                 <span>Return to Dashboard</span>
