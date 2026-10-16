@@ -16,7 +16,8 @@ import {
   Calendar,
   Camera,
   Sun,
-  Moon
+  Moon,
+  CreditCard
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProfilePictureModal from './ProfilePictureModal';
@@ -318,6 +319,24 @@ const Navbar = ({ onToggleSidebar }) => {
                 <User className="w-3.5 h-3.5 text-slate-400" />
                 <span>My Profile</span>
               </Link>
+              {role === 'student' && (
+                <Link
+                  to="/student/fees"
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors"
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Fees & Fee Structure</span>
+                </Link>
+              )}
+              {role === 'admin' && (
+                <Link
+                  to="/admin/fees"
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors"
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Fee Management</span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => {

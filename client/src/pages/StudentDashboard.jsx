@@ -20,7 +20,8 @@ import {
   ChevronRight,
   TrendingUp,
   MapPin,
-  Calendar
+  Calendar,
+  CreditCard
 } from 'lucide-react';
 
 const StudentDashboard = () => {
@@ -185,13 +186,22 @@ const StudentDashboard = () => {
             </p>
           </div>
         </div>
-        <a
-          href="/student/attendance"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-cyan-600/25 transition-all hover:scale-[1.02]"
-        >
-          <span>Open Check-In Scanner</span>
-          <ChevronRight className="w-4 h-4" />
-        </a>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <a
+            href="/student/attendance"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-cyan-600/25 transition-all hover:scale-[1.02]"
+          >
+            <span>Check-In Scanner</span>
+            <ChevronRight className="w-4 h-4" />
+          </a>
+          <a
+            href="/student/fees"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] hover:brightness-110 text-slate-950 text-xs font-bold shadow-md transition-all hover:scale-[1.02]"
+          >
+            <CreditCard className="w-4 h-4 text-slate-950" />
+            <span>Fees & Structure</span>
+          </a>
+        </div>
       </div>
 
       {/* AI Assistant Consultation Widget */}

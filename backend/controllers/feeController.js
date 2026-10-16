@@ -116,10 +116,124 @@ const recordPayment = async (req, res, next) => {
   }
 };
 
+// @desc    Get university course fee structure
+// @route   GET /api/fees/structure
+// @access  Private / Student, Faculty, Admin
+const getFeeStructure = async (req, res, next) => {
+  try {
+    const courseCode = req.query.courseCode || 'BCA';
+    const semester = Number(req.query.semester) || 5;
+
+    // Standard university fee components strictly aligned with FeeRecord.feeType enum
+    const feeStructure = [
+      {
+        feeType: 'Tuition Fee',
+        componentName: 'Academic Tuition & Instruction Fee',
+        amount: 45000,
+        frequency: 'Per Semester',
+        mandatory: true,
+        category: 'Mandatory Tuition',
+        description: 'Covers major credit lectures, professor mentorship, curriculum delivery, and ongoing internal continuous assessments.'
+      },
+      {
+        feeType: 'Examination Fee',
+        componentName: 'University Examination & Assessment Fee',
+        amount: 2500,
+        frequency: 'Per Semester',
+        mandatory: true,
+        category: 'Mandatory Examination',
+        description: 'Mid-term evaluations, semester terminal examinations, central grading, and UGC 10-point GPA transcript generation.'
+      },
+      {
+        feeType: 'Lab Fee',
+        componentName: 'Computer Science Lab & Cloud Sandbox',
+        amount: 3500,
+        frequency: 'Per Semester',
+        mandatory: true,
+        category: 'Laboratory & Compute',
+        description: 'Access to high-performance labs, Docker container sandboxes, AI GPU compute instances, and development workstations.'
+      },
+      {
+        feeType: 'Library Fee',
+        componentName: 'Library & Digital E-Resource Access',
+        amount: 1500,
+        frequency: 'Per Semester',
+        mandatory: true,
+        category: 'Library & Subscriptions',
+        description: 'Central university library borrowing, IEEE Xplore digital library access, ACM subscriptions, and research databases.'
+      },
+      {
+        feeType: 'Hostel Fee',
+        componentName: 'Campus Residential Hostel & Dining (Optional)',
+        amount: 30000,
+        frequency: 'Per Semester (Optional)',
+        mandatory: false,
+        category: 'Residential & Boarding',
+        description: 'Air-conditioned double-sharing room, mess dining facilities, high-speed Wi-Fi, and 24/7 power backup.'
+      },
+      {
+        feeType: 'Other',
+        componentName: 'Student Welfare, Sports & Campus Infrastructure',
+        amount: 1500,
+        frequency: 'Per Academic Year',
+        mandatory: true,
+        category: 'Institutional Development',
+        description: 'University sports complex facilities, annual technical symposiums, student health insurance, and campus maintenance.'
+      }
+    ];
+
+    const totalMandatorySemester = feeStructure
+      .filter((f) => f.mandatory && f.frequency.includes('Semester'))
+      .reduce((sum, f) => sum + f.amount, 0);
+
+    const totalAnnualMandatory = feeStructure
+      .filter((f) => f.mandatory)
+      .reduce((sum, f) => sum + (f.frequency.includes('Semester') ? f.amount * 2 : f.amount), 0);
+
+    res.status(200).json({
+      success: true,
+      courseCode,
+      courseName: 'Bachelor of Computer Applications (BCA)',
+      semester,
+      academicYear: '2026-2027',
+      totalMandatorySemester,
+      totalAnnualMandatory,
+      feeStructure,
+      paymentSchedule: [
+        {
+          milestone: 'Semester Enrollment & Class Allotment',
+          dueDate: '2026-08-30',
+          percentage: '80%',
+          amount: Math.round(totalMandatorySemester * 0.8),
+          requirement: 'Mandatory for timetable release & classroom portal access'
+        },
+        {
+          milestone: 'Mid-Semester Examination Clearance',
+          dueDate: '2026-10-28',
+          percentage: '20%',
+          amount: Math.round(totalMandatorySemester * 0.2),
+          requirement: 'Mandatory before examination hall ticket issuance'
+        }
+      ],
+      bankDetails: {
+        accountName: 'SmartCampus University Central Finance',
+        bankName: 'State Bank of India (Campus Branch)',
+        accountNumber: '3948201948201',
+        ifsc: 'SBIN0004921',
+        branch: 'University Academic Block, Sector 62',
+        upiId: 'fees@smartcampus.edu'
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getMyFees,
   getAllFees,
   createFeeRecord,
-  recordPayment
+  recordPayment,
+  getFeeStructure
 };
 

@@ -29,12 +29,20 @@ const StudentFeesPage = () => {
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [downloadSuccess, setDownloadSuccess] = useState('');
 
+  const [structureData, setStructureData] = useState(null);
+
   useEffect(() => {
     const fetchFees = async () => {
       try {
-        const res = await api.get('/fees/my');
-        if (res.data.success) {
-          setFeeData(res.data);
+        const [myRes, structRes] = await Promise.allSettled([
+          api.get('/fees/my'),
+          api.get('/fees/structure')
+        ]);
+        if (myRes.status === 'fulfilled' && myRes.value.data.success) {
+          setFeeData(myRes.value.data);
+        }
+        if (structRes.status === 'fulfilled' && structRes.value.data.success) {
+          setStructureData(structRes.value.data);
         }
       } catch (err) {
         setError(err.userMessage || 'Failed to load fee records.');
@@ -51,54 +59,71 @@ const StudentFeesPage = () => {
   const totalBalance = feeData?.totalBalance ?? 0;
   const fees = feeData?.fees || [];
 
-  // University Approved Fee Structure for BCA (Bachelor of Computer Applications)
-  const feeStructureItems = [
+  // University Approved Fee Structure aligned with backend FeeRecord.feeType schema
+  const feeStructureItems = structureData?.feeStructure || [
     {
-      component: 'Tuition & Academic Instruction Fee',
-      category: 'Semester Mandatory',
-      semAmount: 45000,
-      annualAmount: 90000,
-      description: 'Lectures, faculty mentorship, credits delivery, and continuous internal assessment.'
+      feeType: 'Tuition Fee',
+      componentName: 'Academic Tuition & Instruction Fee',
+      amount: 45000,
+      frequency: 'Per Semester',
+      mandatory: true,
+      category: 'Mandatory Tuition',
+      description: 'Major credit lectures, professor mentorship, curriculum delivery, and ongoing internal continuous assessments.'
     },
     {
-      component: 'Computer Lab & Cloud Sandbox Access',
-      category: 'Semester Mandatory',
-      semAmount: 3500,
-      annualAmount: 7000,
-      description: 'High-performance computing lab, GPU instances for AI coursework, and cloud sandboxes.'
+      feeType: 'Examination Fee',
+      componentName: 'University Examination & Assessment Fee',
+      amount: 2500,
+      frequency: 'Per Semester',
+      mandatory: true,
+      category: 'Mandatory Examination',
+      description: 'Mid-term evaluations, semester terminal examinations, central grading, and UGC 10-point GPA transcript generation.'
     },
     {
-      component: 'University Examination & Assessment Fee',
-      category: 'Semester Mandatory',
-      semAmount: 2500,
-      annualAmount: 5000,
-      description: 'Mid-term evaluation, end-semester university exams, and grade card processing.'
+      feeType: 'Lab Fee',
+      componentName: 'Computer Science Lab & Cloud Sandbox',
+      amount: 3500,
+      frequency: 'Per Semester',
+      mandatory: true,
+      category: 'Laboratory & Compute',
+      description: 'Access to high-performance labs, Docker container sandboxes, AI GPU compute instances, and development workstations.'
     },
     {
-      component: 'Library & Digital E-Journals (IEEE/ACM)',
-      category: 'Semester Mandatory',
-      semAmount: 1500,
-      annualAmount: 3000,
-      description: 'Digital catalog, physical textbook loans, IEEE Xplore, and academic journal subscriptions.'
+      feeType: 'Library Fee',
+      componentName: 'Library & Digital E-Resource Access',
+      amount: 1500,
+      frequency: 'Per Semester',
+      mandatory: true,
+      category: 'Library & Subscriptions',
+      description: 'Central university library borrowing, IEEE Xplore digital library access, ACM subscriptions, and research databases.'
     },
     {
-      component: 'Campus Development & Infrastructure',
-      category: 'Annual Institutional',
-      semAmount: 1000,
-      annualAmount: 2000,
-      description: 'Campus Wi-Fi infrastructure, smart classrooms, and digital campus security.'
+      feeType: 'Hostel Fee',
+      componentName: 'Campus Residential Hostel & Dining (Optional)',
+      amount: 30000,
+      frequency: 'Per Semester (Optional)',
+      mandatory: false,
+      category: 'Residential & Boarding',
+      description: 'Air-conditioned double-sharing room, mess dining facilities, high-speed Wi-Fi, and 24/7 power backup.'
     },
     {
-      component: 'Student Activities, Sports & Cultural Welfare',
-      category: 'Annual Institutional',
-      semAmount: 500,
-      annualAmount: 1000,
-      description: 'University sports complex, annual tech fests, student clubs, and health insurance.'
+      feeType: 'Other',
+      componentName: 'Student Welfare, Sports & Campus Infrastructure',
+      amount: 1500,
+      frequency: 'Per Academic Year',
+      mandatory: true,
+      category: 'Institutional Development',
+      description: 'University sports complex facilities, annual technical symposiums, student health insurance, and campus maintenance.'
     }
   ];
 
-  const semTotalFee = feeStructureItems.reduce((acc, item) => acc + item.semAmount, 0);
-  const annualTotalFee = feeStructureItems.reduce((acc, item) => acc + item.annualAmount, 0);
+  const semTotalFee = structureData?.totalMandatorySemester || feeStructureItems
+    .filter((f) => f.mandatory && (f.frequency || '').includes('Semester'))
+    .reduce((acc, item) => acc + item.amount, 0);
+
+  const annualTotalFee = structureData?.totalAnnualMandatory || feeStructureItems
+    .filter((f) => f.mandatory)
+    .reduce((acc, item) => acc + ((item.frequency || '').includes('Semester') ? item.amount * 2 : item.amount), 0);
 
   const handleSimulateDownload = (title) => {
     setDownloadSuccess(`Generated official statement: "${title}". Downloading PDF...`);
@@ -269,29 +294,40 @@ const StudentFeesPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-[#1C2640]">
-                  {feeStructureItems.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-[#18233B]/50 transition-colors">
-                      <td className="py-3.5 pr-4">
-                        <span className="font-bold text-slate-900 dark:text-white block text-xs sm:text-sm">
-                          {item.component}
-                        </span>
-                        <span className="text-[11px] text-slate-500 dark:text-[#9BA8C7] mt-0.5 block">
-                          {item.description}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-center">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#18233B] text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-[#2A3654]">
-                          {item.category}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-right font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
-                        ₹{item.semAmount.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-3.5 text-right font-bold text-indigo-600 dark:text-[#6C8CFF] text-xs sm:text-sm">
-                        ₹{item.annualAmount.toLocaleString('en-IN')}
-                      </td>
-                    </tr>
-                  ))}
+                  {feeStructureItems.map((item, idx) => {
+                    const semAmt = Number(item.amount || item.semAmount || 0);
+                    const annAmt = Number(item.annualAmount || (item.frequency?.includes('Semester') ? semAmt * 2 : semAmt));
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-[#18233B]/50 transition-colors">
+                        <td className="py-3.5 pr-4">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
+                              {item.componentName || item.component}
+                            </span>
+                            {item.feeType && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                                {item.feeType}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-slate-500 dark:text-[#9BA8C7] mt-0.5 block">
+                            {item.description}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-center">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#18233B] text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-[#2A3654]">
+                            {item.category || item.frequency}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
+                          ₹{semAmt.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-indigo-600 dark:text-[#6C8CFF] text-xs sm:text-sm">
+                          ₹{annAmt.toLocaleString('en-IN')}
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {/* Totals Row */}
                   <tr className="border-t-2 border-slate-300 dark:border-[#2A3654] bg-slate-50/50 dark:bg-[#162035]/60 font-black">
                     <td className="py-4 text-slate-900 dark:text-white uppercase tracking-wider text-xs">
