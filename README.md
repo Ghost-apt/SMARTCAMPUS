@@ -74,7 +74,25 @@ SMARTCAMPUS/
 │   │   └── envValidator.js                  # Fail-fast environment variable validator
 │   │
 │   ├── models/
-│   │   └── CampusModels.js                  # 16 Mongoose models with optimized compound indexes
+│   │   ├── CampusModels.js                  # Backwards-compatible aggregator exporting all 18 models & constants
+│   │   ├── User.js                          # User schema, bcrypt hash hook & comparePassword method
+│   │   ├── Department.js                    # Academic department schema
+│   │   ├── Course.js                        # Degree program & course schema
+│   │   ├── Subject.js                       # Curriculum subject schema
+│   │   ├── StudentProfile.js                # Student records, CGPA & attendance percentage
+│   │   ├── FacultyProfile.js                # Faculty assignments & designations
+│   │   ├── Attendance.js                    # Daily attendance & compliance tracking
+│   │   ├── TimetableEntry.js                # Conflict-free classroom timetable schedule
+│   │   ├── Assignment.js                    # Coursework submissions & grading schema
+│   │   ├── Examination.js                   # Examination cycle schedule
+│   │   ├── Result.js                        # Exam grades, marks & GPA schema
+│   │   ├── FeeRecord.js                     # Fee ledger with pre-save balance calculation hook
+│   │   ├── Notice.js                        # Campus announcements bulletin schema
+│   │   ├── Resource.js                      # Study material & RAG indexing schema
+│   │   ├── AIQueryLog.js                    # Conversational AI prompt/response log
+│   │   ├── AttendanceSession.js             # Dynamic QR & code attendance session schema
+│   │   ├── Notification.js                  # User notifications hub schema
+│   │   └── AuditLog.js                      # Institutional audit event log schema
 │   │
 │   ├── services/
 │   │   ├── aiService.js                     # MongoDB metrics aggregator, AI client & rule fallback
