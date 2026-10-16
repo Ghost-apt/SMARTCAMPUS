@@ -27,5 +27,8 @@
     "machine-learning"
   ],
   "author": "SmartCampus AI Team",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "docker": "^1.0.0"
+  }
 }

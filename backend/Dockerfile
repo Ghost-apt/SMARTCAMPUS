@@ -27,11 +27,11 @@ RUN mkdir -p backups \
 USER node
 
 # Expose backend port
-EXPOSE 5000
+EXPOSE 5001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:5000/api/health/live || exit 1
+  CMD curl -f http://localhost:5001/api/health/live || exit 1
 
 # Start server using dumb-init
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

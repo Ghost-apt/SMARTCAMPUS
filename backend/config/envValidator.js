@@ -49,7 +49,7 @@ const validateEnv = () => {
   }
 
   // 3. Port validation
-  const port = parseInt(process.env.PORT || '5000', 10);
+  const port = parseInt(process.env.PORT || '5001', 10);
   if (isNaN(port) || port < 1 || port > 65535) {
     errors.push(`Invalid PORT configuration: "${process.env.PORT}". Must be an integer between 1 and 65535.`);
   }

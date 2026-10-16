@@ -95,13 +95,13 @@ const startServices = async () => {
 ============================================================${colors.reset}
 `);
 
-  const port5000Busy = await checkPortInUse(5000);
+  const port5001Busy = await checkPortInUse(5001);
   const port8000Busy = await checkPortInUse(8000);
   const port5173Busy = await checkPortInUse(5173);
 
   // 1. Backend Server
-  if (port5000Busy) {
-    console.log(`${colors.cyan}[BACKEND]${colors.reset} Port 5000 is already active. Connected to existing instance.`);
+  if (port5001Busy) {
+    console.log(`${colors.cyan}[BACKEND]${colors.reset} Port 5001 is already active. Connected to existing instance.`);
   } else {
     console.log(`${colors.cyan}[BACKEND]${colors.reset} Starting Express API on http://localhost:5000...`);
     const backendProcess = spawn('node', ['server.js'], {
