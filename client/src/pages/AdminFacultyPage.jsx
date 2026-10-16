@@ -150,14 +150,14 @@ const AdminFacultyPage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredFaculty.map((f) => {
-                  const userName = f.user?.name || 'Faculty Member';
-                  const userEmail = f.user?.email || 'N/A';
+                  const userName = f.name || f.user?.name || 'Faculty Member';
+                  const userEmail = f.email || f.user?.email || 'N/A';
 
                   return (
                     <tr key={f._id} className="hover:bg-slate-50/70 transition-colors">
                       <td className="py-3.5 font-bold text-slate-900 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs">
-                          {userName.charAt(0)}
+                          {userName ? userName.charAt(0).toUpperCase() : 'F'}
                         </div>
                         <div>
                           <span>{userName}</span>

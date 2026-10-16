@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
+import ProfilePictureModal from '../components/ProfilePictureModal';
 import api from '../services/api';
-import { User, Mail, Phone, Building, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Mail, Phone, Building, ShieldCheck, CheckCircle2, AlertCircle, Camera } from 'lucide-react';
 
 const ProfilePage = () => {
   const { user, updateUser } = useAuth();
@@ -12,6 +13,7 @@ const ProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -49,22 +51,55 @@ const ProfilePage = () => {
           </div>
         )}
 
-        <div className="flex items-center gap-4 pb-6 border-b border-slate-100">
-          <img
-            src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
-            alt="Profile Avatar"
-            className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100 shadow-sm"
-          />
-          <div>
-            <h3 className="text-lg font-bold text-slate-900">{user?.name}</h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700">
-                {user?.role}
-              </span>
-              <span className="text-xs text-slate-500">{user?.email}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+          <div className="flex items-center gap-4">
+            <div className="relative group cursor-pointer" onClick={() => setIsAvatarModalOpen(true)}>
+              <img
+                src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
+                alt="Profile Avatar"
+                className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 shadow-sm group-hover:opacity-90 transition-opacity"
+              />
+              <div className="absolute inset-0 bg-slate-900/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <Camera className="w-6 h-6 drop-shadow" />
+              </div>
+              <button
+                type="button"
+                className="absolute -bottom-1 -right-1 p-1.5 bg-indigo-600 text-white rounded-full shadow-md hover:bg-indigo-500 transition-colors"
+                title="Change Photo"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">{user?.name}</h3>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700">
+                  {user?.role}
+                </span>
+                <span className="text-xs text-slate-500">{user?.email}</span>
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsAvatarModalOpen(true)}
+            className="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center gap-2 self-start sm:self-auto transition-colors"
+          >
+            <Camera className="w-4 h-4 text-indigo-600" />
+            <span>Change Photo</span>
+          </button>
         </div>
+
+        {/* Profile Picture Management Dialog */}
+        <ProfilePictureModal
+          isOpen={isAvatarModalOpen}
+          onClose={() => setIsAvatarModalOpen(false)}
+          currentAvatar={user?.avatar}
+          userName={user?.name}
+          userRole={user?.role}
+          onAvatarUpdated={(updatedUser) => updateUser(updatedUser)}
+        />
 
         <form onSubmit={handleSave} className="space-y-4 pt-6">
           <div>

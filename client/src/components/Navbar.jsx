@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Menu, Bell, Sparkles, User, LogOut, CheckCircle2, CheckCheck, Clock, ArrowRight, AlertTriangle, Info, Calendar } from 'lucide-react';
+import { Menu, Bell, Sparkles, User, LogOut, CheckCircle2, CheckCheck, Clock, ArrowRight, AlertTriangle, Info, Calendar, Camera } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import ProfilePictureModal from './ProfilePictureModal';
 import api from '../services/api';
 
 const Navbar = ({ onToggleSidebar }) => {
-  const { user, role, logout } = useAuth();
+  const { user, role, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -284,6 +286,17 @@ const Navbar = ({ onToggleSidebar }) => {
                 <span>My Profile</span>
               </Link>
               <button
+                type="button"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  setIsAvatarModalOpen(true);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium text-left"
+              >
+                <Camera className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Change Photo</span>
+              </button>
+              <button
                 onClick={logout}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 font-medium text-left"
               >
@@ -294,6 +307,16 @@ const Navbar = ({ onToggleSidebar }) => {
           )}
         </div>
       </div>
+
+      {/* Global Profile Picture Management Dialog */}
+      <ProfilePictureModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        currentAvatar={user?.avatar}
+        userName={user?.name}
+        userRole={user?.role}
+        onAvatarUpdated={(updatedUser) => updateUser(updatedUser)}
+      />
     </header>
   );
 };

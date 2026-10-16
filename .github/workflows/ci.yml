@@ -14,8 +14,19 @@ jobs:
     name: Backend API Tests
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [ 20.x, 22.x ]
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,11 +42,12 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
-      - name: Run Backend Verification Suite (38+ Automated Tests)
+      - name: Run Backend Verification Suite (47+ Automated Tests)
         working-directory: ./backend
         env:
           NODE_ENV: test
           JWT_SECRET: supersecret_jwt_key_smartcampus_ci_test_mode_32chars
+          MONGODB_URI: mongodb://127.0.0.1:27017/smartcampus_ci_test
         run: npm test
 
   # ==========================================

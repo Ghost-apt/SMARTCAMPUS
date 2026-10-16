@@ -43,8 +43,10 @@ const FacultyAttendancePage = () => {
         setStudents(list);
         const initialMap = {};
         list.forEach((s) => {
-          const id = s.user?._id || s.user;
-          initialMap[id] = { status: 'Present', remarks: '' };
+          const id = s._id || s.user?._id || s.user;
+          if (id) {
+            initialMap[id] = { status: 'Present', remarks: '' };
+          }
         });
         setAttendanceMap(initialMap);
       }
@@ -173,8 +175,10 @@ const FacultyAttendancePage = () => {
   const handleMarkAll = (status) => {
     const updated = {};
     students.forEach((s) => {
-      const id = s.user?._id || s.user;
-      updated[id] = { status, remarks: '' };
+      const id = s._id || s.user?._id || s.user;
+      if (id) {
+        updated[id] = { status, remarks: '' };
+      }
     });
     setAttendanceMap(updated);
   };
@@ -502,27 +506,32 @@ const FacultyAttendancePage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {students.map((stud) => {
-                  const studentUserId = stud.user?._id || stud.user;
+                  const studentUserId = stud._id || stud.user?._id || stud.user;
                   const currentStatus = attendanceMap[studentUserId]?.status || 'Present';
-                  const userName = stud.user?.name || stud.rollNumber;
-                  const userEmail = stud.user?.email || '';
+                  const userName = stud.name || stud.user?.name || stud.profile?.rollNumber || stud.studentId || 'Student';
+                  const userEmail = stud.email || stud.user?.email || '';
+                  const rollNumber = stud.profile?.rollNumber || stud.studentId || stud.rollNumber || 'N/A';
+                  const attendancePct = stud.profile?.attendancePercentage ?? stud.attendancePercentage ?? 85;
+                  const initialLetter = userName && typeof userName === 'string' && userName.trim().length > 0
+                    ? userName.trim().charAt(0).toUpperCase()
+                    : 'S';
 
                   return (
-                    <tr key={stud._id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={stud._id || studentUserId} className="hover:bg-slate-50/70 transition-colors">
                       <td className="py-3.5 font-bold text-slate-900 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs">
-                          {userName.charAt(0)}
+                          {initialLetter}
                         </div>
                         <div>
                           <span>{userName}</span>
-                          <span className="block font-normal text-[11px] text-slate-400">{userEmail}</span>
+                          {userEmail && <span className="block font-normal text-[11px] text-slate-400">{userEmail}</span>}
                         </div>
                       </td>
                       <td className="py-3.5 font-mono text-slate-700 font-semibold">
-                        {stud.rollNumber}
+                        {rollNumber}
                       </td>
                       <td className="py-3.5 text-center font-bold text-teal-700">
-                        {stud.attendancePercentage ?? 85}%
+                        {attendancePct}%
                       </td>
                       <td className="py-3.5 text-right">
                         <div className="inline-flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">

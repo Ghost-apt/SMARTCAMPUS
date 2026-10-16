@@ -150,15 +150,15 @@ const AdminStudentsPage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredStudents.map((stud) => {
-                  const userName = stud.user?.name || 'Student';
-                  const userEmail = stud.user?.email || 'N/A';
+                  const userName = stud.name || stud.user?.name || 'Student';
+                  const userEmail = stud.email || stud.user?.email || 'N/A';
                   const pct = stud.attendancePercentage ?? 85;
 
                   return (
                     <tr key={stud._id} className="hover:bg-slate-50/70 transition-colors">
                       <td className="py-3.5 font-bold text-slate-900 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs">
-                          {userName.charAt(0)}
+                          {userName ? userName.charAt(0).toUpperCase() : 'S'}
                         </div>
                         <div>
                           <span>{userName}</span>
