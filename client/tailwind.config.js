@@ -9,49 +9,57 @@ export default {
     extend: {
       colors: {
         brand: {
-          // Primary: Electric Indigo
-          primary: '#6366f1',
-          primaryHover: '#4f46e5',
-          primaryLight: '#818cf8',
-          // Secondary: Vibrant Violet
-          secondary: '#8b5cf6',
-          secondaryHover: '#7c3aed',
-          // Accent: Cyan
-          accent: '#06b6d4',
-          accentLight: '#22d3ee',
-          // Dark Surfaces
-          darkBg: '#0b1020',
-          darkSurface: '#111827',
-          darkCard: '#1a2234',
-          darkBorder: '#232d42',
-          // Light Surfaces
-          lightBg: '#f8fafc',
-          lightSurface: '#ffffff',
-          lightCard: '#ffffff',
-          lightBorder: '#e2e8f0',
-          // Status
-          success: '#10b981',
-          warning: '#f59e0b',
-          danger: '#f43f5e',
+          // Futuristic Midnight Palette
+          darkBg: '#080B16',
+          darkBgSecondary: '#0D1224',
+          darkSurface: '#121A2E',
+          darkCard: '#18233B',
+          darkBorder: '#232D48',
+          // Primary Accent: Electric Blue
+          primary: '#6C8CFF',
+          primaryHover: '#5575F5',
+          primaryLight: '#8FA8FF',
+          // Cyan Accent: Neon Cyan
+          accent: '#43D9FF',
+          accentLight: '#6CE1FF',
+          cyan: '#43D9FF',
+          // AI Violet Accent: Soft AI Violet
+          aiViolet: '#A78BFA',
+          violet: '#A78BFA',
+          secondary: '#A78BFA',
+          secondaryHover: '#9065F7',
+          // Text Tokens
+          textMain: '#F3F6FF',
+          textSecondary: '#9BA8C7',
+          textMuted: '#687799',
+          // Light Surfaces (for Light Mode)
+          lightBg: '#F8FAFC',
+          lightSurface: '#FFFFFF',
+          lightCard: '#FFFFFF',
+          lightBorder: '#E2E8F0',
+          // Status Tokens
+          success: '#10B981',
+          warning: '#F59E0B',
+          danger: '#F43F5E',
           // Legacy aliases for backward compatibility
-          navy: '#0b1020',
-          indigo: '#6366f1',
-          indigoHover: '#4f46e5',
-          teal: '#06b6d4',
-          tealLight: '#22d3ee',
-          bg: '#f8fafc',
-          surface: '#ffffff',
-          border: '#e2e8f0',
-          textMain: '#0f172a',
-          textMuted: '#64748b'
+          navy: '#080B16',
+          indigo: '#6C8CFF',
+          indigoHover: '#5575F5',
+          teal: '#43D9FF',
+          tealLight: '#6CE1FF',
+          bg: '#F8FAFC',
+          surface: '#FFFFFF',
+          border: '#E2E8F0'
         }
       },
       boxShadow: {
-        'glow-indigo': '0 0 25px -4px rgba(99, 102, 241, 0.35)',
-        'glow-violet': '0 0 25px -4px rgba(139, 92, 246, 0.35)',
-        'glow-cyan': '0 0 25px -4px rgba(6, 182, 212, 0.35)',
+        'glow-blue': '0 0 30px -4px rgba(108, 140, 255, 0.35)',
+        'glow-cyan': '0 0 30px -4px rgba(67, 217, 255, 0.35)',
+        'glow-violet': '0 0 30px -4px rgba(167, 139, 250, 0.35)',
+        'glow-indigo': '0 0 25px -4px rgba(108, 140, 255, 0.35)',
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.08)',
-        'glass-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+        'glass-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
+        'card-elevated': '0 12px 40px -10px rgba(0, 0, 0, 0.6)'
       },
       animation: {
         'fade-in': 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -59,8 +67,10 @@ export default {
         'slide-down': 'slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'scale-in': 'scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'float': 'float 6s ease-in-out infinite',
-        'shimmer': 'shimmer 2s infinite linear',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        'float-slow': 'float 9s ease-in-out infinite',
+        'shimmer': 'shimmer 2.2s infinite linear',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'aurora': 'aurora 15s ease infinite alternate'
       },
       keyframes: {
         fadeIn: {
@@ -86,6 +96,11 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' }
+        },
+        aurora: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' }
         }
       }
     },

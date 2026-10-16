@@ -67,20 +67,32 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#080B16] text-[#F3F6FF] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-[#6C8CFF]/30 selection:text-white">
+      {/* Tech Grid Background Overlay */}
+      <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
 
+      {/* Atmospheric Ambient Glows */}
+      <div className="absolute -top-24 right-1/4 w-96 h-96 bg-[#6C8CFF]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-[#43D9FF]/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
+      <div className="absolute top-1/2 -right-20 w-80 h-80 bg-[#A78BFA]/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center z-10">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-teal-400 text-white shadow-xl shadow-indigo-500/30 mb-3">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#9BA8C7] hover:text-white mb-6 transition-all px-3 py-1.5 rounded-full bg-[#121A2E]/70 border border-[#232D48] hover:border-[#6C8CFF]/40 backdrop-blur-md"
+        >
+          <span>← Back to SmartCampus Home</span>
+        </Link>
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#6C8CFF] to-[#43D9FF] text-slate-950 shadow-glow-blue mb-3">
           <Bot className="w-7 h-7" />
         </div>
-        <h2 className="text-3xl font-extrabold text-white tracking-tight">Create Your Account</h2>
-        <p className="mt-1 text-sm text-slate-400">Join SmartCampus AI Intelligent University Platform</p>
+        <h2 className="text-3xl font-extrabold text-[#F3F6FF] tracking-tight">Create Your Account</h2>
+        <p className="mt-1 text-sm text-[#9BA8C7]">Join SmartCampus AI Intelligent University Platform</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl px-4 sm:px-0 z-10">
-        <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/70 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-[#121A2E]/90 backdrop-blur-xl border border-[#232D48] rounded-3xl p-6 sm:p-8 shadow-2xl hover:border-[#6C8CFF]/30 transition-all">
           {localError && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-rose-300 text-xs">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -91,7 +103,7 @@ const RegisterPage = () => {
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Account Role Selector */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-2">
                 I am Registering As
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -100,8 +112,8 @@ const RegisterPage = () => {
                   onClick={() => setFormData({ ...formData, role: 'student', department: 'BCA' })}
                   className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all ${
                     formData.role === 'student'
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                      : 'bg-slate-900/60 text-slate-400 border-slate-700 hover:bg-slate-900'
+                      ? 'bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] text-slate-950 border-[#43D9FF] shadow-lg shadow-[#6C8CFF]/25 font-bold'
+                      : 'bg-[#0D1224]/80 text-[#9BA8C7] border-[#232D48] hover:bg-[#18233B] hover:text-white'
                   }`}
                 >
                   <Users className="w-4 h-4" />
@@ -112,8 +124,8 @@ const RegisterPage = () => {
                   onClick={() => setFormData({ ...formData, role: 'faculty', department: 'Computer Applications' })}
                   className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all ${
                     formData.role === 'faculty'
-                      ? 'bg-teal-600 text-white border-teal-500 shadow-md shadow-teal-600/30'
-                      : 'bg-slate-900/60 text-slate-400 border-slate-700 hover:bg-slate-900'
+                      ? 'bg-gradient-to-r from-[#43D9FF] to-[#38bdf8] text-slate-950 border-[#38bdf8] shadow-lg shadow-[#43D9FF]/25 font-bold'
+                      : 'bg-[#0D1224]/80 text-[#9BA8C7] border-[#232D48] hover:bg-[#18233B] hover:text-white'
                   }`}
                 >
                   <GraduationCap className="w-4 h-4" />
@@ -125,7 +137,7 @@ const RegisterPage = () => {
             {/* Name & Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
@@ -137,13 +149,13 @@ const RegisterPage = () => {
                     onChange={handleChange}
                     placeholder="e.g. Rahul Verma"
                     required
-                    className="w-full bg-slate-900/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   University Email
                 </label>
                 <div className="relative">
@@ -155,7 +167,7 @@ const RegisterPage = () => {
                     onChange={handleChange}
                     placeholder="student@smartcampus.edu"
                     required
-                    className="w-full bg-slate-900/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
                   />
                 </div>
               </div>
@@ -164,24 +176,24 @@ const RegisterPage = () => {
             {/* Department & ID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   Department
                 </label>
                 <select
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  className="w-full bg-slate-900/70 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl px-4 py-2.5 text-sm text-[#F3F6FF] focus:outline-none focus:border-[#6C8CFF] transition-colors"
                 >
-                  <option value="BCA">Bachelor of Computer Applications (BCA)</option>
-                  <option value="Computer Applications">Computer Applications (MCA/M.Sc)</option>
-                  <option value="Computer Science">Computer Science & Engineering</option>
-                  <option value="Information Technology">Information Technology</option>
+                  <option value="BCA" className="bg-[#121A2E] text-white">Bachelor of Computer Applications (BCA)</option>
+                  <option value="Computer Applications" className="bg-[#121A2E] text-white">Computer Applications (MCA/M.Sc)</option>
+                  <option value="Computer Science" className="bg-[#121A2E] text-white">Computer Science & Engineering</option>
+                  <option value="Information Technology" className="bg-[#121A2E] text-white">Information Technology</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   {formData.role === 'student' ? 'Roll / Student ID' : 'Employee ID'}
                 </label>
                 <div className="relative">
@@ -192,7 +204,7 @@ const RegisterPage = () => {
                     value={formData.role === 'student' ? formData.rollNumber : formData.employeeId}
                     onChange={handleChange}
                     placeholder={formData.role === 'student' ? 'e.g. BCA-2023-042' : 'e.g. FAC-BCA-001'}
-                    className="w-full bg-slate-900/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
                   />
                 </div>
               </div>
@@ -201,7 +213,7 @@ const RegisterPage = () => {
             {/* Password & Confirm Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   Password
                 </label>
                 <div className="relative">
@@ -213,12 +225,12 @@ const RegisterPage = () => {
                     onChange={handleChange}
                     placeholder="Min 6 characters"
                     required
-                    className="w-full bg-slate-900/70 border border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                    className="absolute right-3 top-3 text-slate-400 hover:text-white"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -226,7 +238,7 @@ const RegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#9BA8C7] mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -238,7 +250,7 @@ const RegisterPage = () => {
                     onChange={handleChange}
                     placeholder="Re-enter password"
                     required
-                    className="w-full bg-slate-900/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
                   />
                 </div>
               </div>
@@ -247,7 +259,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 text-sm transition-all disabled:opacity-50"
+              className="w-full mt-4 bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] hover:from-[#5575F5] hover:to-[#6CE1FF] text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg shadow-[#6C8CFF]/25 flex items-center justify-center gap-2 text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Registering Account...</span>
@@ -261,9 +273,9 @@ const RegisterPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#9BA8C7]">
               Already have an account?{' '}
-              <Link to="/login" className="text-indigo-400 font-semibold hover:text-indigo-300">
+              <Link to="/login" className="text-[#6C8CFF] font-semibold hover:text-[#8FA8FF] transition-colors">
                 Sign in
               </Link>
             </p>

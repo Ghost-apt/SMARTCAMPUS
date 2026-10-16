@@ -24,25 +24,26 @@
   }
 
   html.dark body {
-    background-color: #0b1020;
-    color: #f1f5f9;
+    background-color: #080b16;
+    color: #f3f6ff;
   }
 }
 
-/* Glassmorphism & Surface Utilities */
+/* Glassmorphism, Ambient Lighting & Surface Utilities */
 @layer components {
   .glass-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border: 1px solid rgba(226, 232, 240, 0.85);
   }
 
   html.dark .glass-card {
-    background: rgba(17, 24, 39, 0.75);
+    background: rgba(18, 26, 46, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(67, 217, 255, 0.09);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
   }
 
   .glass-panel {
@@ -53,10 +54,11 @@
   }
 
   html.dark .glass-panel {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(13, 18, 36, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(108, 140, 255, 0.12);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55);
   }
 
   .glass-input {
@@ -67,47 +69,77 @@
   }
 
   html.dark .glass-input {
-    background: rgba(17, 24, 39, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #f8fafc;
+    background: rgba(18, 26, 46, 0.8);
+    border: 1px solid rgba(108, 140, 255, 0.2);
+    color: #f3f6ff;
   }
 
   .glass-input:focus {
     outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    border-color: #6c8cff;
+    box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.22);
   }
 
-  /* Gradient Text Helpers */
+  /* Futuristic Gradient Text Helpers */
   .gradient-text-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+    background: linear-gradient(135deg, #6c8cff 0%, #43d9ff 50%, #a78bfa 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .gradient-text-accent {
-    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #43d9ff 0%, #6c8cff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .gradient-text-emerald {
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    background: linear-gradient(135deg, #10b981 0%, #43d9ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  /* Animated Shimmer Background for Skeletons & Glows */
+  .gradient-text-violet {
+    background: linear-gradient(135deg, #a78bfa 0%, #6c8cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Shimmer Background for Skeletons & Elevated Borders */
   .shimmer-effect {
     background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
     background-size: 200% 100%;
-    animation: shimmer 1.8s infinite;
+    animation: shimmer 2s infinite;
   }
 
   html.dark .shimmer-effect {
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(24,35,59,0) 0%, rgba(108,140,255,0.12) 50%, rgba(24,35,59,0) 100%);
     background-size: 200% 100%;
-    animation: shimmer 1.8s infinite;
+    animation: shimmer 2.2s infinite;
+  }
+
+  /* Tech Grid Background */
+  .bg-tech-grid {
+    background-size: 36px 36px;
+    background-image: 
+      linear-gradient(to right, rgba(226, 232, 240, 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
+  }
+
+  html.dark .bg-tech-grid {
+    background-size: 36px 36px;
+    background-image: 
+      linear-gradient(to right, rgba(108, 140, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(108, 140, 255, 0.04) 1px, transparent 1px);
+  }
+
+  /* Sparse Ambient Particles */
+  .ambient-particle {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    opacity: 0.6;
+    animation: float-slow 10s ease-in-out infinite alternate;
   }
 }
 
@@ -132,11 +164,11 @@
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #232d48;
 }
 
 html.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #364468;
 }
 
 /* Reduced Motion Compliance */
