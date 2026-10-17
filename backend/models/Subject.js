@@ -52,6 +52,85 @@ const subjectSchema = new mongoose.Schema(
     description: {
       type: String,
       default: ''
+    },
+    syllabus: {
+      academicYear: {
+        type: String,
+        default: '2026-2027'
+      },
+      objectives: [
+        {
+          type: String,
+          trim: true
+        }
+      ],
+      units: [
+        {
+          unitNumber: {
+            type: Number,
+            required: true
+          },
+          title: {
+            type: String,
+            required: true,
+            trim: true
+          },
+          teachingHours: {
+            type: Number,
+            default: 8
+          },
+          topics: [
+            {
+              type: String,
+              trim: true
+            }
+          ],
+          outcomes: [
+            {
+              type: String,
+              trim: true
+            }
+          ]
+        }
+      ],
+      textbooks: [
+        {
+          title: {
+            type: String,
+            trim: true
+          },
+          author: {
+            type: String,
+            trim: true
+          },
+          edition: {
+            type: String,
+            default: 'Latest Edition'
+          },
+          isPrescribed: {
+            type: Boolean,
+            default: true
+          }
+        }
+      ],
+      evaluationScheme: {
+        internalWeightage: {
+          type: Number,
+          default: 30
+        },
+        endSemWeightage: {
+          type: Number,
+          default: 70
+        },
+        hasPractical: {
+          type: Boolean,
+          default: false
+        }
+      },
+      syllabusFileUrl: {
+        type: String,
+        default: ''
+      }
     }
   },
   {

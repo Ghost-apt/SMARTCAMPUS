@@ -15,5 +15,11 @@ router.get('/subjects', authenticate, courseController.getSubjects);
 router.post('/subjects', authenticate, authorize('admin', 'faculty'), courseController.createSubject);
 router.patch('/subjects/:id', authenticate, authorize('admin', 'faculty'), courseController.updateSubject);
 
+// Syllabus & Student Revision Progress
+router.get('/subjects/:id/syllabus', authenticate, courseController.getSyllabus);
+router.put('/subjects/:id/syllabus', authenticate, authorize('admin', 'faculty'), courseController.updateSyllabus);
+router.get('/subjects/:id/progress', authenticate, courseController.getStudentProgress);
+router.post('/subjects/:id/progress/toggle', authenticate, courseController.toggleTopicProgress);
+
 module.exports = router;
 
