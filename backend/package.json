@@ -9,7 +9,11 @@
     "seed": "node scripts/seedDemoUsers.js",
     "backup": "node scripts/backupDatabase.js",
     "restore": "node scripts/restoreDatabase.js",
-    "test": "node --test tests/api.test.js"
+    "test": "node --test tests/api.test.js",
+    "test:live": "node ../scripts/verify-live-e2e.js",
+    "test:avatar": "node ../scripts/test-profile-picture.js",
+    "trust-cert": "npm --prefix ../client run trust-cert",
+    "generate-cert": "npm --prefix ../client run generate-cert"
   },
   "keywords": [],
   "author": "",
