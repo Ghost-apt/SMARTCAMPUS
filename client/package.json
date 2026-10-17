@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "generate-cert": "node scripts/generate-cert.js",
+    "trust-cert": "cmd /c scripts\\trust-cert.bat",
     "test": "node --test tests/frontend.test.js"
   },
   "dependencies": {

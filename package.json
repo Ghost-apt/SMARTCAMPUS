@@ -16,6 +16,7 @@
     "test": "npm --prefix backend test && npm --prefix client test && powershell -Command \"cd ai-service; .\\venv\\Scripts\\pytest -v\"",
     "test:live": "node scripts/verify-live-e2e.js",
     "test:avatar": "node scripts/test-profile-picture.js",
+    "trust-cert": "npm --prefix client run trust-cert",
     "build": "npm --prefix client run build"
   },
   "keywords": [
