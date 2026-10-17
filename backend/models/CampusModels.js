@@ -23,7 +23,6 @@ const AIQueryLog = require('./AIQueryLog');
 const AttendanceSession = require('./AttendanceSession');
 const Notification = require('./Notification');
 const AuditLog = require('./AuditLog');
-const StudentSyllabusProgress = require('./StudentSyllabusProgress');
 
 // Canonical default profile avatar across university roles
 const DEFAULT_AVATAR_URL = User.DEFAULT_AVATAR_URL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
@@ -47,6 +46,5 @@ module.exports = {
   AttendanceSession,
   Notification,
   AuditLog,
-  StudentSyllabusProgress,
   DEFAULT_AVATAR_URL
 };
