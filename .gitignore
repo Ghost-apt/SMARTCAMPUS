@@ -22,6 +22,12 @@ dist/
 build/
 out/
 
+# SSL Certificates & Private Keys
+client/certs/
+*.pem
+*.key
+*.crt
+
 # Python
 __pycache__/
 *.py[cod]

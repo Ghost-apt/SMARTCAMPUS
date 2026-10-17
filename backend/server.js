@@ -104,10 +104,10 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (
-        /^http:\/\/localhost:\d+$/.test(origin) ||
-        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) ||
-        /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
-        /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
+        /^https?:\/\/localhost:\d+$/.test(origin) ||
+        /^https?:\/\/127\.0\.0\.1:\d+$/.test(origin) ||
+        /^https?:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
+        /^https?:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
         origin === CLIENT_ORIGIN
       ) {
         return callback(null, true);
