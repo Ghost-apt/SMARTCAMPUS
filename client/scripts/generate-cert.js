@@ -12,7 +12,7 @@ if (!fs.existsSync(certDir)) {
   fs.mkdirSync(certDir, { recursive: true });
 }
 
-// Collect local IP addresses for Subject Alternative Names (SAN)
+// 1. Collect all local IP addresses for Subject Alternative Names (SAN)
 const ips = ['127.0.0.1'];
 const interfaces = os.networkInterfaces();
 for (const dev in interfaces) {
@@ -23,59 +23,115 @@ for (const dev in interfaces) {
   }
 }
 
-// Construct SAN entries for localhost and all detected LAN IPs
+// Ensure 192.168.208.1 and 192.168.1.45 are both explicitly in SAN list
+['192.168.208.1', '192.168.1.45'].forEach((ip) => {
+  if (!ips.includes(ip)) {
+    ips.push(ip);
+  }
+});
+
+const caKeyPath = path.join(certDir, 'smartcampus-ca-key.pem');
+const caCertPath = path.join(certDir, 'smartcampus-ca.pem');
+const caCrtPath = path.join(certDir, 'smartcampus-ca.crt');
+const serverKeyPath = path.join(certDir, 'key.pem');
+const serverCertPath = path.join(certDir, 'cert.pem');
+
+// 2. Generate Development Root CA if it doesn't exist
+if (!fs.existsSync(caCertPath) || !fs.existsSync(caKeyPath)) {
+  console.log('📌 Generating SmartCampus AI Development Root CA...');
+  const caCnf = `
+[req]
+prompt = no
+distinguished_name = dn
+x509_extensions = v3_ca
+default_md = sha256
+
+[dn]
+CN = SmartCampus AI Development Root CA
+O = SmartCampus AI
+OU = Security Engineering
+C = US
+
+[v3_ca]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+`.trim();
+
+  const caCnfPath = path.join(certDir, 'ca_gen.cnf');
+  fs.writeFileSync(caCnfPath, caCnf, 'utf8');
+
+  try {
+    execSync(`openssl req -x509 -new -nodes -newkey rsa:3072 -sha256 -days 3650 -keyout "${caKeyPath}" -out "${caCertPath}" -config "${caCnfPath}"`, {
+      stdio: 'inherit'
+    });
+    fs.copyFileSync(caCertPath, caCrtPath);
+    console.log('✔ Root CA generated successfully at:', caCertPath);
+  } finally {
+    if (fs.existsSync(caCnfPath)) fs.unlinkSync(caCnfPath);
+  }
+}
+
+// 3. Generate Server Certificate signed by Root CA
+console.log('📌 Generating Server Certificate for addresses:', ['localhost', ...ips].join(', '));
+
 const altNames = [
   'DNS.1 = localhost',
   'DNS.2 = *.localhost',
   ...ips.map((ip, i) => `IP.${i + 1} = ${ip}`)
 ];
 
-const opensslCnf = `
+const serverCnf = `
 [req]
-default_bits = 2048
 prompt = no
-default_md = sha256
 distinguished_name = dn
-x509_extensions = v3_req
+req_extensions = v3_req
+default_md = sha256
 
 [dn]
-C = US
-ST = Campus
-L = University
+CN = 192.168.208.1
 O = SmartCampus AI
-OU = Development
-CN = localhost
+OU = Frontend Development
+C = US
 
 [v3_req]
-subjectAltName = @alt_names
 basicConstraints = CA:FALSE
 keyUsage = digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
 
 [alt_names]
 ${altNames.join('\n')}
 `.trim();
 
-const cnfPath = path.join(certDir, 'openssl.cnf');
-const keyPath = path.join(certDir, 'key.pem');
-const certPath = path.join(certDir, 'cert.pem');
-
-fs.writeFileSync(cnfPath, opensslCnf, 'utf8');
+const serverCnfPath = path.join(certDir, 'server_gen.cnf');
+const serverCsrPath = path.join(certDir, 'server.csr');
+fs.writeFileSync(serverCnfPath, serverCnf, 'utf8');
 
 try {
-  console.log('Generating development SSL certificate with OpenSSL...');
-  execSync(`openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${keyPath}" -out "${certPath}" -config "${cnfPath}"`, {
+  // Generate Server Private Key and CSR
+  execSync(`openssl req -new -newkey rsa:2048 -nodes -keyout "${serverKeyPath}" -out "${serverCsrPath}" -config "${serverCnfPath}"`, {
     stdio: 'inherit'
   });
-  console.log('✅ Development SSL certificate generated successfully:');
-  console.log('   - Certificate:', certPath);
-  console.log('   - Private Key:', keyPath);
-  console.log('   - Domains/IPs:', ['localhost', ...ips].join(', '));
+
+  // Sign Server CSR using Root CA
+  execSync(`openssl x509 -req -in "${serverCsrPath}" -CA "${caCertPath}" -CAkey "${caKeyPath}" -CAcreateserial -out "${serverCertPath}" -days 825 -sha256 -extfile "${serverCnfPath}" -extensions v3_req`, {
+    stdio: 'inherit'
+  });
+
+  // Ensure Windows .crt copy is available
+  fs.copyFileSync(caCertPath, caCrtPath);
+
+  console.log('✅ Development SSL certificate generated and signed by Local Root CA:');
+  console.log('   - Server Certificate:', serverCertPath);
+  console.log('   - Server Private Key:', serverKeyPath);
+  console.log('   - Root CA Certificate:', caCrtPath);
+  console.log('   - Subject Alternative Names (SAN):', ['localhost', ...ips].join(', '));
 } catch (err) {
-  console.error('❌ Failed to generate SSL certificate:', err.message);
+  console.error('❌ Failed to sign server certificate:', err.message);
   process.exit(1);
 } finally {
-  if (fs.existsSync(cnfPath)) {
-    fs.unlinkSync(cnfPath);
-  }
+  if (fs.existsSync(serverCnfPath)) fs.unlinkSync(serverCnfPath);
+  if (fs.existsSync(serverCsrPath)) fs.unlinkSync(serverCsrPath);
 }

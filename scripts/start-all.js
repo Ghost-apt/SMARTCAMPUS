@@ -95,13 +95,13 @@ const startServices = async () => {
 ============================================================${colors.reset}
 `);
 
-  const port5001Busy = await checkPortInUse(5001);
+  const port5000Busy = await checkPortInUse(5000) || await checkPortInUse(5001);
   const port8000Busy = await checkPortInUse(8000);
   const port5173Busy = await checkPortInUse(5173);
 
   // 1. Backend Server
-  if (port5001Busy) {
-    console.log(`${colors.cyan}[BACKEND]${colors.reset} Port 5001 is already active. Connected to existing instance.`);
+  if (port5000Busy) {
+    console.log(`${colors.cyan}[BACKEND]${colors.reset} Backend API port is already active. Connected to existing instance.`);
   } else {
     console.log(`${colors.cyan}[BACKEND]${colors.reset} Starting Express API on http://localhost:5000...`);
     const backendProcess = spawn('node', ['server.js'], {
@@ -150,7 +150,7 @@ const startServices = async () => {
 
   console.log(`
 ${colors.green}${colors.bold}✔ All microservices are active:${colors.reset}
-  - 🖥️  Frontend:   ${colors.bold}http://localhost:5173${colors.reset}
+  - 🖥️  Frontend:   ${colors.bold}https://localhost:5173${colors.reset} (or https://192.168.208.1:5173)
   - 📡 Backend API: ${colors.bold}http://localhost:5000${colors.reset}
   - 🤖 AI Service:  ${colors.bold}http://localhost:8000${colors.reset}
 
