@@ -8,6 +8,7 @@ const AdminDepartmentsPage = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [facultyList, setFacultyList] = useState([]);
 
   // Create Modal State
   const [showModal, setShowModal] = useState(false);
@@ -20,9 +21,16 @@ const AdminDepartmentsPage = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await api.get('/departments');
-      if (res.data.success) {
-        setDepartments(res.data.departments || []);
+      const [deptRes, facRes] = await Promise.allSettled([
+        api.get('/departments'),
+        api.get('/faculty')
+      ]);
+
+      if (deptRes.status === 'fulfilled' && deptRes.value.data.success) {
+        setDepartments(deptRes.value.data.departments || []);
+      }
+      if (facRes.status === 'fulfilled' && facRes.value.data.success) {
+        setFacultyList(facRes.value.data.faculty || []);
       }
     } catch (err) {
       setError(err.userMessage || 'Failed to load university departments.');
@@ -35,6 +43,14 @@ const AdminDepartmentsPage = () => {
     fetchDepartments();
   }, []);
 
+  const getHodDisplayName = (hod) => {
+    if (!hod) return 'Prof. Sharma';
+    if (typeof hod === 'object') {
+      return hod.name || hod.email || 'Prof. Sharma';
+    }
+    return String(hod);
+  };
+
   const handleCreateDepartment = async (e) => {
     e.preventDefault();
     if (!departmentCode.trim() || !departmentName.trim()) return;
@@ -45,9 +61,11 @@ const AdminDepartmentsPage = () => {
 
     try {
       const res = await api.post('/departments', {
+        deptCode: departmentCode,
+        deptName: departmentName,
         departmentCode,
         departmentName,
-        headOfDepartment,
+        headOfDepartment: headOfDepartment || undefined,
         description
       });
 
@@ -115,7 +133,7 @@ const AdminDepartmentsPage = () => {
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="px-3 py-1 rounded-lg text-xs font-black tracking-wide bg-indigo-50 text-indigo-700 border border-indigo-100">
-                    CODE: {dept.departmentCode}
+                    CODE: {dept.departmentCode || dept.deptCode}
                   </span>
                   <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100">
                     Active Division
@@ -123,7 +141,7 @@ const AdminDepartmentsPage = () => {
                 </div>
 
                 <h3 className="text-lg font-bold text-slate-900 mb-2 leading-snug">
-                  {dept.departmentName}
+                  {dept.departmentName || dept.deptName}
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed mb-4">
                   {dept.description || 'University academic department supporting undergraduate and postgraduate degrees.'}
@@ -132,7 +150,7 @@ const AdminDepartmentsPage = () => {
 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
                 <span className="font-semibold">
-                  Head of Dept: <span className="text-indigo-600">{dept.headOfDepartment || 'Prof. Sharma'}</span>
+                  Head of Dept: <span className="text-indigo-600">{getHodDisplayName(dept.headOfDepartment)}</span>
                 </span>
                 <span className="text-slate-400">School of Computing</span>
               </div>
@@ -174,13 +192,33 @@ const AdminDepartmentsPage = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Head of Department (HOD)</label>
-                  <input
-                    type="text"
-                    value={headOfDepartment}
-                    onChange={(e) => setHeadOfDepartment(e.target.value)}
-                    placeholder="e.g. Dr. A. K. Verma"
-                    className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500"
-                  />
+                  {facultyList && facultyList.length > 0 ? (
+                    <select
+                      value={headOfDepartment}
+                      onChange={(e) => setHeadOfDepartment(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 bg-white"
+                    >
+                      <option value="">Select Appointed Faculty (Optional)</option>
+                      {facultyList.map((f) => {
+                        const fId = f.user?._id || f._id;
+                        const fName = f.name || f.user?.name || 'Faculty Member';
+                        const fDept = f.department || f.user?.department || '';
+                        return (
+                          <option key={fId} value={fId}>
+                            {fName} {fDept ? `(${fDept})` : ''}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={headOfDepartment}
+                      onChange={(e) => setHeadOfDepartment(e.target.value)}
+                      placeholder="e.g. Dr. A. K. Verma"
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500"
+                    />
+                  )}
                 </div>
               </div>
 
