@@ -90,19 +90,33 @@ const aiLimiter = rateLimit({
   }
 });
 
+// Chromium Private Network Access (PNA) preflight header support
+app.use((req, res, next) => {
+  if (req.headers['access-control-request-private-network']) {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  }
+  next();
+});
+
 // CORS Configuration supporting development and production frontend origins
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (/^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) || origin === CLIENT_ORIGIN) {
+      if (
+        /^http:\/\/localhost:\d+$/.test(origin) ||
+        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) ||
+        /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
+        /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
+        origin === CLIENT_ORIGIN
+      ) {
         return callback(null, true);
       }
       return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Key']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Key', 'Access-Control-Request-Private-Network']
   })
 );
 
