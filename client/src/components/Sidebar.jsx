@@ -23,6 +23,7 @@ import {
   Sparkles,
   CreditCard
 } from 'lucide-react';
+import SmartCampusLogo from './SmartCampusLogo';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, role, logout } = useAuth();
@@ -76,17 +77,17 @@ const Sidebar = ({ isOpen, onClose }) => {
       case 'admin':
         return {
           label: 'Admin',
-          badge: 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+          badge: 'bg-[#D9AE4B]/15 text-[#F2D78A] border-[#D9AE4B]/40'
         };
       case 'faculty':
         return {
           label: 'Faculty',
-          badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
+          badge: 'bg-[#173F78]/30 text-[#6CE1FF] border-[#173F78]/60'
         };
       default:
         return {
           label: 'Student',
-          badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+          badge: 'bg-[#0B2347]/40 text-[#D9AE4B] border-[#D9AE4B]/30'
         };
     }
   };
@@ -110,18 +111,8 @@ const Sidebar = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-extrabold text-white text-base tracking-tight">SmartCampus</span>
-              <span className="ml-1 text-[11px] font-black text-cyan-400 uppercase tracking-widest px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
-                AI
-              </span>
-            </div>
-          </div>
+        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md">
+          <SmartCampusLogo variant="compact" size="sm" showTagline={false} />
           <button
             onClick={onClose}
             className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
@@ -132,12 +123,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         {/* Current User Card */}
-        <div className="p-3 mx-3 my-3 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-900/40 border border-slate-800/80 flex items-center gap-3 shadow-inner">
+        <div className="p-3 mx-3 my-3 rounded-2xl bg-gradient-to-b from-[#0B2347]/50 to-slate-900/60 border border-slate-800/80 hover:border-[#D9AE4B]/30 flex items-center gap-3 shadow-inner transition-colors">
           <div className="relative">
             <img
               src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'}
               alt="User avatar"
-              className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500/30 shadow-sm"
+              className="w-10 h-10 rounded-full object-cover border-2 border-[#D9AE4B]/40 shadow-sm"
             />
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-slate-950" />
           </div>
@@ -171,7 +162,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 className={({ isActive }) =>
                   `group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                     isActive
-                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30 translate-x-1'
+                      ? 'bg-gradient-to-r from-[#0B2347] to-[#173F78] text-white shadow-md border-l-2 border-[#D9AE4B] translate-x-1'
                       : 'text-slate-400 hover:text-white hover:bg-slate-900/80 hover:translate-x-0.5'
                   }`
                 }
@@ -181,14 +172,14 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <div className="flex items-center gap-3">
                       <Icon
                         className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
-                          isActive ? 'text-white scale-110' : 'text-slate-400 group-hover:text-indigo-400 group-hover:scale-110'
+                          isActive ? 'text-[#F2D78A] scale-110' : 'text-slate-400 group-hover:text-[#D9AE4B] group-hover:scale-110'
                         }`}
                       />
                       <span className="truncate">{item.name}</span>
                     </div>
                     {item.badge && (
-                      <span className="flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 animate-pulse">
-                        <Sparkles className="w-2.5 h-2.5" />
+                      <span className="flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#D9AE4B]/15 text-[#F2D78A] border border-[#D9AE4B]/30">
+                        <Sparkles className="w-2.5 h-2.5 text-[#D9AE4B]" />
                         {item.badge}
                       </span>
                     )}

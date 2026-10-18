@@ -13,16 +13,54 @@ const feeRecordSchema = new mongoose.Schema(
     feeType: {
       type: String,
       required: true,
-      enum: ['Tuition Fee', 'Examination Fee', 'Lab Fee', 'Library Fee', 'Hostel Fee', 'Other'],
-      default: 'Tuition Fee'
+      enum: [
+        'Tuition Fee',
+        'Examination Fee',
+        'Lab Fee',
+        'Library Fee',
+        'Hostel Fee',
+        'Hostel Fees',
+        'Other',
+        'Academic Fees',
+        'Academic Fee',
+        'Debarred Fees',
+        'Debarred Fee',
+        'Transportation Fees',
+        'Transportation Fee',
+        'Transport Fee',
+        'Backlogs Fees',
+        'Backlog Fee',
+        'Miscellaneous Fees',
+        'Miscellaneous Fee'
+      ],
+      default: 'Academic Fees'
+    },
+    academicYear: {
+      type: String,
+      default: '2026-2027',
+      trim: true
     },
     semester: {
       type: Number,
       default: 5
     },
+    semesterName: {
+      type: String,
+      default: ''
+    },
     totalAmount: {
       type: Number,
       required: true,
+      min: 0
+    },
+    concessionAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    lateFee: {
+      type: Number,
+      default: 0,
       min: 0
     },
     paidAmount: {
@@ -62,7 +100,10 @@ feeRecordSchema.index({ status: 1 });
 
 // Pre-save hook: compute balanceAmount & update status accordingly
 feeRecordSchema.pre('save', async function () {
-  this.balanceAmount = Math.max(0, this.totalAmount - (this.paidAmount || 0));
+  const concession = Number(this.concessionAmount) || 0;
+  const late = Number(this.lateFee) || 0;
+  const netPayable = Math.max(0, this.totalAmount + late - concession);
+  this.balanceAmount = Math.max(0, netPayable - (this.paidAmount || 0));
   if (this.balanceAmount === 0) {
     this.status = 'Paid';
   } else if (this.paidAmount > 0) {

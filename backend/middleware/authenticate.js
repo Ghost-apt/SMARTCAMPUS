@@ -3,6 +3,12 @@ const jwt = require('jsonwebtoken');
 const authenticate = async (req, res, next) => {
   try {
     const JWT_SECRET = process.env.JWT_SECRET || 'smartcampus_jwt_secret_dev_key_2026';
+    if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'smartcampus_jwt_secret_dev_key_2026')) {
+      return res.status(500).json({
+        success: false,
+        message: 'Security configuration error: JWT_SECRET must be configured with a secure secret in production.'
+      });
+    }
     let token = null;
 
     // 1. Check Authorization header

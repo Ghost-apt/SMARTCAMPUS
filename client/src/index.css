@@ -7,6 +7,14 @@
 @layer base {
   :root {
     color-scheme: light;
+    --univ-navy: #07162E;
+    --univ-deep-blue: #0B2347;
+    --univ-royal-blue: #173F78;
+    --univ-gold: #D9AE4B;
+    --univ-gold-light: #F2D78A;
+    --univ-ivory: #F8F6F0;
+    --univ-slate: #344256;
+    --univ-muted: #748197;
   }
   
   html.dark {
@@ -18,14 +26,14 @@
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #F8F6F0;
+    color: #07162E;
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   html.dark body {
-    background-color: #080b16;
-    color: #f3f6ff;
+    background-color: #07162E;
+    color: #F8F6F0;
   }
 }
 
@@ -140,6 +148,64 @@
     pointer-events: none;
     opacity: 0.6;
     animation: float-slow 10s ease-in-out infinite alternate;
+  }
+
+  /* Institutional Portal Components & Ambient Lighting */
+  .univ-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 4px 20px -2px rgba(11, 35, 71, 0.05);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  html.dark .univ-card {
+    background: rgba(11, 35, 71, 0.7);
+    border: 1px solid rgba(23, 63, 120, 0.4);
+    box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.4);
+  }
+
+  .univ-card:hover {
+    border-color: rgba(217, 174, 75, 0.35);
+  }
+
+  .univ-badge-gold {
+    background: rgba(217, 174, 75, 0.12);
+    color: #b8860b;
+    border: 1px solid rgba(217, 174, 75, 0.3);
+  }
+
+  html.dark .univ-badge-gold {
+    color: #f2d78a;
+    border-color: rgba(217, 174, 75, 0.35);
+  }
+
+  .univ-badge-navy {
+    background: rgba(11, 35, 71, 0.08);
+    color: #07162e;
+    border: 1px solid rgba(11, 35, 71, 0.2);
+  }
+
+  html.dark .univ-badge-navy {
+    background: rgba(23, 63, 120, 0.3);
+    color: #f8f6f0;
+    border-color: rgba(23, 63, 120, 0.6);
+  }
+
+  .ambient-glow-header {
+    background: radial-gradient(ellipse 60% 80% at 50% -20%, rgba(23, 63, 120, 0.15), transparent 70%);
+  }
+
+  html.dark .ambient-glow-header {
+    background: radial-gradient(ellipse 60% 80% at 50% -20%, rgba(23, 63, 120, 0.35), transparent 70%);
+  }
+
+  .logo-hover-subtle {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+  }
+
+  .logo-hover-subtle:hover {
+    transform: scale(1.02);
+    filter: drop-shadow(0 4px 14px rgba(217, 174, 75, 0.28));
   }
 }
 

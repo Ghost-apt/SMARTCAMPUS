@@ -33,7 +33,7 @@ services:
     environment:
       - PORT=8000
       - HOST=0.0.0.0
-      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-smartcampus_internal_ai_secret_key_2026}
+      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-smartcampus-internal-ai-secret-key-2026}
       - MODEL_PATH=app/ml/support_model.joblib
       - VECTOR_STORE_PATH=app/rag/store
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
@@ -68,7 +68,7 @@ services:
       - JWT_EXPIRES_IN=7d
       - CLIENT_ORIGIN=${CLIENT_ORIGIN:-http://localhost}
       - AI_SERVICE_URL=http://ai-service:8000
-      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-smartcampus_internal_ai_secret_key_2026}
+      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-smartcampus-internal-ai-secret-key-2026}
     depends_on:
       mongodb:
         condition: service_healthy

@@ -88,6 +88,35 @@ const logPrefix = (tag, color, data) => {
   }
 };
 
+// Load environment variables from .env files if present
+const loadEnvFile = (envPath) => {
+  if (!fs.existsSync(envPath)) return;
+  try {
+    const content = fs.readFileSync(envPath, 'utf8');
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx !== -1) {
+        const key = trimmed.slice(0, eqIdx).trim();
+        let val = trimmed.slice(eqIdx + 1).trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        if (!process.env[key]) {
+          process.env[key] = val;
+        }
+      }
+    }
+  } catch (err) {
+    // Ignore read errors
+  }
+};
+
+loadEnvFile(path.join(ROOT_DIR, '.env'));
+loadEnvFile(path.join(BACKEND_DIR, '.env'));
+loadEnvFile(path.join(AI_DIR, '.env'));
+
 const startServices = async () => {
   console.log(`${colors.cyan}${colors.bold}
 ============================================================
@@ -95,20 +124,21 @@ const startServices = async () => {
 ============================================================${colors.reset}
 `);
 
-  const port5000Busy = await checkPortInUse(5000) || await checkPortInUse(5001);
+  const backendPort = parseInt(process.env.PORT, 10) || 5000;
+  const portBackendBusy = await checkPortInUse(backendPort);
   const port8000Busy = await checkPortInUse(8000);
   const port5173Busy = await checkPortInUse(5173);
 
   // 1. Backend Server
-  if (port5000Busy) {
-    console.log(`${colors.cyan}[BACKEND]${colors.reset} Backend API port is already active. Connected to existing instance.`);
+  if (portBackendBusy) {
+    console.log(`${colors.cyan}[BACKEND]${colors.reset} Backend API port ${backendPort} is already active. Connected to existing instance.`);
   } else {
-    console.log(`${colors.cyan}[BACKEND]${colors.reset} Starting Express API on http://localhost:5000...`);
-    const backendProcess = spawn('node', ['server.js'], {
+    console.log(`${colors.cyan}[BACKEND]${colors.reset} Starting Express API on http://localhost:${backendPort}...`);
+    const backendProcess = spawn('node', ['--watch', 'server.js'], {
       cwd: BACKEND_DIR,
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: isWindows,
-      env: { ...process.env, NODE_ENV: 'development' }
+      env: { ...process.env, PORT: String(backendPort), NODE_ENV: process.env.NODE_ENV || 'development' }
     });
     backendProcess.stdout.on('data', (d) => logPrefix('BACKEND', colors.cyan, d));
     backendProcess.stderr.on('data', (d) => logPrefix('BACKEND', colors.red, d));
@@ -151,7 +181,7 @@ const startServices = async () => {
   console.log(`
 ${colors.green}${colors.bold}✔ All microservices are active:${colors.reset}
   - 🖥️  Frontend:   ${colors.bold}https://localhost:5173${colors.reset} (or https://192.168.208.1:5173)
-  - 📡 Backend API: ${colors.bold}http://localhost:5000${colors.reset}
+  - 📡 Backend API: ${colors.bold}http://localhost:${backendPort}${colors.reset}
   - 🤖 AI Service:  ${colors.bold}http://localhost:8000${colors.reset}
 
 ${colors.yellow}Press Ctrl+C to stop all services simultaneously.${colors.reset}

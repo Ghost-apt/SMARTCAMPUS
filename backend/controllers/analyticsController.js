@@ -9,7 +9,8 @@ const {
   Assignment,
   Examination,
   Result,
-  FeeRecord
+  FeeRecord,
+  AuditLog
 } = require('../models/CampusModels');
 
 // @desc    Admin campus-wide overview analytics
@@ -338,8 +339,65 @@ const getStudentAnalytics = async (req, res, next) => {
   }
 };
 
+// @desc    Get system audit and activity logs (Admin only)
+// @route   GET /api/analytics/admin/audit-logs
+// @access  Private / Admin
+const getAdminAuditLogs = async (req, res, next) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+    if (req.query.action) {
+      filter.action = new RegExp(req.query.action.trim(), 'i');
+    }
+    if (req.query.actorRole) {
+      filter.actorRole = req.query.actorRole.trim();
+    }
+    if (req.query.resourceType) {
+      filter.resourceType = req.query.resourceType.trim();
+    }
+
+    const [total, logs] = await Promise.all([
+      AuditLog.countDocuments(filter),
+      AuditLog.find(filter)
+        .populate('actor', 'name email role department')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+    ]);
+
+    // Redact sensitive keys in details if present
+    const sanitizedLogs = logs.map((log) => {
+      if (log.details && typeof log.details === 'object') {
+        const detailsCopy = { ...log.details };
+        delete detailsCopy.password;
+        delete detailsCopy.token;
+        delete detailsCopy.jwt;
+        delete detailsCopy.secret;
+        log.details = detailsCopy;
+      }
+      return log;
+    });
+
+    res.status(200).json({
+      success: true,
+      count: sanitizedLogs.length,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit) || 1,
+      logs: sanitizedLogs
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAdminAnalytics,
   getFacultyAnalytics,
-  getStudentAnalytics
+  getStudentAnalytics,
+  getAdminAuditLogs
 };

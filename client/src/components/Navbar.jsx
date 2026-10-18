@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProfilePictureModal from './ProfilePictureModal';
+import SmartCampusLogo from './SmartCampusLogo';
 import api from '../services/api';
 
 const Navbar = ({ onToggleSidebar }) => {
@@ -134,7 +135,7 @@ const Navbar = ({ onToggleSidebar }) => {
   const noticesPath = role === 'admin' ? '/admin/notices' : role === 'faculty' ? '/faculty/notices' : '/student/notices';
 
   return (
-    <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+    <header className="h-16 bg-white/90 dark:bg-[#07162E]/90 backdrop-blur-md border-b border-slate-200/90 dark:border-[#173F78]/40 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       {/* Left: Mobile Toggle & Context */}
       <div className="flex items-center gap-3">
         <button
@@ -144,13 +145,16 @@ const Navbar = ({ onToggleSidebar }) => {
         >
           <Menu className="w-5 h-5" />
         </button>
+        <div className="lg:hidden flex items-center">
+          <SmartCampusLogo variant="compact" size="xs" showTagline={false} />
+        </div>
         <div className="hidden sm:flex items-center gap-2">
-          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 tracking-wide">
+          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#0B2347]/5 dark:bg-[#173F78]/25 text-[#07162E] dark:text-[#F2D78A] border border-[#D9AE4B]/30 tracking-wide">
             Academic Session 2026-27
           </span>
           <span className="text-slate-300 dark:text-slate-700">|</span>
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Intelligent University System
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+            Intelligent University Portal
           </span>
         </div>
       </div>

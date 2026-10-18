@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bot, Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, ShieldCheck, GraduationCap, Users } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, ShieldCheck, GraduationCap, Users } from 'lucide-react';
+import SmartCampusLogo from '../components/SmartCampusLogo';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -52,33 +53,38 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080B16] text-[#F3F6FF] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-[#6C8CFF]/30 selection:text-white">
-      {/* Tech Grid Background Overlay */}
-      <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
+    <div className="min-h-screen bg-[#07162E] text-[#F8F6F0] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-[#D9AE4B]/30 selection:text-white">
+      {/* Subtle Academic Ambient Lighting */}
+      <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-[#173F78]/25 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 right-1/4 w-[500px] h-[500px] bg-[#0B2347]/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-72 h-72 bg-[#D9AE4B]/5 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Atmospheric Ambient Glows */}
-      <div className="absolute -top-24 left-1/4 w-96 h-96 bg-[#43D9FF]/10 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
-      <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-[#6C8CFF]/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 -left-20 w-80 h-80 bg-[#A78BFA]/10 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center z-10">
+      {/* Header with Full Official Crest */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center z-10 px-4">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#9BA8C7] hover:text-white mb-6 transition-all px-3 py-1.5 rounded-full bg-[#121A2E]/70 border border-[#232D48] hover:border-[#6C8CFF]/40 backdrop-blur-md"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#9BA8C7] hover:text-[#F8F6F0] mb-6 transition-all px-3 py-1.5 rounded-full bg-[#0B2347]/60 border border-[#173F78]/50 hover:border-[#D9AE4B]/40 backdrop-blur-md"
         >
-          <span>← Back to SmartCampus Home</span>
+          <span>← Back to University Home</span>
         </Link>
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#6C8CFF] to-[#43D9FF] text-slate-950 shadow-glow-blue mb-4">
-          <Bot className="w-8 h-8" />
+        
+        {/* Full University Crest Logo */}
+        <div className="mb-3">
+          <SmartCampusLogo variant="full" size="xl" showTagline={true} />
         </div>
-        <h2 className="text-3xl font-extrabold text-[#F3F6FF] tracking-tight">SmartCampus AI</h2>
-        <p className="mt-1 text-sm text-[#9BA8C7]">Intelligent University Management & Student Support</p>
+        <p className="mt-2 text-xs font-medium text-[#9BA8C7] uppercase tracking-wider">
+          Institutional Access & Administration Portal
+        </p>
       </div>
 
       {/* Login Card */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 z-10">
-        <div className="bg-[#121A2E]/90 backdrop-blur-xl border border-[#232D48] rounded-3xl p-6 sm:p-8 shadow-2xl hover:border-[#6C8CFF]/30 transition-all">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 z-10">
+        <div className="bg-[#0B2347]/85 backdrop-blur-xl border border-[#173F78]/60 rounded-3xl p-6 sm:p-8 shadow-2xl hover:border-[#D9AE4B]/35 transition-all">
+          <div className="mb-5 pb-3 border-b border-[#173F78]/40 text-center">
+            <h3 className="text-lg font-bold text-white tracking-tight">University Sign-In</h3>
+            <p className="text-xs text-[#9BA8C7] mt-0.5">Enter your institutional credentials</p>
+          </div>
+
           {localError && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-rose-300 text-xs">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -99,7 +105,7 @@ const LoginPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@smartcampus.edu"
                   required
-                  className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
+                  className="w-full bg-[#07162E]/90 border border-[#173F78]/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#F8F6F0] placeholder-slate-500 focus:outline-none focus:border-[#D9AE4B] focus:ring-1 focus:ring-[#D9AE4B] transition-colors"
                 />
               </div>
             </div>
@@ -116,7 +122,7 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full bg-[#0D1224]/90 border border-[#232D48] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[#F3F6FF] placeholder-slate-500 focus:outline-none focus:border-[#6C8CFF] focus:ring-1 focus:ring-[#6C8CFF] transition-colors"
+                  className="w-full bg-[#07162E]/90 border border-[#173F78]/60 rounded-xl pl-10 pr-10 py-2.5 text-sm text-[#F8F6F0] placeholder-slate-500 focus:outline-none focus:border-[#D9AE4B] focus:ring-1 focus:ring-[#D9AE4B] transition-colors"
                 />
                 <button
                   type="button"
@@ -131,57 +137,57 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-2 bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] hover:from-[#5575F5] hover:to-[#6CE1FF] text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg shadow-[#6C8CFF]/25 flex items-center justify-center gap-2 text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+              className="w-full mt-2 bg-gradient-to-r from-[#0B2347] via-[#173F78] to-[#0B2347] hover:from-[#173F78] hover:to-[#0B2347] text-[#F8F6F0] font-bold py-3 px-4 rounded-xl border border-[#D9AE4B]/40 shadow-lg shadow-[#07162E]/50 flex items-center justify-center gap-2 text-sm transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Authenticating...</span>
               ) : (
                 <>
                   <span>Sign In to SmartCampus</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-[#D9AE4B]" />
                 </>
               )}
             </button>
           </form>
 
           {/* Quick Demo Accounts Helper */}
-          <div className="mt-6 pt-6 border-t border-[#232D48]">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#9BA8C7] text-center mb-3">
+          <div className="mt-6 pt-5 border-t border-[#173F78]/50">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#9BA8C7] text-center mb-3">
               One-Click Demo Accounts (Viva & Evaluation)
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => fillDemo('student@smartcampus.edu', 'Student@123')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#0D1224]/80 border border-[#232D48] hover:border-[#6C8CFF] hover:bg-[#18233B] text-slate-300 transition-all text-xs group"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#07162E]/80 border border-[#173F78]/60 hover:border-[#D9AE4B] hover:bg-[#0B2347] text-slate-300 transition-all text-xs group"
               >
-                <Users className="w-4 h-4 text-[#6C8CFF] mb-1 group-hover:scale-110 transition-transform" />
-                <span className="font-semibold text-[11px] text-[#F3F6FF]">Student</span>
+                <Users className="w-4 h-4 text-[#D9AE4B] mb-1 group-hover:scale-110 transition-transform" />
+                <span className="font-semibold text-[11px] text-[#F8F6F0]">Student</span>
               </button>
               <button
                 type="button"
                 onClick={() => fillDemo('faculty@smartcampus.edu', 'Faculty@123')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#0D1224]/80 border border-[#232D48] hover:border-[#43D9FF] hover:bg-[#18233B] text-slate-300 transition-all text-xs group"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#07162E]/80 border border-[#173F78]/60 hover:border-[#6CE1FF] hover:bg-[#0B2347] text-slate-300 transition-all text-xs group"
               >
-                <GraduationCap className="w-4 h-4 text-[#43D9FF] mb-1 group-hover:scale-110 transition-transform" />
-                <span className="font-semibold text-[11px] text-[#F3F6FF]">Faculty</span>
+                <GraduationCap className="w-4 h-4 text-[#6CE1FF] mb-1 group-hover:scale-110 transition-transform" />
+                <span className="font-semibold text-[11px] text-[#F8F6F0]">Faculty</span>
               </button>
               <button
                 type="button"
                 onClick={() => fillDemo('admin@smartcampus.edu', 'Admin@123')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#0D1224]/80 border border-[#232D48] hover:border-[#A78BFA] hover:bg-[#18233B] text-slate-300 transition-all text-xs group"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#07162E]/80 border border-[#173F78]/60 hover:border-[#F2D78A] hover:bg-[#0B2347] text-slate-300 transition-all text-xs group"
               >
-                <ShieldCheck className="w-4 h-4 text-[#A78BFA] mb-1 group-hover:scale-110 transition-transform" />
-                <span className="font-semibold text-[11px] text-[#F3F6FF]">Admin</span>
+                <ShieldCheck className="w-4 h-4 text-[#F2D78A] mb-1 group-hover:scale-110 transition-transform" />
+                <span className="font-semibold text-[11px] text-[#F8F6F0]">Admin</span>
               </button>
             </div>
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-5 text-center">
             <p className="text-xs text-[#9BA8C7]">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-[#6C8CFF] font-semibold hover:text-[#8FA8FF] transition-colors">
-                Register here
+              New campus member?{' '}
+              <Link to="/register" className="text-[#D9AE4B] font-semibold hover:text-[#F2D78A] transition-colors">
+                Register account
               </Link>
             </p>
           </div>

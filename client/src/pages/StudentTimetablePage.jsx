@@ -2,23 +2,47 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import api from '../services/api';
-import { Calendar, Clock, MapPin, User, BookOpen, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Calendar, Clock, MapPin, User, BookOpen, AlertCircle, Filter } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const StudentTimetablePage = () => {
+  const { user, profile } = useAuth();
+
+  // Dynamically resolve student course & semester from profile/auth context
+  const initialCourse = profile?.course || user?.profile?.course || user?.department || 'BCA';
+  const initialSemester = profile?.semester || user?.profile?.semester || 5;
+
+  const [selectedCourse, setSelectedCourse] = useState(initialCourse);
+  const [selectedSemester, setSelectedSemester] = useState(initialSemester);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Default to today's day of week or Monday if Sunday
   const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const [activeDay, setActiveDay] = useState(DAYS.includes(todayName) ? todayName : 'Monday');
 
+  // Keep state in sync if user profile loads asynchronously
+  useEffect(() => {
+    if (profile?.course && profile.course !== selectedCourse) {
+      setSelectedCourse(profile.course);
+    }
+    if (profile?.semester && profile.semester !== selectedSemester) {
+      setSelectedSemester(profile.semester);
+    }
+  }, [profile]);
+
   useEffect(() => {
     const fetchTimetable = async () => {
+      setLoading(true);
+      setError('');
       try {
-        const res = await api.get('/timetable?courseCode=BCA&semester=5');
+        const res = await api.get(
+          `/timetable?courseCode=${encodeURIComponent(selectedCourse)}&semester=${selectedSemester}`
+        );
         if (res.data.success) {
           setEntries(res.data.entries || []);
         }
@@ -30,7 +54,7 @@ const StudentTimetablePage = () => {
     };
 
     fetchTimetable();
-  }, []);
+  }, [selectedCourse, selectedSemester]);
 
   const dayEntries = entries
     .filter((e) => e.day === activeDay)
@@ -39,7 +63,7 @@ const StudentTimetablePage = () => {
   return (
     <DashboardLayout
       title="Weekly Class Timetable"
-      subtitle="BCA Semester 5 • Section A • Lecture & Lab Routine"
+      subtitle={`${selectedCourse} Semester ${selectedSemester} • Lecture & Lab Routine`}
     >
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
@@ -47,6 +71,39 @@ const StudentTimetablePage = () => {
           <span>{error}</span>
         </div>
       )}
+
+      {/* Dynamic Semester & Course Filter Header */}
+      <div className="bg-white dark:bg-[#121A2E] rounded-2xl border border-slate-200/80 dark:border-[#232D48] p-4 mb-6 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-[#9BA8C7]">
+          <Filter className="w-4 h-4 text-[#6C8CFF]" />
+          <span>Active Curriculum:</span>
+          <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-[#6C8CFF]/15 text-indigo-700 dark:text-[#6C8CFF] font-black">
+            {selectedCourse}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-slate-500 dark:text-[#9BA8C7] flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Semester:</span>
+          </label>
+          <div className="flex items-center gap-1 overflow-x-auto">
+            {SEMESTERS.map((sem) => (
+              <button
+                key={sem}
+                onClick={() => setSelectedSemester(sem)}
+                className={`w-7 h-7 rounded-lg text-xs font-bold transition-all ${
+                  selectedSemester === sem
+                    ? 'bg-gradient-to-r from-[#6C8CFF] to-[#43D9FF] text-slate-950 font-black shadow-sm'
+                    : 'bg-slate-100 dark:bg-[#18233B] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#232D48]'
+                }`}
+              >
+                {sem}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Day Selector Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-none">
@@ -79,7 +136,9 @@ const StudentTimetablePage = () => {
         <div className="bg-white dark:bg-[#121A2E] rounded-2xl border border-dashed border-slate-300 dark:border-[#232D48] p-12 text-center">
           <Calendar className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
           <h4 className="text-base font-bold text-slate-700 dark:text-slate-200">No Lectures Scheduled</h4>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">There are no lectures or lab periods scheduled for {activeDay}.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            There are no lectures or lab periods scheduled for {activeDay} in {selectedCourse} Semester {selectedSemester}.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -131,4 +190,3 @@ const StudentTimetablePage = () => {
 };
 
 export default StudentTimetablePage;
-

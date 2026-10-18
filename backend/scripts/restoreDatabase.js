@@ -52,7 +52,8 @@ const runRestore = async (specifiedBackupDir = null) => {
     { name: 'Notice', model: CampusModels.Notice },
     { name: 'Resource', model: CampusModels.Resource },
     { name: 'AttendanceSession', model: CampusModels.AttendanceSession },
-    { name: 'Notification', model: CampusModels.Notification }
+    { name: 'Notification', model: CampusModels.Notification },
+    { name: 'PaymentTransaction', model: CampusModels.PaymentTransaction }
   ];
 
   let restoredTotal = 0;

@@ -152,9 +152,35 @@ const getAttendanceReport = async (req, res, next) => {
   }
 };
 
+// @desc    Get attendance summary for student
+// @route   GET /api/attendance/summary
+// @access  Private
+const getAttendanceSummary = async (req, res, next) => {
+  try {
+    const studentId = req.query.studentId && ['admin', 'faculty'].includes(req.user.role)
+      ? req.query.studentId
+      : req.user.id;
+    const records = await Attendance.find({ student: studentId }).populate('subject', 'subjectCode subjectName');
+    const total = records.length;
+    const present = records.filter((r) => r.status === 'Present').length;
+    const percentage = total > 0 ? Number(((present / total) * 100).toFixed(1)) : 100;
+
+    res.status(200).json({
+      success: true,
+      totalClasses: total,
+      presentClasses: present,
+      percentage,
+      records
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   markAttendance,
   getStudentAttendance,
-  getAttendanceReport
+  getAttendanceReport,
+  getAttendanceSummary
 };
 

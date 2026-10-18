@@ -1,0 +1,527 @@
+<USER_REQUEST>
+# MASTER PROMPT: SMARTCAMPUS AI — UNIVERSITY-WIDE BRANDING & AMBIENT UI REDESIGN
+
+## 1. Role and Objective
+
+Act as a senior UI/UX designer, React frontend architect, brand identity designer, and accessibility specialist.
+
+You are working directly inside my existing project:
+
+**Project:** SmartCampus AI — Intelligent University Management & Student Support System  
+**Workspace:** `C:\VS CODE\SMARTCAMPUS`  
+**Frontend:** Existing React + Vite application  
+**Backend:** Existing Node.js + Express application  
+**Environment:** Windows 11, VS Code, Google Antigravity
+
+I have supplied the official SmartCampus AI logo. It features a navy-blue and gold university crest, graduation cap, academic building, open book with AI circuitry, gold laurels, and the words “SMARTCAMPUS-AI” with the tagline “LEARN • CONNECT • INNOVATE.”
+
+Your task is to integrate this exact logo into the existing website and give the entire application a polished, premium university identity inspired by modern university portals, academic institutions, and enterprise education platforms.
+
+**Do not generate a replacement logo. Use the supplied image as the source of truth.**
+
+Implement the changes directly in the existing project. Do not merely describe the design or provide sample code.
+
+## 2. Mandatory File Preservation Rules
+
+These requirements are non-negotiable:
+
+1. Never delete, remove, rename, or move any existing files or folders.
+2. Never delete or remove any `.txt`, `.md`, `.json`, `.env`, source, configuration, certificate, test, or documentation files.
+3. Do not overwrite unrelated files or rebuild the application from scratch.
+4. Inspect existing components, layouts, routes, styles, and assets before modifying them.
+5. Reuse existing components and styling conventions whenever practical.
+6. Do not create duplicate pages, duplicate navigation components, or multiple competing theme systems.
+7. Preserve all current authentication, role-based access, API integrations, dashboards, fee management, attendance, timetable, AI assistant, and notification functionality.
+8. Preserve the existing Git state and user changes.
+9. Create new files only when necessary, and use clear, consistent names.
+10. Do not weaken security, disable HTTPS, or alter backend behavior unnecessarily.
+
+## 3. Step One: Inspect the Existing Project
+
+Before making changes, inspect:
+
+- The full project structure.
+- Existing `client/src` folders and page components.
+- `client/src/App.jsx` or the actual routing configuration.
+- The shared navbar, sidebar, header, footer, and layout components.
+- Existing login, registration, and authentication pages.
+- Student, faculty, and administrator dashboards.
+- Existing global CSS, theme variables, typography, and responsive breakpoints.
+- The current logo and image asset directory.
+- Existing dark/light theme support.
+- Loading screens, error pages, and notification components.
+
+Determine how many pages and layouts already exist. Integrate the new visual identity into the existing architecture rather than creating a disconnected redesign.
+
+## 4. Logo Asset Integration
+
+Use the supplied logo image exactly as provided.
+
+First locate the uploaded image in the project workspace or accessible input files. If it is not already part of the repository, add a copy to an appropriate existing public asset directory, for example:
+
+`client/public/assets/smartcampus-ai-logo.png`
+
+Use that filename only if it does not conflict with an existing asset. If an equivalent asset already exists, reuse it.
+
+Do not rename, delete, or relocate the original user-provided file.
+
+### Logo variants and usage
+
+Use the full crest and wordmark for:
+
+- Login and registration pages.
+- Landing or welcome page.
+- Authentication loading screen.
+- Student dashboard welcome section, where space permits.
+- About or university identity section.
+- Full sidebar branding where appropriate.
+
+For compact spaces, use the existing image's appropriately cropped or scaled logo only if a clean variant can be produced without modifying or replacing the original asset.
+
+For the sidebar, display the complete logo at a suitable compact size without making the navigation crowded.
+
+### Logo rendering rules
+
+- Preserve the original aspect ratio.
+- Use `object-fit: contain`.
+- Do not stretch, squash, distort, or recolor the crest.
+- Do not recreate the lettering using ordinary text.
+- Do not crop away the crest, wordmark, or tagline in full-logo placements.
+- Use a suitable transparent or dark background when supported by the image.
+- Avoid placing the logo inside multiple unnecessary frames.
+- Provide meaningful alt text: `SmartCampus AI university logo`.
+- Prevent layout shifts while the logo loads.
+- Use responsive sizing for desktop, tablet, and mobile.
+- Avoid oversized logos inside data-heavy dashboards.
+
+The full logo should look prestigious on the login page but remain compact and functional throughout the authenticated application.
+
+## 5. University Design System
+
+Create or extend a consistent design system based on the supplied logo.
+
+### Core colors
+
+Use these as starting points and tune them against the actual logo:
+
+- Midnight navy: `#07162E`
+- Deep academic blue: `#0B2347`
+- Royal blue: `#173F78`
+- Gold: `#D9AE4B`
+- Light gold: `#F2D78A`
+- Ivory: `#F8F6F0`
+- White: `#FFFFFF`
+- Slate text: `#344256`
+- Muted text: `#748197`
+- Success: `#15966A`
+- Warning: `#D99122`
+- Error: `#D64545`
+
+Use navy and gold as the primary brand colors. Gold should provide elegant highlights rather than cover large areas of the interface.
+
+### Typography
+
+Use a consistent, professional typography system.
+
+Suggested approach:
+
+- Headings: an elegant, readable font such as `Manrope` or an already-installed equivalent.
+- Body and dashboard data: `Inter` or the project's existing equivalent.
+- Use strong, restrained heading weights.
+- Keep body text comfortable to read.
+- Use consistent heading hierarchy, line heights, and spacing.
+
+Prefer existing dependencies and installed fonts. Avoid adding a large dependency merely for typography.
+
+### UI principles
+
+The website should feel like a real university information system:
+
+- Professional.
+- Academic.
+- Trustworthy.
+- Modern.
+- Calm.
+- Accessible.
+- Data-focused.
+- Premium without looking flashy.
+
+Use consistent card radii, borders, shadows, buttons, tables, form fields, badges, dropdowns, and modal dialogs.
+
+Avoid excessive gradients, oversized headings inside dashboards, random colors, excessive glass effects, and unnecessary animations.
+
+## 6. Ambient Visual Effects
+
+Add subtle ambient effects inspired by modern university websites and enterprise AI platforms.
+
+The effects must enhance the content, not compete with it.
+
+### A. Ambient background lighting
+
+Create a restrained background treatment using layered CSS radial gradients or pseudo-elements.
+
+Suggested effects:
+
+- A soft blue ambient glow near a dashboard header.
+- A subtle warm gold glow around selected brand elements.
+- A low-opacity blue gradient behind the login hero.
+- Gentle lighting variation between the sidebar and main content.
+- Very subtle background depth behind selected hero sections.
+
+Keep ambient effects primarily in the background.
+
+Do not make text difficult to read. Avoid high-opacity neon glows, strong blur across content, or animated backgrounds that distract from academic work.
+
+### B. Logo hover treatment
+
+For interactive logo placements:
+
+- Add a very subtle brightness or shadow transition on hover.
+- Use a small scale transition only where it improves the experience.
+- Keep the logo stable while the user navigates.
+- Do not continuously rotate, bounce, pulse, or flash the crest.
+
+### C. Card interactions
+
+Use subtle hover effects for appropriate dashboard cards:
+
+- Slight elevation.
+- Gentle border-color transition.
+- Very restrained shadow.
+- Smooth color transition.
+- Clear keyboard focus states.
+
+Do not make tables, long lists, or every element animate independently.
+
+### D. Page transitions
+
+If the application already supports a routing or animation library, use it carefully.
+
+Otherwise, implement lightweight CSS transitions for:
+
+- Main content appearing.
+- Modal dialogs opening.
+- Dropdown menus opening.
+- Tabs switching.
+- Loading skeletons.
+
+Keep transitions short and unobtrusive. Avoid adding a new animation framework unless truly necessary.
+
+### E. Reduced motion
+
+Respect `prefers-reduced-motion: reduce`.
+
+When reduced motion is enabled:
+
+- Disable nonessential animation.
+- Remove parallax or animated background movement.
+- Preserve immediate visual feedback.
+- Keep the interface fully usable.
+
+### F. Performance
+
+- Prefer CSS effects over continuous JavaScript animation loops.
+- Avoid expensive filters over large parts of the screen.
+- Do not animate large full-screen elements continuously.
+- Avoid unnecessary re-renders.
+- Avoid introducing layout shifts.
+- Ensure effects work on typical student laptops and mobile devices.
+
+## 7. Authentication Pages
+
+Redesign the existing login and registration pages using the supplied branding.
+
+Create a polished university-style composition with:
+
+- SmartCampus AI logo.
+- University system identity.
+- A concise academic welcome message.
+- Existing authentication form.
+- Proper form labels.
+- Password visibility control, if already supported or implemented safely.
+- Validation messages.
+- Loading and error states.
+- Existing role-aware login behavior.
+- Clear password recovery access, if the project supports it.
+
+Use a restrained navy-and-gold visual identity with an ivory or white form surface, depending on the existing theme.
+
+The logo should be prominent but should not consume excessive vertical space.
+
+Keep authentication functionality intact. Do not hardcode demo credentials, automatically authenticate users, or remove existing validation.
+
+## 8. Shared Application Header
+
+Improve the existing shared header used by authenticated users.
+
+Integrate the brand identity through:
+
+- A compact logo or brand mark, where suitable.
+- Consistent header height.
+- Clear page titles and breadcrumbs, if already supported.
+- Existing notification controls.
+- Existing theme toggle.
+- Existing profile menu.
+- Consistent spacing and alignment.
+- Subtle border or shadow separating the header from the page.
+
+Do not duplicate existing navigation controls.
+
+Preserve existing notification counts, profile actions, logout behavior, and authentication-dependent content.
+
+## 9. Sidebar and Main Navigation
+
+Give the existing sidebar a professional academic appearance.
+
+Requirements:
+
+- Compact SmartCampus AI branding.
+- A clear logo-to-navigation relationship.
+- Existing navigation items and links preserved.
+- Distinct active-route styling.
+- Subtle blue or gold active indicator.
+- Readable icons and labels.
+- Consistent item spacing.
+- Smooth hover and focus feedback.
+- Existing role-based navigation preserved.
+- Responsive collapse behavior where appropriate.
+
+Do not remove navigation items to create extra space.
+
+Do not make the full sidebar glow continuously.
+
+Ensure that long navigation labels remain readable and the sidebar works at common laptop and mobile widths.
+
+## 10. Apply Branding Across All Existing Pages
+
+Audit every existing route and apply the new visual identity consistently.
+
+### Student pages
+
+Include the existing student pages for:
+
+- Overview/dashboard.
+- Courses.
+- Attendance.
+- Timetable.
+- Assignments.
+- Examinations and results.
+- Fees and invoices.
+- Study resources.
+- AI academic assistant.
+- Notices.
+- Profile.
+- Other student routes found in the repository.
+
+### Faculty pages
+
+Apply the same design system to existing faculty pages, including relevant:
+
+- Faculty dashboard.
+- Course and student management.
+- Attendance.
+- Assignments.
+- Examination and results.
+- Timetable.
+- Notices.
+- Profile.
+
+### Administrator pages
+
+Apply the same identity to existing administrative pages, including relevant:
+
+- Admin dashboard.
+- Student and faculty management.
+- Course management.
+- Academic settings.
+- Fee management.
+- Payment transactions.
+- Analytics.
+- Notices.
+- Audit logs.
+- Other existing administration routes.
+
+Do not assume all these routes exist. Inspect the project and modify only the actual pages and layouts present.
+
+Use shared CSS variables and reusable components to maintain consistency. Avoid copying the same large CSS block into every page.
+
+Do not rewrite the business logic of these pages simply to change their appearance.
+
+## 11. Dashboard Design
+
+Make dashboards feel like an institutional portal rather than a generic admin template.
+
+Use:
+
+- Clear page titles.
+- A compact welcome section.
+- Well-aligned metric cards.
+- Readable charts.
+- Organized data tables.
+- Consistent status badges.
+- Clear section headings.
+- Appropriate whitespace.
+- Subtle ambient lighting behind the top content region.
+- Consistent icons and action buttons.
+
+Preserve real data and API integrations.
+
+Do not replace charts, attendance figures, fees, student information, or notifications with hardcoded values.
+
+For the student dashboard, use the full logo in the welcome section only if the layout remains balanced. Avoid displaying the large crest repeatedly on every dashboard card.
+
+## 12. Fees & Payments Page
+
+Apply university branding to the existing Fees & Invoices page without interfering with the payment workflow.
+
+Requirements:
+
+- Preserve all seven fee categories already required by the project.
+- Preserve semester-wise fee assessments.
+- Preserve total assessed, paid, outstanding, and overdue amounts.
+- Maintain readable transaction tables and invoice layouts.
+- Use clear payment-status badges.
+- Style the existing Razorpay checkout launch and confirmation controls consistently.
+- Keep payment progress and error states visible.
+- Preserve receipt access and finance administration functionality.
+- Ensure that all amounts remain sourced from the backend.
+
+Do not make a failed or pending payment appear successful as part of a visual redesign.
+
+Do not change payment authentication, gateway verification, or financial calculations merely to adjust styling.
+
+## 13. Light and Dark Themes
+
+Inspect the existing theme system before changing it.
+
+If both themes are supported, make the branding work correctly in both.
+
+### Dark theme
+
+- Deep navy background.
+- Slightly lighter navy surfaces.
+- Ivory primary text.
+- Muted slate secondary text.
+- Restrained gold accents.
+- Subtle blue ambient lighting.
+
+### Light theme
+
+- Ivory or white background.
+- Navy headings.
+- Neutral gray borders.
+- Soft, restrained shadows.
+- Gold accents for emphasis.
+- High-contrast form controls and data tables.
+
+Do not force the entire application into dark mode if the existing theme toggle supports both themes.
+
+Persist theme preference using the existing mechanism. Avoid creating a conflicting second preference store.
+
+## 14. Responsive Design and Accessibility
+
+Ensure that the application remains functional on:
+
+- Large desktop displays.
+- Standard laptop screens.
+- Tablets.
+- Mobile phones.
+
+Requirements:
+
+- No horizontal page overflow.
+- No distorted logos.
+- Readable tables and cards.
+- Usable mobile navigation.
+- Proper contrast.
+- Visible keyboard focus.
+- Semantic headings and buttons.
+- Accessible names for icon-only controls.
+- Form labels and validation feedback.
+- Appropriate touch-target sizes.
+- Reduced-motion support.
+- Correct behavior at narrow viewport widths.
+
+Do not rely exclusively on color to communicate payment status, attendance status, or navigation selection.
+
+## 15. Implementation Architecture
+
+Create or extend a small, maintainable branding system using the project's existing structure.
+
+Where appropriate, use:
+
+- One shared set of brand CSS variables.
+- One shared logo asset.
+- Existing layout components.
+- Existing navigation components.
+- Reusable card and section styles.
+- Existing theme context.
+- Existing responsive breakpoints.
+
+Possible asset and stylesheet locations are examples only. Inspect the real structure and follow existing conventions.
+
+Do not introduce duplicate global stylesheets or multiple competing branding providers.
+
+Avoid adding dependencies unless necessary.
+
+If image optimization is needed, preserve the original logo and create a separate optimized copy only when appropriate.
+
+## 16. Testing and Quality Checks
+
+After implementation:
+
+1. Run the existing frontend production build.
+2. Run the existing frontend tests.
+3. Check that all existing application routes still load.
+4. Verify the logo loads without a broken-image icon.
+5. Verify the full logo is not stretched or cropped.
+6. Check the login and registration pages.
+7. Check student, faculty, and admin layouts.
+8. Check the Fees & Invoices page and ensure payment behavior remains intact.
+9. Check existing navigation, notifications, profile menus, and logout.
+10. Test light and dark themes, if supported.
+11. Check desktop and mobile layouts.
+12. Inspect the browser console for new errors.
+13. Check for missing assets and invalid CSS.
+14. Check Git changes to confirm unrelated code was preserved.
+
+Do not suppress console errors just to make the redesign look successful.
+
+Do not weaken tests or report unexecuted tests as passing.
+
+## 17. Final Report
+
+When finished, provide:
+
+- The logo asset location used.
+- Every file created.
+- Every existing file modified.
+- A list of the pages and layouts updated.
+- The shared branding and ambient effects implemented.
+- Responsive and accessibility improvements.
+- Build and test results.
+- Any remaining visual limitations.
+- Confirmation that no existing files, folders, or `.txt` files were removed, renamed, or moved.
+- Confirmation that authentication, APIs, fee calculations, and payment verification were preserved.
+
+## FINAL EXECUTION INSTRUCTION
+
+Inspect the current repository and supplied logo first. Then implement the branding and ambient design directly across the existing SmartCampus AI website.
+
+Use the exact supplied logo, preserve the existing project structure, and apply the visual system consistently across all real application routes.
+
+**The final result must resemble a premium, credible university portal with subtle ambient effects—not a flashy gaming dashboard, not a neon-heavy AI landing page, and not a generic template.**
+
+Do not stop after proposing a design. Implement the changes, run the available checks, and report the actual results.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-18T07:28:59+05:30.
+
+The user's current state is as follows:
+Other open documents:
+- c:\VS CODE\SMARTCAMPUS\backend\.env (LANGUAGE_UNSPECIFIED)
+- c:\VS CODE\SMARTCAMPUS\backend\models\CampusModels.js (LANGUAGE_UNSPECIFIED)
+- c:\VS CODE\SMARTCAMPUS\client\src\pages\FacultyClassesPage.jsx (LANGUAGE_UNSPECIFIED)
+- c:\VS CODE\SMARTCAMPUS\backend\server.js (LANGUAGE_UNSPECIFIED)
+- c:\VS CODE\SMARTCAMPUS\client\.env (LANGUAGE_UNSPECIFIED)
+</ADDITIONAL_METADATA>

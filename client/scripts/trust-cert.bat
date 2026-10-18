@@ -28,20 +28,23 @@ if not exist "%CA_FILE%" (
 
 certutil -addstore -user "Root" "%CA_FILE%"
 
-if %ERRORLEVEL% equ 0 (
-    echo.
-    echo ======================================================================
-    echo [SUCCESS] Root CA installed into Trusted Root Authorities!
-    echo.
-    echo Next Steps:
-    echo 1. Close and reopen Google Chrome (or your browser).
-    echo 2. Navigate to: https://192.168.208.1:5173 or https://localhost:5173
-    echo 3. You will now see the verified secure padlock [🔒] with 0 warnings!
-    echo ======================================================================
-) else (
-    echo.
-    echo [INFO] Certificate installation was canceled or not completed.
-)
+if %ERRORLEVEL% neq 0 goto :failed
+
+echo ======================================================================
+echo [SUCCESS] Root CA installed into Trusted Root Authorities!
+echo.
+echo Next Steps:
+echo  - Step 1: Close and reopen Google Chrome (or your browser).
+echo  - Step 2: Navigate to https://192.168.208.1:5173 or https://localhost:5173
+echo  - Step 3: You will now see the verified secure padlock [SSL/TLS] with 0 warnings!
+echo ======================================================================
+goto :end
+
+:failed
+echo.
+echo [INFO] Certificate installation was canceled or not completed.
+
+:end
 
 echo.
 pause

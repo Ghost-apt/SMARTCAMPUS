@@ -31,6 +31,18 @@ const validateEnv = () => {
     }
   }
 
+  // Known development placeholders strictly forbidden in production
+  const KNOWN_DEV_JWT_SECRETS = [
+    'smartcampus_jwt_secret_dev_key_2026',
+    'supersecret_jwt_key_smartcampus_2026_dev_secure',
+    'smartcampus_dev_jwt_secret_key_2026_minimum_32chars_long'
+  ];
+  const KNOWN_DEV_AI_SECRETS = [
+    'smartcampus-internal-ai-secret-key-2026',
+    'smartcampus_internal_ai_secret_key_2026',
+    'your_shared_internal_ai_secret_key_here'
+  ];
+
   // 2. JWT_SECRET validation
   if (!process.env.JWT_SECRET) {
     if (isProduction) {
@@ -41,23 +53,38 @@ const validateEnv = () => {
     }
   } else {
     const jwtSecret = process.env.JWT_SECRET.trim();
-    if (isProduction && jwtSecret.length < 32) {
-      errors.push('JWT_SECRET must be at least 32 characters long in production mode for cryptographic security.');
+    if (isProduction) {
+      if (jwtSecret.length < 32) {
+        errors.push('JWT_SECRET must be at least 32 characters long in production mode for cryptographic security.');
+      }
+      if (KNOWN_DEV_JWT_SECRETS.includes(jwtSecret)) {
+        errors.push('JWT_SECRET in production cannot equal a known development placeholder.');
+      }
     } else if (!isProduction && jwtSecret.length < 16) {
       warnings.push('JWT_SECRET is relatively short (<16 chars). Recommended: >=32 chars.');
     }
   }
 
-  // 3. Port validation
-  const port = parseInt(process.env.PORT || '5001', 10);
+  // 3. Port validation (aligned to 5000)
+  const port = parseInt(process.env.PORT || '5000', 10);
   if (isNaN(port) || port < 1 || port > 65535) {
     errors.push(`Invalid PORT configuration: "${process.env.PORT}". Must be an integer between 1 and 65535.`);
   }
 
-  // 4. Internal AI Secret Key check
-  if (!process.env.INTERNAL_AI_KEY) {
-    process.env.INTERNAL_AI_KEY = 'smartcampus-internal-ai-secret-key-2026';
-    warnings.push('INTERNAL_AI_KEY is not set; defaulting to standard internal key.');
+  // 4. Internal AI Secret Key check (canonical: INTERNAL_AI_KEY, backwards-compatible: INTERNAL_API_KEY)
+  const rawAiKey = (process.env.INTERNAL_AI_KEY || process.env.INTERNAL_API_KEY || '').trim();
+  if (!rawAiKey) {
+    if (isProduction) {
+      errors.push('Missing required environment variable: INTERNAL_AI_KEY');
+    } else {
+      process.env.INTERNAL_AI_KEY = 'smartcampus-internal-ai-secret-key-2026';
+      warnings.push('INTERNAL_AI_KEY is not set; defaulting to standard internal key.');
+    }
+  } else {
+    if (isProduction && KNOWN_DEV_AI_SECRETS.includes(rawAiKey)) {
+      errors.push('INTERNAL_AI_KEY in production cannot equal a known development placeholder.');
+    }
+    process.env.INTERNAL_AI_KEY = rawAiKey;
   }
 
   // 5. AI Microservice URL check

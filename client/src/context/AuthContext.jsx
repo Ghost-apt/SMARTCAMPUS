@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await api.get('/auth/me');
         if (res.data.success && res.data.user) {
-          setUser(res.data.user);
+          setUser({ ...res.data.user, profile: res.data.profile || null });
           setToken(storedToken);
         } else {
           // Invalidate
@@ -106,6 +106,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    profile: user?.profile || null,
     token,
     role: user?.role || null,
     loading,

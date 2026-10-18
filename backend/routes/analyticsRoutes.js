@@ -12,6 +12,13 @@ router.get(
   analyticsController.getAdminAnalytics
 );
 
+router.get(
+  '/admin/audit-logs',
+  authenticate,
+  authorize('admin'),
+  analyticsController.getAdminAuditLogs
+);
+
 // Faculty Analytics
 router.get(
   '/faculty/overview',

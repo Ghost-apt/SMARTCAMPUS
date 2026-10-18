@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import api from '../services/api';
-import { CreditCard, PlusCircle, CheckCircle2, Clock, AlertCircle, X, DollarSign } from 'lucide-react';
+import { CreditCard, PlusCircle, CheckCircle2, Clock, AlertCircle, X, DollarSign, Download, History, ShieldCheck } from 'lucide-react';
 
 const AdminFeesPage = () => {
   const [feeData, setFeeData] = useState(null);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('invoices'); // 'invoices' or 'transactions'
+  const [transactions, setTransactions] = useState([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
 
   // Payment Modal State
   const [selectedFee, setSelectedFee] = useState(null);
@@ -21,7 +24,7 @@ const AdminFeesPage = () => {
   // Create Invoice Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newStudentId, setNewStudentId] = useState('');
-  const [feeType, setFeeType] = useState('Tuition Fee');
+  const [feeType, setFeeType] = useState('Academic Fees');
   const [semester, setSemester] = useState(5);
   const [totalAmount, setTotalAmount] = useState('45000');
   const [dueDate, setDueDate] = useState('');
@@ -48,8 +51,42 @@ const AdminFeesPage = () => {
     }
   };
 
+  const fetchTransactions = async () => {
+    setLoadingTransactions(true);
+    try {
+      const res = await api.get('/fees/transactions');
+      if (res.data.success) {
+        setTransactions(res.data.transactions || []);
+      }
+    } catch (err) {
+      console.warn('Failed to load transactions:', err.message);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const handleDownloadReceipt = async (feeId, receiptNo) => {
+    try {
+      const response = await api.get(`/fees/${feeId}/receipt`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `SmartCampus_Receipt_${receiptNo || feeId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      setError('Failed to download receipt for selected fee.');
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchTransactions();
   }, []);
 
   const handleRecordPayment = async (e) => {
@@ -154,103 +191,245 @@ const AdminFeesPage = () => {
         </div>
       </div>
 
-      {/* Control Strip */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 mb-8 shadow-sm flex items-center justify-between">
-        <div>
-          <h3 className="font-bold text-base text-slate-900">Student Invoices Ledger</h3>
-          <p className="text-xs text-slate-500">Record incoming payments or issue new semester fee bills.</p>
-        </div>
+      {/* Tab Navigation */}
+      <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition-colors"
+          onClick={() => setActiveTab('invoices')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === 'invoices'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
         >
-          <PlusCircle className="w-4 h-4" />
-          <span>Generate Invoice</span>
+          <CreditCard className="w-4 h-4" />
+          <span>Fee Invoices Ledger ({fees.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('transactions')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            activeTab === 'transactions'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          <History className="w-4 h-4" />
+          <span>Gateway Transactions ({transactions.length})</span>
         </button>
       </div>
 
-      {/* Fees Table */}
-      {loading ? (
-        <LoadingSkeleton count={4} />
-      ) : fees.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
-          <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h4 className="text-base font-bold text-slate-700">No Invoices on File</h4>
-          <p className="text-xs text-slate-400 mt-1">Generate fee invoices to track student dues.</p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase">
-                  <th className="pb-3">Student</th>
-                  <th className="pb-3">Invoice Type</th>
-                  <th className="pb-3 text-right">Billed</th>
-                  <th className="pb-3 text-right">Paid</th>
-                  <th className="pb-3 text-right">Balance Due</th>
-                  <th className="pb-3 text-center">Receipt Number</th>
-                  <th className="pb-3 text-center">Status</th>
-                  <th className="pb-3 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {fees.map((f) => (
-                  <tr key={f._id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3.5 font-bold text-slate-900">
-                      {f.student?.name || 'Student'}
-                      <span className="block font-normal text-[11px] text-slate-400 font-mono">
-                        {f.student?.studentId || f.student?.email}
-                      </span>
-                    </td>
-                    <td className="py-3.5 text-slate-700">
-                      {f.feeType}
-                      <span className="block text-[11px] text-slate-400">Sem {f.semester}</span>
-                    </td>
-                    <td className="py-3.5 text-right font-bold text-slate-900">
-                      ₹{f.totalAmount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 text-right font-bold text-emerald-600">
-                      ₹{f.paidAmount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 text-right font-bold text-rose-600">
-                      ₹{f.balanceAmount.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 text-center font-mono text-[11px] text-indigo-700 font-semibold">
-                      {f.receiptNumber || 'None'}
-                    </td>
-                    <td className="py-3.5 text-center">
-                      <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] uppercase ${
-                        f.status === 'Paid'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : f.status === 'Partial'
-                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}>
-                        {f.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 text-center">
-                      {f.balanceAmount > 0 ? (
-                        <button
-                          onClick={() => {
-                            setSelectedFee(f);
-                            setPaymentAmount(f.balanceAmount);
-                            setReceiptNumber(`REC-${Date.now().toString().slice(-6)}`);
-                          }}
-                          className="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
-                        >
-                          Record Payment
-                        </button>
-                      ) : (
-                        <span className="text-[11px] font-semibold text-emerald-600">Cleared</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {activeTab === 'invoices' ? (
+        <>
+          {/* Control Strip */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 mb-8 shadow-sm flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-base text-slate-900">Student Invoices Ledger</h3>
+              <p className="text-xs text-slate-500">Record incoming payments or issue new semester fee bills across all 6 categories.</p>
+            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition-colors"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Generate Invoice</span>
+            </button>
           </div>
+
+          {/* Fees Table */}
+          {loading ? (
+            <LoadingSkeleton count={4} />
+          ) : fees.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+              <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <h4 className="text-base font-bold text-slate-700">No Invoices on File</h4>
+              <p className="text-xs text-slate-400 mt-1">Generate fee invoices to track student dues.</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase">
+                      <th className="pb-3">Student</th>
+                      <th className="pb-3">Invoice Type</th>
+                      <th className="pb-3 text-right">Billed</th>
+                      <th className="pb-3 text-right">Paid</th>
+                      <th className="pb-3 text-right">Balance Due</th>
+                      <th className="pb-3 text-center">Receipt Number</th>
+                      <th className="pb-3 text-center">Status</th>
+                      <th className="pb-3 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {fees.map((f) => (
+                      <tr key={f._id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3.5 font-bold text-slate-900">
+                          {f.student?.name || 'Student'}
+                          <span className="block font-normal text-[11px] text-slate-400 font-mono">
+                            {f.student?.studentId || f.student?.email}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-slate-700">
+                          {f.feeType}
+                          <span className="block text-[11px] text-slate-400">Sem {f.semester}</span>
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-slate-900">
+                          ₹{f.totalAmount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-emerald-600">
+                          ₹{f.paidAmount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3.5 text-right font-bold text-rose-600">
+                          ₹{f.balanceAmount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-3.5 text-center font-mono text-[11px] text-indigo-700 font-semibold">
+                          {f.receiptNumber || 'None'}
+                        </td>
+                        <td className="py-3.5 text-center">
+                          <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] uppercase ${
+                            f.status === 'Paid'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : f.status === 'Partial'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-rose-50 text-rose-700 border border-rose-200'
+                          }`}>
+                            {f.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            {f.paidAmount > 0 && (
+                              <button
+                                onClick={() => handleDownloadReceipt(f._id, f.receiptNumber)}
+                                className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1"
+                                title="Download Receipt PDF"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                <span>PDF</span>
+                              </button>
+                            )}
+                            {f.balanceAmount > 0 ? (
+                              <button
+                                onClick={() => {
+                                  setSelectedFee(f);
+                                  setPaymentAmount(f.balanceAmount);
+                                  setReceiptNumber(`REC-${Date.now().toString().slice(-6)}`);
+                                }}
+                                className="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
+                              >
+                                Record Payment
+                              </button>
+                            ) : (
+                              <span className="text-[11px] font-semibold text-emerald-600">Cleared</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        /* Transactions Tab */
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-base text-slate-900">Razorpay Gateway Transactions</h3>
+              <p className="text-xs text-slate-500">Live order captures, webhook settlements, and receipt audit ledger.</p>
+            </div>
+            <button
+              onClick={fetchTransactions}
+              className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Refresh
+            </button>
+          </div>
+
+          {loadingTransactions ? (
+            <LoadingSkeleton count={4} />
+          ) : transactions.length === 0 ? (
+            <div className="text-center py-12 border border-dashed border-slate-200 rounded-xl">
+              <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-slate-700">No gateway transactions recorded yet</p>
+              <p className="text-xs text-slate-400">Transactions created by students via Razorpay will be listed here.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase">
+                    <th className="pb-3">Order ID / Payment ID</th>
+                    <th className="pb-3">Student</th>
+                    <th className="pb-3">Category</th>
+                    <th className="pb-3 text-right">Amount</th>
+                    <th className="pb-3 text-center">Status</th>
+                    <th className="pb-3 text-center">Date</th>
+                    <th className="pb-3 text-center">Receipt</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {transactions.map((tx) => (
+                    <tr key={tx._id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-3.5">
+                        <span className="font-mono font-bold text-slate-900 block">{tx.orderId}</span>
+                        {tx.paymentId ? (
+                          <span className="font-mono text-[11px] text-emerald-600 font-medium block">
+                            {tx.paymentId}
+                          </span>
+                        ) : (
+                          <span className="font-mono text-[11px] text-slate-400 block">Pending Gateway</span>
+                        )}
+                      </td>
+                      <td className="py-3.5">
+                        <span className="font-bold text-slate-900 block">{tx.student?.name || 'Student'}</span>
+                        <span className="text-[11px] text-slate-400 block">{tx.student?.email}</span>
+                      </td>
+                      <td className="py-3.5 text-slate-700">
+                        {tx.feeRecord?.feeType || 'University Fee'}
+                        <span className="block text-[11px] text-slate-400">Sem {tx.feeRecord?.semester || '-'}</span>
+                      </td>
+                      <td className="py-3.5 text-right font-bold text-slate-900">
+                        ₹{(tx.amount || 0).toLocaleString('en-IN')}
+                      </td>
+                      <td className="py-3.5 text-center">
+                        <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] uppercase ${
+                          tx.status === 'captured'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : tx.status === 'created'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : 'bg-rose-50 text-rose-700 border border-rose-200'
+                        }`}>
+                          {tx.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 text-center text-slate-500 text-[11px]">
+                        {new Date(tx.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </td>
+                      <td className="py-3.5 text-center">
+                        {tx.feeRecord?._id ? (
+                          <button
+                            onClick={() => handleDownloadReceipt(tx.feeRecord._id, tx.receiptNumber)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>PDF</span>
+                          </button>
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -377,10 +556,16 @@ const AdminFeesPage = () => {
                     onChange={(e) => setFeeType(e.target.value)}
                     className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 bg-white"
                   >
-                    <option value="Tuition Fee">Tuition Fee</option>
-                    <option value="Hostel Fee">Hostel Fee</option>
-                    <option value="Examination Fee">Examination Fee</option>
-                    <option value="Library Deposit">Library Deposit</option>
+                    <option value="Academic Fees">Academic Fees</option>
+                    <option value="Debarred Fees">Debarred Fees</option>
+                    <option value="Hostel Fees">Hostel Fees</option>
+                    <option value="Transportation Fees">Transportation Fees</option>
+                    <option value="Backlogs Fees">Backlogs Fees</option>
+                    <option value="Miscellaneous Fees">Miscellaneous Fees</option>
+                    <option value="Tuition Fee">Tuition Fee (Legacy)</option>
+                    <option value="Hostel Fee">Hostel Fee (Legacy)</option>
+                    <option value="Examination Fee">Examination Fee (Legacy)</option>
+                    <option value="Library Deposit">Library Deposit (Legacy)</option>
                   </select>
                 </div>
                 <div>

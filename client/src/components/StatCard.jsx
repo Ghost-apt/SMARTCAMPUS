@@ -49,6 +49,18 @@ const StatCard = ({ title, value, icon: Icon, color = 'indigo', subtitle, trend 
       border: 'border-blue-100 dark:border-blue-500/20',
       glow: 'hover:shadow-blue-500/10',
       accent: 'from-blue-600 to-cyan-500'
+    },
+    gold: {
+      bg: 'bg-[#D9AE4B]/15 text-[#B8860B] dark:text-[#F2D78A]',
+      border: 'border-[#D9AE4B]/30',
+      glow: 'hover:shadow-[#D9AE4B]/15',
+      accent: 'from-[#D9AE4B] to-[#F2D78A]'
+    },
+    navy: {
+      bg: 'bg-[#0B2347]/10 dark:bg-[#173F78]/30 text-[#07162E] dark:text-[#F8F6F0]',
+      border: 'border-[#173F78]/40',
+      glow: 'hover:shadow-[#173F78]/20',
+      accent: 'from-[#07162E] to-[#173F78]'
     }
   };
 
@@ -56,7 +68,7 @@ const StatCard = ({ title, value, icon: Icon, color = 'indigo', subtitle, trend 
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800/90 shadow-sm hover:shadow-xl ${currentTheme.glow} transition-all duration-300 hover:-translate-y-1`}
+      className={`group relative overflow-hidden rounded-2xl p-5 bg-white/95 dark:bg-[#0B2347]/75 border border-slate-200/90 dark:border-[#173F78]/50 shadow-sm hover:shadow-xl hover:border-[#D9AE4B]/35 ${currentTheme.glow} transition-all duration-300 hover:-translate-y-0.5`}
     >
       {/* Decorative top accent line */}
       <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${currentTheme.accent} opacity-60 group-hover:opacity-100 transition-opacity`} />

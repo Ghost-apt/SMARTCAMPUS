@@ -42,17 +42,40 @@ export default {
           warning: '#F59E0B',
           danger: '#F43F5E',
           // Legacy aliases for backward compatibility
-          navy: '#080B16',
+          navy: '#07162E',
           indigo: '#6C8CFF',
           indigoHover: '#5575F5',
           teal: '#43D9FF',
           tealLight: '#6CE1FF',
           bg: '#F8FAFC',
           surface: '#FFFFFF',
-          border: '#E2E8F0'
+          border: '#E2E8F0',
+          // Official University Tokens
+          midnightNavy: '#07162E',
+          academicBlue: '#0B2347',
+          royalBlue: '#173F78',
+          gold: '#D9AE4B',
+          goldLight: '#F2D78A',
+          ivory: '#F8F6F0'
+        },
+        univ: {
+          navy: '#07162E',
+          deepBlue: '#0B2347',
+          royalBlue: '#173F78',
+          gold: '#D9AE4B',
+          goldLight: '#F2D78A',
+          ivory: '#F8F6F0',
+          slate: '#344256',
+          muted: '#748197',
+          success: '#15966A',
+          warning: '#D99122',
+          error: '#D64545'
         }
       },
       boxShadow: {
+        'glow-gold': '0 0 25px -4px rgba(217, 174, 75, 0.35)',
+        'glow-navy': '0 0 30px -4px rgba(11, 35, 71, 0.45)',
+        'glow-royal': '0 0 25px -4px rgba(23, 63, 120, 0.35)',
         'glow-blue': '0 0 30px -4px rgba(108, 140, 255, 0.35)',
         'glow-cyan': '0 0 30px -4px rgba(67, 217, 255, 0.35)',
         'glow-violet': '0 0 30px -4px rgba(167, 139, 250, 0.35)',

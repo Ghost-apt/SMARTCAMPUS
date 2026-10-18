@@ -12,8 +12,9 @@ Implements endpoints for:
 """
 
 import os
+import secrets
 from datetime import datetime
-from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from typing import Optional
 
 from app.config import INTERNAL_API_KEY, MODEL_PATH, MODEL_META_PATH
@@ -53,15 +54,24 @@ router = APIRouter()
 def verify_internal_auth(x_internal_key: Optional[str] = Header(None, alias="X-Internal-Key")):
     """
     Validates internal service-to-service communication.
-    Allows local development calls when configured or matches INTERNAL_API_KEY.
+    Requires matching INTERNAL_API_KEY using constant-time comparison.
+    Rejects missing or empty keys with 401, invalid keys with 403.
     """
-    if x_internal_key and x_internal_key != INTERNAL_API_KEY:
-        raise HTTPException(status_code=403, detail="Unauthorized internal service access.")
+    if not x_internal_key or not x_internal_key.strip():
+        raise HTTPException(
+            status_code=401,
+            detail="Internal authentication required. Missing or empty X-Internal-Key header."
+        )
+    if not secrets.compare_digest(x_internal_key.strip(), INTERNAL_API_KEY):
+        raise HTTPException(
+            status_code=403,
+            detail="Unauthorized internal service access. Invalid X-Internal-Key."
+        )
     return True
 
 @router.get("/health", response_model=HealthResponse)
 def health_check():
-    """Returns AI service telemetry, ML model load state, and LLM connectivity."""
+    """Returns AI service telemetry, ML model load state, and LLM connectivity (public probe)."""
     model, meta = get_loaded_model()
     return HealthResponse(
         status="healthy",
@@ -73,8 +83,8 @@ def health_check():
         timestamp=datetime.utcnow().isoformat()
     )
 
-@router.post("/predict/academic-support", response_model=PredictionResult)
-def predict_academic_support(metrics: StudentMetrics, auth: bool = Header(None)):
+@router.post("/predict/academic-support", response_model=PredictionResult, dependencies=[Depends(verify_internal_auth)])
+def predict_academic_support(metrics: StudentMetrics):
     """
     Single student early academic support evaluation.
     Computes risk score, explainable primary factors, and recommended interventions.
@@ -82,7 +92,7 @@ def predict_academic_support(metrics: StudentMetrics, auth: bool = Header(None))
     result = evaluate_student_risk(metrics.model_dump())
     return PredictionResult(**result)
 
-@router.post("/predict/batch", response_model=BatchSupportResponse)
+@router.post("/predict/batch", response_model=BatchSupportResponse, dependencies=[Depends(verify_internal_auth)])
 def predict_batch_academic_support(batch: BatchSupportRequest):
     """
     Evaluates an entire classroom cohort or department for academic risk.
@@ -97,7 +107,7 @@ def predict_batch_academic_support(batch: BatchSupportRequest):
         results=[PredictionResult(**r) for r in results]
     )
 
-@router.post("/recommendations", response_model=RecommendationResponse)
+@router.post("/recommendations", response_model=RecommendationResponse, dependencies=[Depends(verify_internal_auth)])
 def get_recommendations(req: RecommendationRequest):
     """
     Generates personalized study topics and approved university library resources
@@ -120,7 +130,7 @@ def get_recommendations(req: RecommendationRequest):
         generated_at=datetime.utcnow().isoformat()
     )
 
-@router.post("/assistant/respond", response_model=AssistantResponse)
+@router.post("/assistant/respond", response_model=AssistantResponse, dependencies=[Depends(verify_internal_auth)])
 def assistant_chat(query_data: AssistantQuery):
     """
     Role-aware campus assistant answering attendance, routine, exam, and assignment queries
@@ -142,7 +152,7 @@ def assistant_chat(query_data: AssistantQuery):
         timestamp=datetime.utcnow().isoformat()
     )
 
-@router.post("/ml/train", response_model=TrainResponse)
+@router.post("/ml/train", response_model=TrainResponse, dependencies=[Depends(verify_internal_auth)])
 def train_model():
     """
     Executes the scikit-learn training pipeline on benchmark dataset,
@@ -159,7 +169,7 @@ def train_model():
         saved_to=result["saved_to"]
     )
 
-@router.get("/ml/model-info", response_model=ModelInfoResponse)
+@router.get("/ml/model-info", response_model=ModelInfoResponse, dependencies=[Depends(verify_internal_auth)])
 def get_model_info():
     """
     Returns metadata, version, features, accuracy metrics, and responsible AI disclaimer.
@@ -186,7 +196,7 @@ def get_model_info():
 # Phase 5: RAG Academic Document Endpoints
 # ==========================================
 
-@router.post("/rag/ingest", response_model=RAGIngestResponse)
+@router.post("/rag/ingest", response_model=RAGIngestResponse, dependencies=[Depends(verify_internal_auth)])
 def ingest_document(req: RAGIngestRequest):
     """
     Ingests an academic syllabus, note, or handout PDF/text into the persistent vector store.
@@ -250,7 +260,7 @@ def ingest_document(req: RAGIngestRequest):
         message=f"Successfully extracted {len(pages)} page(s) and indexed {chunk_count} chunk(s) into vector store."
     )
 
-@router.post("/rag/query", response_model=RAGQueryResponse)
+@router.post("/rag/query", response_model=RAGQueryResponse, dependencies=[Depends(verify_internal_auth)])
 def query_academic_documents(req: RAGQueryRequest):
     """
     Retrieves authorized academic document passages and generates a grounded response
@@ -283,7 +293,7 @@ def query_academic_documents(req: RAGQueryRequest):
         engine=result["engine"]
     )
 
-@router.delete("/rag/document/{document_id}")
+@router.delete("/rag/document/{document_id}", dependencies=[Depends(verify_internal_auth)])
 def delete_rag_document(document_id: str):
     """
     Deletes all chunks and vectors associated with an academic document.
@@ -297,7 +307,7 @@ def delete_rag_document(document_id: str):
         "message": "Document vectors successfully purged from store." if existed else "Document was not in index."
     }
 
-@router.get("/rag/status", response_model=RAGStatusResponse)
+@router.get("/rag/status", response_model=RAGStatusResponse, dependencies=[Depends(verify_internal_auth)])
 def get_rag_status():
     """
     Reports status, readiness, and total catalog count of the RAG vector store.

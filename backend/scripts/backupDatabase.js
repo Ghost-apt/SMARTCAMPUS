@@ -38,7 +38,8 @@ const runBackup = async () => {
     { name: 'Notice', model: CampusModels.Notice },
     { name: 'Resource', model: CampusModels.Resource },
     { name: 'AttendanceSession', model: CampusModels.AttendanceSession },
-    { name: 'Notification', model: CampusModels.Notification }
+    { name: 'Notification', model: CampusModels.Notification },
+    { name: 'PaymentTransaction', model: CampusModels.PaymentTransaction }
   ];
 
   const metadata = {
@@ -52,7 +53,7 @@ const runBackup = async () => {
     try {
       let query = model.find({});
       if (name === 'User') {
-        query = query.select('+password');
+        query = query.select('-password -resetPasswordToken -resetPasswordExpire');
       }
       const records = await query.lean();
       const filePath = path.join(backupDir, `${name}.json`);

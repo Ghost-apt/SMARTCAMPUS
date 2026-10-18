@@ -40,6 +40,7 @@ import AdminAttendancePage from './pages/AdminAttendancePage';
 import AdminFeesPage from './pages/AdminFeesPage';
 import AdminNoticesPage from './pages/AdminNoticesPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
+import AdminSettingsPage from './pages/AdminSettingsPage';
 
 import LandingPage from './pages/LandingPage';
 
@@ -322,7 +323,7 @@ function App() {
         path="/admin/settings"
         element={
           <ProtectedRoute allowedRoles={['admin']}>
-            <AdminAnalyticsPage />
+            <AdminSettingsPage />
           </ProtectedRoute>
         }
       />

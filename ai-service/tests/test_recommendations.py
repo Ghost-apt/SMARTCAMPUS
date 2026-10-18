@@ -52,3 +52,71 @@ def test_assistant_response_with_authorized_context():
     # Test attendance response
     att_res = generate_campus_response("STU-001", "student", "What is my attendance rate?", context)
     assert "91.5%" in att_res["response"]
+
+def test_internal_auth_missing_key_rejected():
+    from fastapi import HTTPException
+    from app.api.routes import verify_internal_auth
+
+    with pytest.raises(HTTPException) as exc_info:
+        verify_internal_auth(None)
+    assert exc_info.value.status_code == 401
+    assert "Missing or empty" in exc_info.value.detail
+
+def test_internal_auth_empty_key_rejected():
+    from fastapi import HTTPException
+    from app.api.routes import verify_internal_auth
+
+    with pytest.raises(HTTPException) as exc_info:
+        verify_internal_auth("   ")
+    assert exc_info.value.status_code == 401
+
+def test_internal_auth_invalid_key_rejected():
+    from fastapi import HTTPException
+    from app.api.routes import verify_internal_auth
+
+    with pytest.raises(HTTPException) as exc_info:
+        verify_internal_auth("attacker-spoofed-key-2026")
+    assert exc_info.value.status_code == 403
+    assert "Unauthorized" in exc_info.value.detail
+
+def test_internal_auth_valid_key_accepted():
+    from app.api.routes import verify_internal_auth
+    from app.config import INTERNAL_API_KEY
+
+    assert verify_internal_auth(INTERNAL_API_KEY) is True
+
+def test_all_protected_endpoints_enforce_auth_dependency():
+    from app.api.routes import router, verify_internal_auth
+
+    protected_paths = {
+        "/predict/academic-support",
+        "/predict/batch",
+        "/recommendations",
+        "/assistant/respond",
+        "/ml/train",
+        "/ml/model-info",
+        "/rag/ingest",
+        "/rag/query",
+        "/rag/status",
+        "/rag/document/{document_id}"
+    }
+
+    found_paths = set()
+    for route in router.routes:
+        if hasattr(route, "path") and route.path in protected_paths:
+            found_paths.add(route.path)
+            # Route must declare verify_internal_auth in its dependencies
+            dep_callables = [d.dependency for d in getattr(route, "dependencies", [])]
+            assert verify_internal_auth in dep_callables, f"Route {route.path} is missing verify_internal_auth dependency!"
+
+    assert protected_paths == found_paths, f"Expected to find all protected routes, found {found_paths}"
+
+def test_health_endpoint_is_public():
+    from app.api.routes import router, verify_internal_auth
+
+    health_routes = [r for r in router.routes if getattr(r, "path", None) == "/health"]
+    assert len(health_routes) == 1
+    dep_callables = [d.dependency for d in getattr(health_routes[0], "dependencies", [])]
+    assert verify_internal_auth not in dep_callables, "Public /health endpoint must not require internal auth."
+
+

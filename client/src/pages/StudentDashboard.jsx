@@ -23,6 +23,7 @@ import {
   Calendar,
   CreditCard
 } from 'lucide-react';
+import SmartCampusLogo from '../components/SmartCampusLogo';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -133,6 +134,31 @@ const StudentDashboard = () => {
           <span>{error}</span>
         </div>
       )}
+
+      {/* University Institutional Banner */}
+      <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#07162E] via-[#0B2347] to-[#173F78] text-white border border-[#D9AE4B]/30 shadow-md flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:block flex-shrink-0">
+            <SmartCampusLogo variant="crest" size="md" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#D9AE4B] px-2 py-0.5 rounded bg-[#D9AE4B]/15 border border-[#D9AE4B]/30">
+                Official University Portal
+              </span>
+              <span className="text-xs text-slate-300 font-medium">Academic Year 2026-27</span>
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-[#F8F6F0] mt-1">
+              SmartCampus AI Student Academic Workspace
+            </h2>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-2 text-right">
+          <p className="text-[11px] font-semibold text-[#D9AE4B] tracking-wider uppercase">
+            Learn • Connect • Innovate
+          </p>
+        </div>
+      </div>
 
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

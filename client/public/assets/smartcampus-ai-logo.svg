@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" role="img" aria-label="SmartCampus AI university logo">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="shieldNavyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07162E" />
+      <stop offset="45%" stop-color="#0B2347" />
+      <stop offset="100%" stop-color="#173F78" />
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2D78A" />
+      <stop offset="35%" stop-color="#D9AE4B" />
+      <stop offset="70%" stop-color="#B8860B" />
+      <stop offset="100%" stop-color="#F2D78A" />
+    </linearGradient>
+
+    <linearGradient id="goldLightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D9AE4B" />
+      <stop offset="100%" stop-color="#996515" />
+    </linearGradient>
+
+    <linearGradient id="accentCircuitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D9AE4B" />
+      <stop offset="50%" stop-color="#6CE1FF" />
+      <stop offset="100%" stop-color="#D9AE4B" />
+    </linearGradient>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="shieldShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Ambient Outer Glow -->
+  <circle cx="256" cy="240" r="210" fill="#0B2347" opacity="0.12" filter="url(#softGlow)" />
+
+  <!-- ==================== LAUREL WREATH (LEFT BRANCH) ==================== -->
+  <g id="laurel-left" fill="url(#goldGrad)" opacity="0.95">
+    <!-- Stem left -->
+    <path d="M256,430 C190,425 105,370 85,255 C75,198 90,140 120,95" fill="none" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" />
+    <!-- Leaves left -->
+    <path d="M96,128 C85,120 70,128 72,142 C74,156 90,154 96,145 Z" />
+    <path d="M118,102 C106,96 92,106 96,120 C100,132 114,128 118,118 Z" />
+    <path d="M80,165 C68,160 55,170 60,184 C65,196 79,190 84,180 Z" />
+    <path d="M72,208 C60,206 50,218 55,232 C60,244 74,236 78,224 Z" />
+    <path d="M70,255 C60,256 52,270 60,282 C68,294 80,282 82,270 Z" />
+    <path d="M78,302 C70,306 65,320 75,332 C85,342 94,328 92,316 Z" />
+    <path d="M96,346 C90,352 90,368 102,376 C114,384 120,368 114,356 Z" />
+    <path d="M125,384 C120,392 125,406 138,412 C150,416 154,400 145,390 Z" />
+    <path d="M162,414 C160,422 170,434 184,434 C196,432 196,418 184,414 Z" />
+    <!-- Inner leaves left -->
+    <path d="M112,175 C104,166 94,176 98,188 C102,198 114,194 116,184 Z" />
+    <path d="M102,224 C94,218 86,230 92,242 C98,252 108,246 109,234 Z" />
+    <path d="M102,274 C96,270 90,284 98,294 C106,304 114,294 114,284 Z" />
+    <path d="M115,320 C110,318 108,332 118,340 C128,348 134,336 130,326 Z" />
+  </g>
+
+  <!-- ==================== LAUREL WREATH (RIGHT BRANCH) ==================== -->
+  <g id="laurel-right" fill="url(#goldGrad)" opacity="0.95">
+    <!-- Stem right -->
+    <path d="M256,430 C322,425 407,370 427,255 C437,198 422,140 392,95" fill="none" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" />
+    <!-- Leaves right -->
+    <path d="M416,128 C427,120 442,128 440,142 C438,156 422,154 416,145 Z" />
+    <path d="M394,102 C406,96 420,106 416,120 C412,132 398,128 394,118 Z" />
+    <path d="M432,165 C444,160 457,170 452,184 C447,196 433,190 428,180 Z" />
+    <path d="M440,208 C452,206 462,218 457,232 C452,244 438,236 434,224 Z" />
+    <path d="M442,255 C452,256 460,270 452,282 C444,294 432,282 430,270 Z" />
+    <path d="M434,302 C442,306 447,320 437,332 C427,342 418,328 420,316 Z" />
+    <path d="M416,346 C422,352 422,368 410,376 C398,384 392,368 398,356 Z" />
+    <path d="M387,384 C392,392 387,406 374,412 C362,416 358,400 367,390 Z" />
+    <path d="M350,414 C352,422 342,434 328,434 C316,432 316,418 328,414 Z" />
+    <!-- Inner leaves right -->
+    <path d="M400,175 C408,166 418,176 414,188 C410,198 398,194 396,184 Z" />
+    <path d="M410,224 C418,218 426,230 420,242 C414,252 404,246 403,234 Z" />
+    <path d="M410,274 C416,270 422,284 414,294 C406,304 398,294 398,284 Z" />
+    <path d="M397,320 C402,318 404,332 394,340 C384,348 378,336 382,326 Z" />
+  </g>
+
+  <!-- ==================== MAIN UNIVERSITY SHIELD ==================== -->
+  <g filter="url(#shieldShadow)">
+    <!-- Outer Shield Rim (Gold) -->
+    <path d="M256,76 C346,76 384,104 384,178 C384,286 322,382 256,416 C190,382 128,286 128,178 C128,104 166,76 256,76 Z" 
+          fill="url(#goldGrad)" />
+    
+    <!-- Shield Inset Border (Thin Navy spacer) -->
+    <path d="M256,82 C341,82 376,108 376,180 C376,282 317,374 256,406 C195,374 136,282 136,180 C136,108 171,82 256,82 Z" 
+          fill="#07162E" />
+
+    <!-- Inner Shield Rim (Fine Gold line) -->
+    <path d="M256,86 C337,86 370,111 370,181 C370,279 313,368 256,399 C199,368 142,279 142,181 C142,111 175,86 256,86 Z" 
+          fill="url(#goldLightGrad)" />
+
+    <!-- Inner Shield Body (Rich Navy-Blue Gradient) -->
+    <path d="M256,90 C333,90 364,114 364,182 C364,276 309,363 256,393 C203,363 148,276 148,182 C148,114 179,90 256,90 Z" 
+          fill="url(#shieldNavyGrad)" />
+  </g>
+
+  <!-- Shield Interior Decorative Dividing Arch -->
+  <path d="M152,246 C210,230 302,230 360,246" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" opacity="0.6" />
+
+  <!-- ==================== ACADEMIC BUILDING (COLLEGE TEMPLE) ==================== -->
+  <g id="academic-building" transform="translate(186, 114)">
+    <!-- Pediment Roof (Triangle) -->
+    <polygon points="70,6 10,26 130,26" fill="url(#goldLightGrad)" stroke="#07162E" stroke-width="1" />
+    <!-- Entablature / Architrave Bar -->
+    <rect x="14" y="27" width="112" height="6" rx="1.5" fill="url(#goldGrad)" />
+    <!-- Pediment inner crest emblem -->
+    <circle cx="70" cy="18" r="4" fill="#0B2347" stroke="url(#goldLightGrad)" stroke-width="1.2" />
+
+    <!-- 4 Classical Columns -->
+    <!-- Column 1 -->
+    <rect x="24" y="34" width="8" height="34" rx="1" fill="url(#goldGrad)" />
+    <rect x="22" y="33" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <rect x="22" y="66" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <!-- Column 2 -->
+    <rect x="52" y="34" width="8" height="34" rx="1" fill="url(#goldGrad)" />
+    <rect x="50" y="33" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <rect x="50" y="66" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <!-- Column 3 -->
+    <rect x="80" y="34" width="8" height="34" rx="1" fill="url(#goldGrad)" />
+    <rect x="78" y="33" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <rect x="78" y="66" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <!-- Column 4 -->
+    <rect x="108" y="34" width="8" height="34" rx="1" fill="url(#goldGrad)" />
+    <rect x="106" y="33" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+    <rect x="106" y="66" width="12" height="3" rx="0.5" fill="url(#goldLightGrad)" />
+
+    <!-- Central Arched Portal -->
+    <path d="M63,68 L63,49 C63,45 77,45 77,49 L77,68 Z" fill="#07162E" stroke="url(#goldLightGrad)" stroke-width="1.2" />
+
+    <!-- Stylobate / Base Steps -->
+    <rect x="10" y="69" width="120" height="4" rx="1" fill="url(#goldGrad)" />
+    <rect x="6" y="73" width="128" height="4" rx="1" fill="url(#goldLightGrad)" />
+  </g>
+
+  <!-- ==================== OPEN BOOK WITH AI CIRCUITRY ==================== -->
+  <g id="open-book-circuits" transform="translate(176, 235)">
+    <!-- Book Pages Glow -->
+    <path d="M80,38 C52,24 16,30 6,40 L6,88 C16,78 52,72 80,84 C108,72 144,78 154,88 L154,40 C144,30 108,24 80,38 Z" 
+          fill="#07162E" stroke="url(#goldGrad)" stroke-width="2.5" />
+
+    <!-- Left Page -->
+    <path d="M80,38 C52,24 16,30 8,39 L8,84 C18,75 52,70 80,82 Z" 
+          fill="#0B2347" stroke="url(#goldLightGrad)" stroke-width="1.5" />
+
+    <!-- Right Page -->
+    <path d="M80,38 C108,24 144,30 152,39 L152,84 C142,75 108,70 80,82 Z" 
+          fill="#0B2347" stroke="url(#goldLightGrad)" stroke-width="1.5" />
+
+    <!-- Center Spine Spine Ridge -->
+    <line x1="80" y1="36" x2="80" y2="85" stroke="url(#goldLightGrad)" stroke-width="2.5" />
+
+    <!-- AI Circuitry Traces on Left Page -->
+    <!-- Trace 1 -->
+    <path d="M22,48 L44,48 L56,58 L72,58" fill="none" stroke="url(#accentCircuitGrad)" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="22" cy="48" r="2.2" fill="#6CE1FF" />
+    <circle cx="56" cy="58" r="1.8" fill="#F2D78A" />
+    <circle cx="72" cy="58" r="2.2" fill="#6CE1FF" />
+
+    <!-- Trace 2 -->
+    <path d="M26,68 L48,68 L60,62 L72,62" fill="none" stroke="url(#accentCircuitGrad)" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="26" cy="68" r="2" fill="#F2D78A" />
+    <circle cx="72" cy="62" r="2" fill="#F2D78A" />
+
+    <!-- Trace 3 vertical link -->
+    <line x1="44" y1="48" x2="44" y2="60" stroke="#6CE1FF" stroke-width="1.2" />
+    <circle cx="44" cy="60" r="1.6" fill="#6CE1FF" />
+
+    <!-- AI Circuitry Traces on Right Page -->
+    <!-- Trace 1 -->
+    <path d="M138,48 L116,48 L104,58 L88,58" fill="none" stroke="url(#accentCircuitGrad)" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="138" cy="48" r="2.2" fill="#6CE1FF" />
+    <circle cx="104" cy="58" r="1.8" fill="#F2D78A" />
+    <circle cx="88" cy="58" r="2.2" fill="#6CE1FF" />
+
+    <!-- Trace 2 -->
+    <path d="M134,68 L112,68 L100,62 L88,62" fill="none" stroke="url(#accentCircuitGrad)" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="134" cy="68" r="2" fill="#F2D78A" />
+    <circle cx="88" cy="62" r="2" fill="#F2D78A" />
+
+    <!-- Trace 3 vertical link -->
+    <line x1="116" y1="48" x2="116" y2="60" stroke="#6CE1FF" stroke-width="1.2" />
+    <circle cx="116" cy="60" r="1.6" fill="#6CE1FF" />
+
+    <!-- Central Microchip Core over spine -->
+    <rect x="74" y="62" width="12" height="12" rx="2" fill="#07162E" stroke="url(#goldLightGrad)" stroke-width="1.4" />
+    <path d="M77,66 L83,70 M83,66 L77,70" stroke="#6CE1FF" stroke-width="1" />
+  </g>
+
+  <!-- Lower Shield Star Trio -->
+  <g fill="url(#goldGrad)" transform="translate(0, 5)">
+    <!-- Center star -->
+    <polygon points="256,350 258,356 264,357 259,361 261,367 256,363 251,367 253,361 248,357 254,356" />
+    <!-- Left star -->
+    <polygon points="228,342 229.5,346.5 234,347 230.5,350 232,354.5 228,351.5 224,354.5 225.5,350 222,347 226.5,346.5" opacity="0.8" />
+    <!-- Right star -->
+    <polygon points="284,342 285.5,346.5 290,347 286.5,350 288,354.5 284,351.5 280,354.5 281.5,350 278,347 282.5,346.5" opacity="0.8" />
+  </g>
+
+  <!-- ==================== GRADUATION CAP (MORTARBOARD) ==================== -->
+  <g id="graduation-cap" filter="url(#shieldShadow)">
+    <!-- Skull Cap Base Underneath -->
+    <path d="M228,68 C228,58 284,58 284,68 L280,78 C265,82 247,82 232,78 Z" fill="#07162E" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <!-- Diamond Top Plate -->
+    <polygon points="256,32 334,55 256,76 178,55" fill="#0B2347" stroke="url(#goldLightGrad)" stroke-width="3" />
+    <polygon points="256,36 324,55 256,72 188,55" fill="#07162E" />
+    <!-- Center Gold Button -->
+    <ellipse cx="256" cy="55" rx="4.5" ry="3.5" fill="url(#goldGrad)" />
+    <!-- Hanging Gold Tassel -->
+    <path d="M256,56 Q232,60 216,74 Q208,82 208,98" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linecap="round" />
+    <!-- Tassel Fringe -->
+    <polygon points="204,97 212,97 215,114 201,114" fill="url(#goldLightGrad)" />
+  </g>
+
+  <!-- ==================== BOTTOM RIBBON / BANNER ==================== -->
+  <g id="university-banner" filter="url(#shieldShadow)" transform="translate(0, 10)">
+    <!-- Ribbon Left Tail Fold -->
+    <polygon points="90,422 60,432 90,448 82,434" fill="#07162E" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <!-- Ribbon Right Tail Fold -->
+    <polygon points="422,422 452,432 422,448 430,434" fill="#07162E" stroke="url(#goldGrad)" stroke-width="1.5" />
+
+    <!-- Ribbon Under-Fold Shadow -->
+    <path d="M100,426 L124,438 L124,420 Z" fill="#040B17" />
+    <path d="M412,426 L388,438 L388,420 Z" fill="#040B17" />
+
+    <!-- Main Ribbon Front Plaque -->
+    <path d="M96,418 C150,404 362,404 416,418 L408,446 C354,432 158,432 104,446 Z" 
+          fill="url(#shieldNavyGrad)" stroke="url(#goldGrad)" stroke-width="2.5" />
+
+    <!-- Text on Ribbon: SMARTCAMPUS-AI -->
+    <text x="256" y="434" 
+          text-anchor="middle" 
+          font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', system-ui, sans-serif" 
+          font-size="17" 
+          font-weight="900" 
+          letter-spacing="3.5" 
+          fill="url(#goldLightGrad)">SMARTCAMPUS-AI</text>
+  </g>
+
+  <!-- ==================== TAGLINE ==================== -->
+  <g id="tagline">
+    <!-- Fine Gold Accent Rules -->
+    <line x1="120" y1="482" x2="160" y2="482" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.7" />
+    <circle cx="164" cy="482" r="1.5" fill="#D9AE4B" />
+    
+    <text x="256" y="486" 
+          text-anchor="middle" 
+          font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', system-ui, sans-serif" 
+          font-size="11.5" 
+          font-weight="700" 
+          letter-spacing="4.5" 
+          fill="#D9AE4B">LEARN • CONNECT • INNOVATE</text>
+
+    <circle cx="348" cy="482" r="1.5" fill="#D9AE4B" />
+    <line x1="352" y1="482" x2="392" y2="482" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.7" />
+  </g>
+</svg>

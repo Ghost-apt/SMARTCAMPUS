@@ -27,6 +27,7 @@ import {
   Compass,
   Activity
 } from 'lucide-react';
+import SmartCampusLogo from '../components/SmartCampusLogo';
 
 const LandingPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -133,15 +134,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#6C8CFF] via-[#5575F5] to-[#43D9FF] flex items-center justify-center text-white shadow-lg shadow-[#6C8CFF]/25 group-hover:scale-105 transition-transform">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">SmartCampus</span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#6C8CFF]/15 dark:bg-[#43D9FF]/15 text-[#6C8CFF] dark:text-[#43D9FF] border border-[#6C8CFF]/25 dark:border-[#43D9FF]/25">
-                AI 6.0
-              </span>
-            </div>
+            <SmartCampusLogo variant="compact" size="sm" showTagline={false} />
           </Link>
 
           {/* Center Links (Desktop) */}
@@ -166,10 +159,10 @@ const LandingPage = () => {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate(getDashboardPath())}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#6C8CFF] to-[#5575F5] hover:brightness-110 text-white text-xs font-bold shadow-md shadow-[#6C8CFF]/30 transition-all"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#07162E] via-[#0B2347] to-[#173F78] hover:from-[#0B2347] hover:to-[#173F78] text-white text-xs font-bold border border-[#D9AE4B]/40 shadow-md shadow-[#07162E]/30 transition-all"
               >
                 <span>Go to Dashboard</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#D9AE4B]" />
               </button>
             ) : (
               <div className="flex items-center gap-2">
@@ -181,10 +174,10 @@ const LandingPage = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#6C8CFF] to-[#5575F5] hover:brightness-110 text-white text-xs font-bold shadow-md shadow-[#6C8CFF]/30 transition-all hover:scale-[1.02]"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#07162E] via-[#0B2347] to-[#173F78] hover:from-[#0B2347] hover:to-[#173F78] text-white text-xs font-bold border border-[#D9AE4B]/40 shadow-md shadow-[#07162E]/30 transition-all hover:scale-[1.02]"
                 >
                   <span>Launch Portal</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#D9AE4B]" />
                 </Link>
               </div>
             )}
@@ -193,38 +186,43 @@ const LandingPage = () => {
       </header>
 
       {/* HERO SECTION */}
-      <section className="relative pt-16 pb-20 sm:pt-24 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center z-10">
+      <section className="relative pt-12 pb-20 sm:pt-16 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center z-10">
+        {/* Full University Crest Emblem */}
+        <div className="flex justify-center mb-6">
+          <SmartCampusLogo variant="full" size="hero" showTagline={true} />
+        </div>
+
         {/* Release Tag Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#6C8CFF]/10 dark:bg-[#6C8CFF]/15 border border-[#6C8CFF]/25 text-[#6C8CFF] dark:text-[#8FA8FF] text-xs font-semibold mb-6 animate-fade-in shadow-sm backdrop-blur-md">
-          <Sparkles className="w-3.5 h-3.5 text-[#43D9FF] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B2347]/10 dark:bg-[#173F78]/25 border border-[#D9AE4B]/35 text-[#07162E] dark:text-[#F2D78A] text-xs font-semibold mb-6 shadow-sm backdrop-blur-md">
+          <Sparkles className="w-3.5 h-3.5 text-[#D9AE4B]" />
           <span>Intelligent University Management & Support Platform</span>
-          <span className="w-1 h-1 rounded-full bg-[#6C8CFF]"></span>
-          <span className="text-[11px] font-bold text-[#43D9FF]">Phases 1–6 Operational</span>
+          <span className="w-1 h-1 rounded-full bg-[#D9AE4B]"></span>
+          <span className="text-[11px] font-bold text-[#B8860B] dark:text-[#F2D78A]">Academic Session 2026-27</span>
         </div>
 
         {/* Master Headline */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-[1.1]">
-          The Future of <br />
-          <span className="gradient-text-primary">Campus Intelligence.</span>
+          Excellence in <br />
+          <span className="gradient-text-primary">University Intelligence.</span>
         </h1>
 
         {/* Master Supporting Text */}
         <p className="mt-6 text-base sm:text-lg text-slate-600 dark:text-[#9BA8C7] max-w-2xl mx-auto font-normal leading-relaxed">
-          Connect learning, campus operations, academic insights, and AI-powered student support in one intelligent platform.
+          Unifying student success, academic analytics, automated fee management, dynamic attendance, and grounded AI support under one authoritative institutional portal.
         </p>
 
         {/* Primary Call to Actions */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/login"
-            className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#6C8CFF] via-[#5575F5] to-[#43D9FF] hover:brightness-110 text-white text-sm font-bold shadow-xl shadow-[#6C8CFF]/30 hover:shadow-[#6C8CFF]/50 hover:-translate-y-0.5 transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#07162E] via-[#0B2347] to-[#173F78] hover:from-[#0B2347] hover:to-[#173F78] text-white text-sm font-bold border border-[#D9AE4B]/40 shadow-xl shadow-[#07162E]/30 hover:-translate-y-0.5 transition-all duration-200"
           >
             <span>Launch SmartCampus Portal</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-[#D9AE4B]" />
           </Link>
           <a
             href="#features"
-            className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white dark:bg-[#121A2E] border border-slate-200 dark:border-[#232D48] text-slate-700 dark:text-[#F3F6FF] hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-[#6C8CFF]/40 text-sm font-semibold shadow-sm hover:-translate-y-0.5 transition-all duration-200"
+            className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white dark:bg-[#0B2347]/80 border border-slate-200 dark:border-[#173F78]/60 text-slate-700 dark:text-[#F8F6F0] hover:text-slate-900 dark:hover:text-white hover:border-[#D9AE4B]/40 text-sm font-semibold shadow-sm hover:-translate-y-0.5 transition-all duration-200"
           >
             <span>Explore Capabilities</span>
             <ChevronRight className="w-4 h-4 text-slate-400" />

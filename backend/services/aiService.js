@@ -58,7 +58,9 @@ const gatherStudentMetrics = async (studentUserId) => {
   });
 
   // B. Assignment submissions
-  const allAssignments = await Assignment.find({ courseCode: 'BCA', semester: profile?.semester || 5 });
+  const studentCourse = profile?.course || 'BCA';
+  const studentSemester = profile?.semester || 5;
+  const allAssignments = await Assignment.find({ courseCode: studentCourse, semester: studentSemester });
   let submittedCount = 0;
   let failedCount = 0;
 
@@ -413,6 +415,10 @@ const askCampusAssistant = async (user, query) => {
   const context = {};
 
   if (role === 'student') {
+    const profile = await StudentProfile.findOne({ user: userId });
+    const studentCourse = profile?.course || 'BCA';
+    const studentSemester = profile?.semester || 5;
+
     // 1. Attendance
     const attRecords = await Attendance.find({ student: userId });
     const total = attRecords.length;
@@ -420,17 +426,17 @@ const askCampusAssistant = async (user, query) => {
     context.attendance_percentage = total > 0 ? Number(((present / total) * 100).toFixed(1)) : 88.5;
 
     // 2. Open assignments
-    const assignments = await Assignment.find({ courseCode: 'BCA', semester: 5 }).sort({ dueDate: 1 });
+    const assignments = await Assignment.find({ courseCode: studentCourse, semester: studentSemester }).sort({ dueDate: 1 });
     context.assignments = assignments.slice(0, 4).map((a) => ({
       title: a.title,
-      subject_code: a.courseCode || 'BCA',
+      subject_code: a.courseCode || studentCourse,
       due_date: new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     }));
 
     // 3. Today's classes
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const currentDay = days[new Date().getDay()];
-    const timetable = await TimetableEntry.find({ day: currentDay, courseCode: 'BCA' })
+    const timetable = await TimetableEntry.find({ day: currentDay, courseCode: studentCourse, semester: studentSemester })
       .populate('subject', 'subjectName subjectCode')
       .populate('faculty', 'name');
 

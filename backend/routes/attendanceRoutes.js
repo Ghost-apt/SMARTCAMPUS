@@ -7,6 +7,7 @@ const authorize = require('../middleware/authorize');
 
 // Student attendance view
 router.get('/student', authenticate, attendanceController.getStudentAttendance);
+router.get('/summary', authenticate, attendanceController.getAttendanceSummary);
 
 // Faculty / Admin manual attendance operations
 router.post('/mark', authenticate, authorize('faculty', 'admin'), attendanceController.markAttendance);
