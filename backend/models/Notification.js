@@ -20,6 +20,10 @@ const notificationSchema = new mongoose.Schema(
         'NOTICE',
         'RESULT_PUBLISHED',
         'FEE_DUE',
+        'PAYMENT_RECEIVED',
+        'REGISTRATION_SUBMITTED',
+        'REGISTRATION_APPROVED',
+        'REGISTRATION_REJECTED',
         'SYSTEM'
       ],
       default: 'SYSTEM'

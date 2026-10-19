@@ -1,4 +1,4 @@
-const { FeeRecord, PaymentTransaction, StudentProfile, AuditLog, User } = require('../models/CampusModels');
+const { FeeRecord, PaymentTransaction, StudentProfile, AuditLog, User, FeeStructure, Notification } = require('../models/CampusModels');
 const paymentService = require('../services/paymentService');
 
 // @desc    Get current student's fee records & comprehensive summary
@@ -49,6 +49,30 @@ const getMyFees = async (req, res, next) => {
       .filter((f) => Number(f.semester) < currentSemester)
       .reduce((acc, f) => acc + (Number(f.balanceAmount) || 0), 0);
 
+    // Channel totals
+    const offlinePaidTotal = fees.reduce((acc, f) => acc + (Number(f.offlinePaidAmount) || 0), 0);
+    const onlinePaidTotal = fees.reduce((acc, f) => acc + (Number(f.onlinePaidAmount) || 0), 0);
+
+    // Distinct registration vs academic tuition tracking
+    const isRegFee = (feeType) => typeof feeType === 'string' && /registration/i.test(feeType);
+
+    const regFees = fees.filter((f) => isRegFee(f.feeType));
+    const academicFees = fees.filter((f) => !isRegFee(f.feeType));
+
+    const registrationFeeBilled = regFees.reduce((acc, f) => acc + (Number(f.totalAmount) || 0), 0);
+    const registrationFeePaid = regFees.reduce((acc, f) => acc + (Number(f.paidAmount) || 0), 0);
+    const registrationFeeBalance = regFees.reduce((acc, f) => acc + (Number(f.balanceAmount) || 0), 0);
+    const registrationFeeStatus = registrationFeeBilled > 0
+      ? (registrationFeeBalance === 0 ? 'Paid' : (registrationFeePaid > 0 ? 'Partial' : 'Pending'))
+      : 'N/A';
+
+    const academicFeesBilled = academicFees.reduce((acc, f) => acc + (Number(f.totalAmount) || 0), 0);
+    const academicFeesPaid = academicFees.reduce((acc, f) => acc + (Number(f.paidAmount) || 0), 0);
+    const academicFeesBalance = academicFees.reduce((acc, f) => acc + (Number(f.balanceAmount) || 0), 0);
+    const academicFeesStatus = academicFeesBilled > 0
+      ? (academicFeesBalance === 0 ? 'Paid' : (academicFeesPaid > 0 ? 'Partial' : 'Pending'))
+      : 'N/A';
+
     res.status(200).json({
       success: true,
       totalBilled,
@@ -56,6 +80,16 @@ const getMyFees = async (req, res, next) => {
       totalConcessions,
       totalBalance,
       overdueAmount,
+      offlinePaidTotal,
+      onlinePaidTotal,
+      registrationFeeBilled,
+      registrationFeePaid,
+      registrationFeeBalance,
+      registrationFeeStatus,
+      academicFeesBilled,
+      academicFeesPaid,
+      academicFeesBalance,
+      academicFeesStatus,
       currentSemester,
       currentSemesterOutstanding,
       previousSemesterOutstanding,
@@ -237,13 +271,80 @@ const recordPayment = async (req, res, next) => {
   }
 };
 
-// @desc    Get university course fee structure
+// @desc    Get university course fee structure (Dynamic DB with standard fallback)
 // @route   GET /api/fees/structure
 // @access  Private / Student, Faculty, Admin
 const getFeeStructure = async (req, res, next) => {
   try {
-    const courseCode = req.query.courseCode || 'BCA';
+    const courseCode = (req.query.courseCode || req.query.course || 'BCA').toUpperCase();
     const semester = Number(req.query.semester) || 5;
+    const academicYear = req.query.academicYear;
+
+    const structureQuery = { course: courseCode, status: 'PUBLISHED' };
+    if (academicYear) structureQuery.academicYear = academicYear;
+
+    const publishedStructure = await FeeStructure.findOne(structureQuery).sort({ version: -1 });
+
+    if (publishedStructure && publishedStructure.categories && publishedStructure.categories.length > 0) {
+      const filteredCategories = publishedStructure.categories.filter(
+        (cat) => !cat.semester || cat.semester === semester || cat.frequency === 'PER_SEMESTER' || cat.frequency === 'ANNUAL' || cat.frequency === 'ONE_TIME'
+      );
+
+      const feeStructure = (filteredCategories.length > 0 ? filteredCategories : publishedStructure.categories).map((cat) => ({
+        feeType: cat.feeType,
+        componentName: cat.categoryName || cat.feeType,
+        amount: cat.amount,
+        frequency: cat.frequency ? cat.frequency.replace('_', ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : 'Per Semester',
+        mandatory: cat.mandatory !== false,
+        category: cat.feeType,
+        description: cat.description || `Assessment for ${cat.categoryName || cat.feeType}`
+      }));
+
+      const totalMandatorySemester = feeStructure
+        .filter((f) => f.mandatory && (f.frequency.toLowerCase().includes('semester') || f.frequency.toLowerCase().includes('one time')))
+        .reduce((sum, f) => sum + f.amount, 0);
+
+      const totalAnnualMandatory = feeStructure
+        .filter((f) => f.mandatory)
+        .reduce((sum, f) => sum + (f.frequency.toLowerCase().includes('semester') ? f.amount * 2 : f.amount), 0);
+
+      return res.status(200).json({
+        success: true,
+        structureId: publishedStructure._id,
+        version: publishedStructure.version,
+        courseCode,
+        courseName: publishedStructure.courseName || courseCode,
+        semester,
+        academicYear: publishedStructure.academicYear || '2026-2027',
+        totalMandatorySemester,
+        totalAnnualMandatory,
+        feeStructure,
+        paymentSchedule: [
+          {
+            milestone: 'Semester Enrollment & Class Allotment',
+            dueDate: '2026-08-30',
+            percentage: '80%',
+            amount: Math.round(totalMandatorySemester * 0.8),
+            requirement: 'Mandatory for timetable release & classroom portal access'
+          },
+          {
+            milestone: 'Mid-Semester Examination Clearance',
+            dueDate: '2026-10-28',
+            percentage: '20%',
+            amount: Math.round(totalMandatorySemester * 0.2),
+            requirement: 'Mandatory before examination hall ticket issuance'
+          }
+        ],
+        bankDetails: {
+          accountName: 'SmartCampus University Central Finance',
+          bankName: 'State Bank of India (Campus Branch)',
+          accountNumber: '3948201948201',
+          ifsc: 'SBIN0004921',
+          branch: 'University Academic Block, Sector 62',
+          upiId: 'fees@smartcampus.edu'
+        }
+      });
+    }
 
     // Standard university fee components strictly aligned with FeeRecord.feeType enum
     const feeStructure = [
@@ -612,6 +713,157 @@ const getAdminFinanceSummary = async (req, res, next) => {
   }
 };
 
+// @desc    Record verified offline fee payment (Cash, Bank Transfer, DD, Cheque)
+// @route   POST /api/fees/offline-pay, POST /api/fees/offline, POST /api/fees/:id/offline-pay
+// @access  Private / Admin
+const recordOfflinePayment = async (req, res, next) => {
+  try {
+    const feeId = req.params.id || req.body.feeRecordId || req.body.feeId;
+    const {
+      studentId,
+      amount,
+      paymentMethod = 'Cash',
+      referenceNumber,
+      offlineReference,
+      receiptNumber,
+      paymentDate,
+      remarks,
+      notes
+    } = req.body;
+
+    const paymentAmount = parseFloat(amount);
+    if (!feeId) {
+      return res.status(400).json({ success: false, message: 'Fee record ID is required.' });
+    }
+    if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      return res.status(400).json({ success: false, message: 'Valid payment amount greater than zero is required.' });
+    }
+
+    const fee = await FeeRecord.findById(feeId);
+    if (!fee) {
+      return res.status(404).json({ success: false, message: 'Fee assessment record not found.' });
+    }
+
+    // Verify student if studentId provided in body
+    if (studentId && fee.student.toString() !== studentId.toString()) {
+      return res.status(400).json({ success: false, message: 'Fee record does not belong to the specified student.' });
+    }
+
+    // Strict validation: Amount cannot exceed remaining balance
+    if (paymentAmount > fee.balanceAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Offline payment amount (₹${paymentAmount.toLocaleString('en-IN')}) exceeds outstanding balance (₹${fee.balanceAmount.toLocaleString('en-IN')}).`
+      });
+    }
+
+    const refNum = (referenceNumber || offlineReference || '').trim();
+    if (refNum) {
+      const duplicateTxn = await PaymentTransaction.findOne({
+        offlineReference: refNum,
+        status: 'captured'
+      });
+      if (duplicateTxn) {
+        return res.status(400).json({
+          success: false,
+          message: `A transaction with offline reference "${refNum}" has already been recorded.`
+        });
+      }
+    }
+
+    const generatedReceipt = receiptNumber && receiptNumber.trim()
+      ? receiptNumber.trim()
+      : `REC-OFF-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const orderId = `OFF-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Create PaymentTransaction
+    const transaction = await PaymentTransaction.create({
+      student: fee.student,
+      feeRecord: fee._id,
+      orderId,
+      paymentId: `OFFPAY-${Date.now()}`,
+      signature: 'OFFLINE_VERIFIED',
+      amount: paymentAmount,
+      currency: 'INR',
+      status: 'captured',
+      paymentMethod: paymentMethod || 'Cash',
+      paymentChannel: 'OFFLINE',
+      offlineReference: refNum,
+      recordedBy: req.user.id,
+      recordedByName: req.user.name || 'Finance Administrator',
+      receiptNumber: generatedReceipt,
+      academicYear: fee.academicYear,
+      semester: fee.semester,
+      feeType: fee.feeType,
+      notes: {
+        adminNotes: remarks || notes || '',
+        paymentDate: paymentDate || new Date(),
+        recordedByRole: req.user.role
+      }
+    });
+
+    // Update FeeRecord
+    fee.paidAmount = (fee.paidAmount || 0) + paymentAmount;
+    fee.offlinePaidAmount = (fee.offlinePaidAmount || 0) + paymentAmount;
+    fee.receiptNumber = generatedReceipt;
+    await fee.save();
+
+    // Financial AuditLog
+    try {
+      await AuditLog.create({
+        actor: req.user.id,
+        actorName: req.user.name || 'Finance Administrator',
+        actorRole: req.user.role,
+        action: 'OFFLINE_PAYMENT_RECORDED',
+        resourceType: 'PaymentTransaction',
+        resourceId: transaction._id.toString(),
+        details: {
+          feeRecordId: fee._id.toString(),
+          student: fee.student,
+          amount: paymentAmount,
+          paymentMethod,
+          referenceNumber: refNum,
+          receiptNumber: generatedReceipt,
+          newBalance: fee.balanceAmount,
+          newStatus: fee.status
+        },
+        ipAddress: req.ip
+      });
+    } catch (auditErr) {
+      console.warn('AuditLog note:', auditErr.message);
+    }
+
+    // In-app Notification for student
+    try {
+      await Notification.create({
+        recipient: fee.student,
+        type: 'PAYMENT_RECEIVED',
+        title: 'Offline Payment Verified & Credited',
+        message: `Your offline payment of ₹${paymentAmount.toLocaleString('en-IN')} for ${fee.feeType} (Semester ${fee.semester}) has been verified and credited. Receipt: ${generatedReceipt}.`,
+        link: '/student/fees',
+        metadata: {
+          transactionId: transaction._id.toString(),
+          receiptNumber: generatedReceipt,
+          amount: paymentAmount,
+          paymentChannel: 'OFFLINE'
+        }
+      });
+    } catch (notifErr) {
+      console.warn('Notification note:', notifErr.message);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Offline payment of ₹${paymentAmount.toLocaleString('en-IN')} verified and recorded successfully.`,
+      transaction,
+      fee
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getMyFees,
   getAssessmentById,
@@ -623,6 +875,7 @@ module.exports = {
   getAllTransactions,
   getAdminFinanceSummary,
   recordPayment,
+  recordOfflinePayment,
   getFeeStructure,
   createPaymentOrder,
   verifyPayment,

@@ -55,6 +55,25 @@ const paymentTransactionSchema = new mongoose.Schema(
       type: String,
       default: 'razorpay_checkout'
     },
+    paymentChannel: {
+      type: String,
+      enum: ['ONLINE', 'OFFLINE'],
+      default: 'ONLINE',
+      index: true
+    },
+    offlineReference: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    recordedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    recordedByName: {
+      type: String,
+      default: ''
+    },
     receiptNumber: {
       type: String,
       required: true,

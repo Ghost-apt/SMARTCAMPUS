@@ -66,8 +66,17 @@ const userSchema = new mongoose.Schema(
     },
     accountStatus: {
       type: String,
-      enum: ['active', 'inactive', 'suspended'],
+      enum: ['active', 'inactive', 'suspended', 'pending', 'rejected'],
       default: 'active'
+    },
+    approvalStatus: {
+      type: String,
+      enum: ['PENDING', 'APPROVED', 'REJECTED'],
+      default: 'APPROVED'
+    },
+    registrationRequestId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'RegistrationRequest'
     },
     isActive: {
       type: Boolean,

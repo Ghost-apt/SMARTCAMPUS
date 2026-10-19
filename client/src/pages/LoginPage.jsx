@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, ShieldCheck, GraduationCap, Users } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, ShieldCheck, GraduationCap, Users, Clock } from 'lucide-react';
 import SmartCampusLogo from '../components/SmartCampusLogo';
 
 const LoginPage = () => {
@@ -10,6 +10,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState('');
+  const [approvalStatus, setApprovalStatus] = useState(null);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLocalError('');
+    setApprovalStatus(null);
 
     if (!email || !password) {
       setLocalError('Please enter both your university email and password.');
@@ -42,6 +44,9 @@ const LoginPage = () => {
       }
     } else {
       setLocalError(result.message || 'Invalid email or password.');
+      if (result.approvalStatus) {
+        setApprovalStatus(result.approvalStatus);
+      }
     }
   };
 
@@ -85,12 +90,50 @@ const LoginPage = () => {
             <p className="text-xs text-[#9BA8C7] mt-0.5">Enter your institutional credentials</p>
           </div>
 
-          {localError && (
+          {approvalStatus === 'PENDING' ? (
+            <div className="mb-5 p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs space-y-2">
+              <div className="flex items-start gap-2.5 font-bold text-amber-300">
+                <Clock className="w-4 h-4 flex-shrink-0 mt-0.5 animate-pulse" />
+                <span>Registration Awaiting Administrative Approval</span>
+              </div>
+              <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                Your student registration was recorded and is currently in the review queue. University administration will activate your portal access upon review.
+              </p>
+              <div className="pt-1">
+                <Link
+                  to={`/register?tab=status&reference=${encodeURIComponent(email)}`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#F2D78A] underline hover:text-white transition-colors"
+                >
+                  <span>Track Application Status Online</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          ) : approvalStatus === 'REJECTED' ? (
+            <div className="mb-5 p-4 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs space-y-2">
+              <div className="flex items-start gap-2.5 font-bold text-rose-300">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>Application Not Approved</span>
+              </div>
+              <p className="text-[11px] text-rose-200/90 leading-relaxed">
+                Your university registration was not approved by administration. Please check your application status or contact the admissions office.
+              </p>
+              <div className="pt-1">
+                <Link
+                  to={`/register?tab=status&reference=${encodeURIComponent(email)}`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-300 underline hover:text-white transition-colors"
+                >
+                  <span>View Details & Notes</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          ) : localError ? (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-rose-300 text-xs">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{localError}</span>
             </div>
-          )}
+          ) : null}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>

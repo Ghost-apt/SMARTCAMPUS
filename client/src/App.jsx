@@ -31,6 +31,7 @@ import FacultyNoticesPage from './pages/FacultyNoticesPage';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboard';
+import AdminRegistrationsPage from './pages/AdminRegistrationsPage';
 import AdminStudentsPage from './pages/AdminStudentsPage';
 import AdminFacultyPage from './pages/AdminFacultyPage';
 import AdminDepartmentsPage from './pages/AdminDepartmentsPage';
@@ -244,6 +245,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/registrations"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminRegistrationsPage />
           </ProtectedRoute>
         }
       />

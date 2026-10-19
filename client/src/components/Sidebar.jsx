@@ -21,7 +21,8 @@ import {
   Settings,
   X,
   Sparkles,
-  CreditCard
+  CreditCard,
+  UserCheck
 } from 'lucide-react';
 import SmartCampusLogo from './SmartCampusLogo';
 
@@ -57,6 +58,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const adminLinks = [
     { name: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Registration Requests', path: '/admin/registrations', icon: UserCheck },
     { name: 'Students', path: '/admin/students', icon: Users },
     { name: 'Faculty', path: '/admin/faculty', icon: GraduationCap },
     { name: 'Departments', path: '/admin/departments', icon: Building2 },

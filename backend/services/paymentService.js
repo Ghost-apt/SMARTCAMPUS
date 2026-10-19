@@ -241,6 +241,7 @@ const verifyAndCapturePayment = async ({ orderId, paymentId, signature, verified
   }
 
   fee.paidAmount = Math.min(fee.totalAmount, (fee.paidAmount || 0) + transaction.amount);
+  fee.onlinePaidAmount = (Number(fee.onlinePaidAmount) || 0) + transaction.amount;
   fee.receiptNumber = transaction.receiptNumber;
   fee.remarks = `Online payment received via Razorpay (${paymentId}). Balance settled.`;
   await fee.save(); // triggers pre-save hook to recompute balanceAmount and status

@@ -1,8 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const feeController = require('../controllers/feeController');
+const feeStructureController = require('../controllers/feeStructureController');
 const authenticate = require('../middleware/authenticate');
 const authorize = require('../middleware/authorize');
+
+// Dynamic Fee Structure Management Endpoints
+router.get('/structures', authenticate, feeStructureController.getFeeStructures);
+router.get('/structures/:id', authenticate, feeStructureController.getFeeStructureById);
+router.post('/structures', authenticate, authorize('admin'), feeStructureController.createFeeStructure);
+router.patch('/structures/:id', authenticate, authorize('admin'), feeStructureController.updateFeeStructure);
+router.post('/structures/:id/publish', authenticate, authorize('admin'), feeStructureController.publishFeeStructure);
+router.get('/structures/:id/versions', authenticate, feeStructureController.getFeeStructureVersions);
+router.post('/structures/:id/assign', authenticate, authorize('admin'), feeStructureController.assignFeeStructureToStudents);
 
 // Student Fee & Ledger Endpoints
 router.get('/my', authenticate, feeController.getMyFees);
@@ -25,6 +35,11 @@ router.post('/verify', authenticate, feeController.verifyPayment);
 router.post('/webhook', feeController.handleWebhook);
 router.get('/:id/receipt', authenticate, feeController.downloadReceipt);
 
+// Admin Offline Payment Recording Endpoints
+router.post('/offline-pay', authenticate, authorize('admin'), feeController.recordOfflinePayment);
+router.post('/offline', authenticate, authorize('admin'), feeController.recordOfflinePayment);
+router.post('/:id/offline-pay', authenticate, authorize('admin'), feeController.recordOfflinePayment);
+
 // Admin Fee & Financial Governance Endpoints
 router.get('/', authenticate, authorize('admin'), feeController.getAllFees);
 router.post('/', authenticate, authorize('admin'), feeController.createFeeRecord);
@@ -34,4 +49,5 @@ router.get('/transactions', authenticate, authorize('admin'), feeController.getA
 router.get('/admin/summary', authenticate, authorize('admin'), feeController.getAdminFinanceSummary);
 
 module.exports = router;
+
 

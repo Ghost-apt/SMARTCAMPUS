@@ -5,8 +5,14 @@ const { User, StudentProfile } = require('../models/CampusModels');
 // @access  Private / Faculty, Admin
 const getStudents = async (req, res, next) => {
   try {
-    const { search, department, semester, page = 1, limit = 20 } = req.query;
+    const { search, department, semester, status, page = 1, limit = 20 } = req.query;
     const query = { role: 'student' };
+
+    if (status && status !== 'all') {
+      query.accountStatus = status;
+    } else if (!status) {
+      query.accountStatus = 'active';
+    }
 
     if (department && department !== 'all') {
       query.department = department;

@@ -33,6 +33,7 @@ const academicRoutes = require('./routes/academicRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const registrationRoutes = require('./routes/registrationRoutes');
 const { initScheduler } = require('./services/schedulerService');
 const seedDemoUsers = require('./scripts/seedDemoUsers');
 
@@ -246,6 +247,7 @@ app.post('/api/seed', async (req, res, next) => {
 // ==========================================
 app.use('/api', apiLimiter);
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/admin/registration-requests', registrationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/faculty', facultyRoutes);

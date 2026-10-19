@@ -212,6 +212,17 @@ const StudentFeesPage = () => {
   const totalBalance = feeData?.totalBalance ?? 0;
   const fees = feeData?.fees || [];
 
+  const offlinePaidTotal = feeData?.offlinePaidTotal ?? 0;
+  const onlinePaidTotal = feeData?.onlinePaidTotal ?? 0;
+  const registrationFeeBilled = feeData?.registrationFeeBilled ?? 0;
+  const registrationFeePaid = feeData?.registrationFeePaid ?? 0;
+  const registrationFeeBalance = feeData?.registrationFeeBalance ?? 0;
+  const registrationFeeStatus = feeData?.registrationFeeStatus ?? 'N/A';
+  const academicFeesBilled = feeData?.academicFeesBilled ?? 0;
+  const academicFeesPaid = feeData?.academicFeesPaid ?? 0;
+  const academicFeesBalance = feeData?.academicFeesBalance ?? 0;
+  const academicFeesStatus = feeData?.academicFeesStatus ?? 'N/A';
+
   // University Approved Fee Structure aligned with backend FeeRecord.feeType schema
   const feeStructureItems = structureData?.feeStructure || [
     {
@@ -437,6 +448,93 @@ const StudentFeesPage = () => {
             ₹{Number(feeData?.previousSemesterOutstanding || 0).toLocaleString('en-IN')}
           </h3>
           <p className="text-[11px] text-slate-500 dark:text-[#9BA8C7] mt-0.5">Arrears / backlogs</p>
+        </div>
+      </div>
+
+      {/* Dual-Track Financial Breakdown: Registration vs Academic Tuition & Channel Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Registration Fee Track */}
+        <div className="bg-white dark:bg-[#121A2E] rounded-2xl border border-slate-200 dark:border-[#232D48] p-4.5 shadow-sm">
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-[#1C2640]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center font-bold text-xs">
+                REG
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">University Registration Fee</h4>
+                <p className="text-[10px] text-slate-500 dark:text-[#9BA8C7]">One-time mandatory enrollment & admission charge</p>
+              </div>
+            </div>
+            <span
+              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                registrationFeeStatus === 'Paid'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                  : registrationFeeStatus === 'Partial'
+                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+              }`}
+            >
+              {registrationFeeStatus}
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-[#18233B]">
+              <span className="text-[10px] text-slate-500 dark:text-[#9BA8C7] block">Assessed</span>
+              <span className="font-bold text-slate-900 dark:text-white">₹{registrationFeeBilled.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="p-2 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/10">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">Paid</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{registrationFeePaid.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="p-2 rounded-xl bg-rose-500/5 dark:bg-rose-500/10">
+              <span className="text-[10px] text-rose-600 dark:text-rose-400 block">Balance</span>
+              <span className="font-bold text-rose-600 dark:text-rose-400">₹{registrationFeeBalance.toLocaleString('en-IN')}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Semester Academic Tuition Track & Channel Breakdown */}
+        <div className="bg-white dark:bg-[#121A2E] rounded-2xl border border-slate-200 dark:border-[#232D48] p-4.5 shadow-sm">
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-[#1C2640]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs">
+                SEM
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Academic Tuition & Semester Labs</h4>
+                <p className="text-[10px] text-slate-500 dark:text-[#9BA8C7]">Semester curriculum, instruction, exams & compute</p>
+              </div>
+            </div>
+            <span
+              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                academicFeesStatus === 'Paid'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                  : academicFeesStatus === 'Partial'
+                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+              }`}
+            >
+              {academicFeesStatus}
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2 text-center text-xs">
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-[#18233B]">
+              <span className="text-[10px] text-slate-500 dark:text-[#9BA8C7] block">Assessed</span>
+              <span className="font-bold text-slate-900 dark:text-white">₹{academicFeesBilled.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="p-2 rounded-xl bg-indigo-500/5 dark:bg-indigo-500/10">
+              <span className="text-[10px] text-indigo-600 dark:text-indigo-400 block">Online Paid</span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400">₹{onlinePaidTotal.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="p-2 rounded-xl bg-emerald-500/5 dark:bg-emerald-500/10">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">Offline Paid</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{offlinePaidTotal.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="p-2 rounded-xl bg-rose-500/5 dark:bg-rose-500/10">
+              <span className="text-[10px] text-rose-600 dark:text-rose-400 block">Balance</span>
+              <span className="font-bold text-rose-600 dark:text-rose-400">₹{academicFeesBalance.toLocaleString('en-IN')}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -692,15 +790,16 @@ const StudentFeesPage = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
               {[
-                { id: 'Debarred Fees', label: '1. Debarred Fees' },
+                { id: 'Registration Fee', label: '1. Reg Fee' },
                 { id: 'Academic Fees', label: '2. Academic Fees' },
                 { id: 'Hostel Fees', label: '3. Hostel Fees' },
                 { id: 'Transportation Fees', label: '4. Transport Fees' },
-                { id: 'Backlogs Fees', label: '5. Backlogs Fees' },
-                { id: 'Miscellaneous Fees', label: '6. Misc Fees' },
-                { id: 'TOTAL_OUTSTANDING', label: '7. Net Balance Due', isTotal: true }
+                { id: 'Debarred Fees', label: '5. Debarred Fees' },
+                { id: 'Backlogs Fees', label: '6. Backlogs Fees' },
+                { id: 'Miscellaneous Fees', label: '7. Misc Fees' },
+                { id: 'TOTAL_OUTSTANDING', label: '8. Net Balance Due', isTotal: true }
               ].map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 let dueAmt = 0;
@@ -708,6 +807,7 @@ const StudentFeesPage = () => {
                   dueAmt = totalBalance;
                 } else {
                   const matched = fees.filter((f) => {
+                    if (cat.id === 'Registration Fee') return /registration/i.test(f.feeType);
                     if (cat.id === 'Academic Fees') return f.feeType === 'Academic Fees' || f.feeType === 'Tuition Fee';
                     if (cat.id === 'Hostel Fees') return f.feeType === 'Hostel Fees' || f.feeType === 'Hostel Fee';
                     if (cat.id === 'Transportation Fees') return f.feeType === 'Transportation Fees' || f.feeType === 'Transport Fee';
@@ -847,7 +947,8 @@ const StudentFeesPage = () => {
                         const matchYear = selectedAcademicYear === 'all' || (fee.academicYear || '2026-2027') === selectedAcademicYear;
                         let matchCat = true;
                         if (selectedCategory !== 'all') {
-                          if (selectedCategory === 'Academic Fees') matchCat = fee.feeType === 'Academic Fees' || fee.feeType === 'Tuition Fee';
+                          if (selectedCategory === 'Registration Fee') matchCat = /registration/i.test(fee.feeType);
+                          else if (selectedCategory === 'Academic Fees') matchCat = fee.feeType === 'Academic Fees' || fee.feeType === 'Tuition Fee';
                           else if (selectedCategory === 'Hostel Fees') matchCat = fee.feeType === 'Hostel Fees' || fee.feeType === 'Hostel Fee';
                           else if (selectedCategory === 'Transportation Fees') matchCat = fee.feeType === 'Transportation Fees' || fee.feeType === 'Transport Fee';
                           else if (selectedCategory === 'Debarred Fees') matchCat = fee.feeType === 'Debarred Fees' || fee.feeType === 'Debarred Fee';
@@ -863,6 +964,7 @@ const StudentFeesPage = () => {
                         const hasReceipt = Boolean(fee.receiptNumber);
 
                         const getCategoryBadgeClass = (type) => {
+                          if (/registration/i.test(type)) return 'bg-violet-500/10 text-violet-400 border-violet-500/20';
                           switch (type) {
                             case 'Academic Fees':
                             case 'Tuition Fee':

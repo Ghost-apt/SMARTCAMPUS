@@ -14,6 +14,8 @@ const feeRecordSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
+        'Registration Fee',
+        'Registration Fees',
         'Tuition Fee',
         'Examination Fee',
         'Lab Fee',
@@ -68,6 +70,16 @@ const feeRecordSchema = new mongoose.Schema(
       default: 0,
       min: 0
     },
+    offlinePaidAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    onlinePaidAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
     balanceAmount: {
       type: Number,
       default: 0
@@ -80,6 +92,24 @@ const feeRecordSchema = new mongoose.Schema(
       type: String,
       enum: ['Paid', 'Partial', 'Pending', 'Overdue'],
       default: 'Pending'
+    },
+    course: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    department: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    feeStructure: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'FeeStructure'
+    },
+    feeStructureVersion: {
+      type: Number,
+      default: 1
     },
     receiptNumber: {
       type: String,

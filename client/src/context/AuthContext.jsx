@@ -59,8 +59,9 @@ export const AuthProvider = ({ children }) => {
       return { success: false, message: 'Invalid response from server' };
     } catch (err) {
       const msg = err.userMessage || 'Login failed. Please check your credentials.';
+      const approvalStatus = err.response?.data?.approvalStatus || null;
       setError(msg);
-      return { success: false, message: msg };
+      return { success: false, message: msg, approvalStatus };
     }
   };
 
@@ -70,13 +71,25 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/auth/register', formData);
       if (res.data.success) {
+        if (res.data.pendingApproval) {
+          return {
+            success: true,
+            pendingApproval: true,
+            registrationId: res.data.registrationId,
+            message: res.data.message,
+            applicant: res.data.applicant
+          };
+        }
+
         const receivedToken = res.data.token;
         const receivedUser = res.data.user;
 
-        localStorage.setItem('smartcampus_token', receivedToken);
-        setToken(receivedToken);
-        setUser(receivedUser);
-        return { success: true, role: receivedUser.role };
+        if (receivedToken) {
+          localStorage.setItem('smartcampus_token', receivedToken);
+          setToken(receivedToken);
+          setUser(receivedUser);
+        }
+        return { success: true, role: receivedUser?.role, message: res.data.message };
       }
       return { success: false, message: 'Registration failed.' };
     } catch (err) {

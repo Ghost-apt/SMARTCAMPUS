@@ -24,6 +24,8 @@ const AttendanceSession = require('./AttendanceSession');
 const Notification = require('./Notification');
 const AuditLog = require('./AuditLog');
 const PaymentTransaction = require('./PaymentTransaction');
+const RegistrationRequest = require('./RegistrationRequest');
+const FeeStructure = require('./FeeStructure');
 
 // Canonical default profile avatar across university roles
 const DEFAULT_AVATAR_URL = User.DEFAULT_AVATAR_URL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
@@ -48,5 +50,7 @@ module.exports = {
   Notification,
   AuditLog,
   PaymentTransaction,
+  RegistrationRequest,
+  FeeStructure,
   DEFAULT_AVATAR_URL
 };
